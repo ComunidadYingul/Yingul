@@ -123,5 +123,12 @@ public class UbicationController {
     	return ambientList;
     }
     
+    @RequestMapping("/cp/{cp}")
+    public List<Yng_City> findCityListByProvinceCP(@PathVariable("cp") int cp) {
+    	//Yng_Province yng_Province = provinceService.findByProvinceId(provinceId);
+        List<Yng_City> cityList = cityService.findByProvince2(cp);//.findByProvince(yng_Province);
+        System.out.println(""+cp);
+        return cityList;
+    }
     
 }
