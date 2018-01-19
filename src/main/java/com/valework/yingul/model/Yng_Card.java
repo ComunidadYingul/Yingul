@@ -32,7 +32,7 @@ public class Yng_Card {
     @JoinColumn(name = "user_id")
     private Yng_User user;
 	
-	private Yng_Card() {}
+	public Yng_Card() {}
 	public Long getCardId() {
 		return cardId;
 	}

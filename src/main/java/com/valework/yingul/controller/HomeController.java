@@ -70,8 +70,9 @@ public class HomeController {
     public String signupPost(@Valid @RequestBody Yng_Person person) throws MessagingException {
 		Yng_User user=person.getYng_User();
 		user.setYng_Ubication(null);
-		String password= user.getPassword();
-		user.setUsername(person.getName()+person.getLastname());
+		user.setPassword(user.getPassword().trim());
+		String password= user.getPassword().trim();
+		user.setUsername((person.getName()+person.getLastname()).replace(" ",""));
 		LOG.info(user.getUsername());
 		if(userService.checkUsernameExists(user.getUsername())) {
 			LOG.info("existe"+user.getUsername());
@@ -83,6 +84,7 @@ public class HomeController {
 			}
 		}
 		LOG.info(user.getUsername());
+		user.setEmail(user.getEmail().trim().toLowerCase());
 		if (userService.checkEmailExists(user.getEmail())) {
             return "email exist";
         } else {     	

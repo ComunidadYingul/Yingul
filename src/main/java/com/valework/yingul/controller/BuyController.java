@@ -228,13 +228,11 @@ public class BuyController {
 		}
 		Yng_PaymentMethod paymentMethodTemp=buy.getYng_PaymentMethod();
 		//para ver si la tarjeta existe 
-		if (null == cardDao.findByNumber(cardTemp.getNumber())) {
+		if (null == cardDao.findByNumberAndUser(cardTemp.getNumber(),buy.getUser())) {
 			paymentMethodTemp.setYng_Card(cardDao.save(cardTemp)); 
         }
 		else {
-			cardTemp=cardDao.findByNumber(cardTemp.getNumber());
 			paymentMethodTemp.setYng_Card(cardTemp);
-			
 		}
 		paymentMethodTemp.setYng_Request(requestTemp);
 		buy.setYng_PaymentMethod(paymentMethodDao.save(paymentMethodTemp));
