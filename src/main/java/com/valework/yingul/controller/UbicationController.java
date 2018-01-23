@@ -130,4 +130,5 @@ public class UbicationController {
         System.out.println(""+cp);
         return cityList;
     }
+
 }
