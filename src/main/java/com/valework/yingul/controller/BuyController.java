@@ -26,6 +26,7 @@ import org.testng.Assert;
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.BuyDao;
 import com.valework.yingul.dao.CardDao;
+import com.valework.yingul.dao.CardProviderDao;
 import com.valework.yingul.dao.EnvioDao;
 import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.ListCreditCardDao;
@@ -107,6 +108,8 @@ public class BuyController {
 	ShippingDao shippingDao;
 	 @Autowired
 	 EnvioDao  envioDao;
+	@Autowired 
+	CardProviderDao cardProviderDao;
 	
 	@RequestMapping("/listCreditCard/all")
     public List<Yng_ListCreditCard> findProvinceList() {
@@ -224,7 +227,7 @@ public class BuyController {
 			cardTemp.setYng_CardProvider(null);
 		}
 		else {
-			//aqui asignar el banco que proporciono ala tarjeta de credito
+			cardTemp.setYng_CardProvider(cardProviderDao.findByCardProviderId(cardTemp.getYng_CardProvider().getCardProviderId()));
 		}
 		Yng_PaymentMethod paymentMethodTemp=buy.getYng_PaymentMethod();
 		//para ver si la tarjeta existe 
