@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.valework.yingul.model.Yng_Ambient;
 import com.valework.yingul.model.Yng_Amenities;
 import com.valework.yingul.model.Yng_Barrio;
+import com.valework.yingul.model.Yng_Category;
 import com.valework.yingul.model.Yng_City;
 import com.valework.yingul.model.Yng_Confort;
 import com.valework.yingul.model.Yng_Equipment;
@@ -129,6 +130,16 @@ public class UbicationController {
         List<Yng_City> cityList = cityService.findByProvince2(cp);//.findByProvince(yng_Province);
         System.out.println(""+cp);
         return cityList;
+    }
+    @RequestMapping("/cities/{name}")
+    public List<Yng_City> findCityByName(@PathVariable("name") String name) {
+        List<Yng_City> cityList = cityService.findByName(name);
+        if(cityList.size()>10) {
+        	return cityList.subList(0, 10);
+        }
+        else {
+        	return cityList;
+        }
     }
 
 }

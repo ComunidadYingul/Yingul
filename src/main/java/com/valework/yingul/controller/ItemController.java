@@ -20,6 +20,7 @@ import com.valework.yingul.dao.CategoryDao;
 import com.valework.yingul.dao.FindMotorizedDao;
 import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.MotorizedDao;
+import com.valework.yingul.dao.PropertyDao;
 import com.valework.yingul.dao.QueryDao;
 import com.valework.yingul.dao.ServiceDao;
 import com.valework.yingul.dao.UserDao;
@@ -82,6 +83,8 @@ public class ItemController {
 	MotorizedDao motorizedDao;
 	@Autowired 
 	FindMotorizedDao findMotorizedDao;
+	@Autowired
+	PropertyDao propertyDao;
 	
 	@RequestMapping("/itemType/{itemId}")
     public String getItemTypeById(@PathVariable("itemId") Long itemId) {
@@ -249,5 +252,11 @@ public class ItemController {
             return itemList;
     	}
 
+    }
+    @RequestMapping("/property/all")
+    public Set<Yng_Item> findPropertyList() { 
+    	List<Yng_Property> propertyList = propertyDao.findAll();
+        Set<Yng_Item> itemList = itemService.findProperty(propertyList);
+        return itemList;
     }
 }

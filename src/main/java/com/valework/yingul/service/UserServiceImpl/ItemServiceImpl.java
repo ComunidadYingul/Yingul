@@ -15,6 +15,7 @@ import com.valework.yingul.model.Yng_Category;
 import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_ItemCategory;
 import com.valework.yingul.model.Yng_Motorized;
+import com.valework.yingul.model.Yng_Property;
 import com.valework.yingul.model.Yng_Service;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.ItemCategoryService;
@@ -139,5 +140,14 @@ public class ItemServiceImpl implements ItemService{
     	}
     	return false;
     	
+	}
+
+	public Set<Yng_Item> findProperty(List<Yng_Property> propertyList) {
+		Set<Yng_Item> listItem = new HashSet<>();
+		for (Yng_Property s : propertyList) {
+			Yng_Item item=itemDao.findByItemId(s.getYng_Item().getItemId());
+    		listItem.add(item);
+    	}
+		return listItem;
 	}	
 }

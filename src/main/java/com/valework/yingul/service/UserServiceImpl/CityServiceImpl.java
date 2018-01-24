@@ -3,10 +3,8 @@ package com.valework.yingul.service.UserServiceImpl;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.model.Yng_City;
 import com.valework.yingul.model.Yng_Province;
@@ -16,7 +14,7 @@ import com.valework.yingul.service.CityService;
 public class CityServiceImpl implements CityService{
 
 	@Autowired 
-	CityDao cityDao;
+	private CityDao cityDao;
 	
 	public List<Yng_City> findByProvince(Yng_Province yng_province) {
 		int provinceId = yng_province.getProvinceId();
@@ -36,6 +34,14 @@ public class CityServiceImpl implements CityService{
                 .filter(city -> postalCode.equals(city.getCodigopostal()))	//filters the line, equals to username
                 .collect(Collectors.toList());
         return cityList;
+	}
+
+	public List<Yng_City> findByName(String name) {
+		System.out.print("eddy"+name);
+		List<Yng_City> cityList = cityDao.findAll().stream() 			//convert list to stream
+                .filter(city -> name.equals(city.getName()))	//filters the line, equals to username
+                .collect(Collectors.toList());
+		return cityList;
 	}
 	
 

@@ -29,7 +29,7 @@ public class CategoryServiceImpl implements CategoryService{
 
 	public List<Yng_Category> findByName(String name) {
 		List<Yng_Category> categoryList = categoryDao.findAll().stream() 			//convert list to stream
-                .filter(category -> category.getName().toLowerCase().contains(name.toLowerCase()))	//filters the line, equals to username
+                .filter(category -> category.getName().toLowerCase().replace(" ","").contains(name.toLowerCase().replace(" ","")))	//filters the line, equals to username
                 .collect(Collectors.toList());
 		return categoryList;
 	}
