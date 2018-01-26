@@ -10,8 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 @Entity
 public class Yng_City {
 	@Id
@@ -51,12 +49,7 @@ public class Yng_City {
 	public void setCodigopostal(String codigopostal) {
 		this.codigopostal = codigopostal;
 	}
-	@Override
-	public String toString() {
-		return "Yng_City [cityId=" + cityId + ", name=" + name + ", codigopostal=" + codigopostal + ", yng_Province="
-				+ yng_Province + "]";
-	}
-	
+
 
 	
 }

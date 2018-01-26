@@ -1,12 +1,16 @@
 
 package com.valework.yingul.service.UserServiceImpl;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.model.Yng_City;
+import com.valework.yingul.model.Yng_Item;
+import com.valework.yingul.model.Yng_Property;
 import com.valework.yingul.model.Yng_Province;
 import com.valework.yingul.service.CityService;
 
@@ -35,12 +39,19 @@ public class CityServiceImpl implements CityService{
                 .collect(Collectors.toList());
         return cityList;
 	}
-
-	public List<Yng_City> findByName(String name) {
-		System.out.print("eddy"+name);
-		List<Yng_City> cityList = cityDao.findAll().stream() 			//convert list to stream
-                .filter(city -> name.equals(city.getName()))	//filters the line, equals to username
-                .collect(Collectors.toList());
+	@Override
+	public Set<Yng_City> findCitiesByName(String name) {
+		List<Yng_City> cityListTemp = cityDao.findAll();
+		Set<Yng_City> cityList = new HashSet<>();
+		for (Yng_City s : cityListTemp) {
+			if(s.getName()!=null) {
+				if(s.getName().replace(" ","").toUpperCase().contains(name.replace(" ","").toUpperCase())) {
+					if(cityList.size()<=10){
+					cityList.add(s);}
+					else {return cityList;}
+				}
+			}
+    	}
 		return cityList;
 	}
 	

@@ -1,25 +1,27 @@
 package com.valework.yingul.controller;
 
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.valework.yingul.model.Yng_Ambient;
 import com.valework.yingul.model.Yng_Amenities;
 import com.valework.yingul.model.Yng_Barrio;
-import com.valework.yingul.model.Yng_Category;
 import com.valework.yingul.model.Yng_City;
 import com.valework.yingul.model.Yng_Confort;
 import com.valework.yingul.model.Yng_Equipment;
 import com.valework.yingul.model.Yng_Exterior;
+import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_Province;
 import com.valework.yingul.model.Yng_Security;
 import com.valework.yingul.model.Yng_Sound;
 import com.valework.yingul.service.AmbientProperty;
 import com.valework.yingul.service.AmenitiesProperty;
 import com.valework.yingul.service.BarrioService;
+import com.valework.yingul.service.CategoryService;
 import com.valework.yingul.service.CityService;
 import com.valework.yingul.service.ConfortMotorized;
 import com.valework.yingul.service.EquipmentMotorized;
@@ -132,14 +134,9 @@ public class UbicationController {
         return cityList;
     }
     @RequestMapping("/cities/{name}")
-    public List<Yng_City> findCityByName(@PathVariable("name") String name) {
-        List<Yng_City> cityList = cityService.findByName(name);
-        if(cityList.size()>10) {
-        	return cityList.subList(0, 10);
-        }
-        else {
-        	return cityList;
-        }
+    public Set<Yng_City> findCityByName(@PathVariable("name") String name) {
+    	Set<Yng_City> cityList = cityService.findCitiesByName(name);
+    	return cityList;
     }
 
 }

@@ -259,4 +259,16 @@ public class ItemController {
         Set<Yng_Item> itemList = itemService.findProperty(propertyList);
         return itemList;
     }
+    @RequestMapping("/searchProperty/{categoryId}/{cityId}")
+    public Set<Yng_Item> searchPropertyList(@PathVariable("categoryId") Long categoryId,@PathVariable("cityId") Long cityId) { 
+    	System.out.println(" "+categoryId+"/"+cityId);
+    	List<Yng_Property> propertyList = propertyDao.findAll();
+    	if(categoryId == 0 && cityId == 0) {
+            Set<Yng_Item> itemList = itemService.findProperty(propertyList);
+            return itemList;
+    	}else{
+    		Set<Yng_Item> itemList = itemService.searchProperty(propertyList, categoryId, cityId);
+            return itemList;
+    	}
+    }
 }

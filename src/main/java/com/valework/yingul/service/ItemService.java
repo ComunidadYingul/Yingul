@@ -20,4 +20,5 @@ public interface ItemService {
 	List<Yng_Item> findByUser(Yng_User yng_User);
 	boolean verifyItemByCategory(Long itemId, Long categoryId);
 	Set<Yng_Item> findProperty(List<Yng_Property> propertyList);
+	Set<Yng_Item> searchProperty(List<Yng_Property> propertyList,Long categoryId,Long cityId);
 }
