@@ -15,6 +15,7 @@ import com.valework.yingul.model.Yng_Category;
 import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_ItemCategory;
 import com.valework.yingul.model.Yng_Motorized;
+import com.valework.yingul.model.Yng_Property;
 import com.valework.yingul.model.Yng_Service;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.ItemCategoryService;
@@ -139,5 +140,38 @@ public class ItemServiceImpl implements ItemService{
     	}
     	return false;
     	
+	}
+
+	public Set<Yng_Item> findProperty(List<Yng_Property> propertyList) {
+		Set<Yng_Item> listItem = new HashSet<>();
+		for (Yng_Property s : propertyList) {
+			Yng_Item item=itemDao.findByItemId(s.getYng_Item().getItemId());
+    		listItem.add(item);
+    	}
+		return listItem;
+	}
+
+	public Set<Yng_Item> searchProperty(List<Yng_Property> propertyList, Long categoryId, Long cityId) {
+		Set<Yng_Item> listItem = new HashSet<>();
+		for (Yng_Property s : propertyList) {
+			Yng_Item item=itemDao.findByItemId(s.getYng_Item().getItemId());
+			if(cityId==0) {
+				if(this.verifyItemByCategory(s.getYng_Item().getItemId(),categoryId)) {
+					listItem.add(item);
+				}
+			}else{
+				if(categoryId==0) {
+					if( cityId == s.getYng_Item().getYng_Ubication().getYng_City().getCityId()) {
+						listItem.add(item);
+					}
+				}else {
+					if( cityId == s.getYng_Item().getYng_Ubication().getYng_City().getCityId() && this.verifyItemByCategory(s.getYng_Item().getItemId(),categoryId)) {
+						listItem.add(item);
+					}
+				}
+			}	
+			
+    	}
+		return listItem;
 	}	
 }

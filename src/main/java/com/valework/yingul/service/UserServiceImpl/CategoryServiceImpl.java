@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.valework.yingul.dao.CategoryDao;
+import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.model.Yng_Category;
 import com.valework.yingul.service.CategoryService;
 
@@ -13,7 +14,7 @@ public class CategoryServiceImpl implements CategoryService{
 
 	@Autowired
     private CategoryDao categoryDao;
-
+	
 	public List<Yng_Category> findAll() {
 		return categoryDao.findAll();
 	}
@@ -29,11 +30,9 @@ public class CategoryServiceImpl implements CategoryService{
 
 	public List<Yng_Category> findByName(String name) {
 		List<Yng_Category> categoryList = categoryDao.findAll().stream() 			//convert list to stream
-                .filter(category -> category.getName().toLowerCase().contains(name.toLowerCase()))	//filters the line, equals to username
+                .filter(category -> category.getName().toLowerCase().replace(" ","").contains(name.toLowerCase().replace(" ","")))	//filters the line, equals to username
                 .collect(Collectors.toList());
 		return categoryList;
 	}
-	
-
 	
 }
