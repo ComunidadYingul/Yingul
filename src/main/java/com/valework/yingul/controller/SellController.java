@@ -331,7 +331,7 @@ public class SellController {
 		userTemp.setPhone(itemTemp.getUser().getPhone());
 		userTemp.setPhone2(itemTemp.getUser().getPhone2());
 		userTemp.setWebSite(itemTemp.getUser().getWebSite());
-		userTemp.setYng_Ubication(ubicationTempo);
+		userTemp.setYng_Ubication(ubicationTempo); System.out.println(""+ubicationTempo.toString());
 		userDao.save(userTemp);
 		itemTemp.setUser(userTemp);
 		//hasta aqui para el usuario

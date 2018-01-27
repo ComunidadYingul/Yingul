@@ -100,7 +100,7 @@ public class BuyController {
 	@Autowired 
 	ResponseHeaderDao responseHeaderDao;
 	@Autowired 
-	ResponseBodyDao responseBodyDao;
+	ResponseBodyDao  responseBodyDao;
 	@Autowired 
 	RequestBodyDao requestBodyDao;
 	//visacybersource
