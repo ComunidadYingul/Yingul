@@ -74,12 +74,14 @@ import com.valework.yingul.model.Yng_Envio;
 import com.valework.yingul.model.Yng_Product;
 import com.valework.yingul.model.Yng_Service;
 import com.valework.yingul.model.Yng_Token;
+import com.valework.yingul.model.Yng_User;
 
 import andreaniapis.*;
  
 
 import com.valework.yingul.dao.CotizacionDao;
 import com.valework.yingul.dao.EnvioDao;
+import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.logistic.*;
 
 
@@ -107,6 +109,8 @@ public class LogisticsController {
     private String TYPE="application/x-www-form-urlencoded";
     private final String USER_AGENT = "Mozilla/5.0";
     private Yng_Cotizar yngCotizar= new Yng_Cotizar();
+	@Autowired
+	UserDao userDao;
 	
     @RequestMapping("/token")
     private String token() {
@@ -1002,6 +1006,7 @@ public class LogisticsController {
  	@RequestMapping(value = "/cotizarAndreani", method = RequestMethod.POST)
 	@ResponseBody
     public CotizarEnvioResponse andreaniCotizarList(@Valid @RequestBody Yng_AndreaniCotizacion cotizar) throws MessagingException {
+ 		
  		CotizarEnvioResponse cot=null;
  		Yng_AndreaniCotizacion cotizarTemp=cotizar;
  		System.out.println(cotizarTemp.toString()); 		
@@ -1171,6 +1176,8 @@ public class LogisticsController {
     @RequestMapping(value = "/cotizacion", method = RequestMethod.POST)
 	@ResponseBody
     public String sellServicePost(@Valid @RequestBody Yng_Cotizacion cotizacion) throws MessagingException {
+    	Yng_User userTemp= userDao.findByUsername(cotizacion.getIdUser());
+    	cotizacion.setIdUser(""+userTemp.getUserId());
     	cotizacionDao.save(cotizacion);
     	
     	 return "save";
@@ -1364,5 +1371,15 @@ public class LogisticsController {
     	 return tempEnvio;
     }
      
-    
+    @RequestMapping(value = "/cotizacionB", method = RequestMethod.POST)
+	@ResponseBody
+    public Yng_Cotizacion logisticCotiBuscar(@Valid @RequestBody Yng_Cotizacion cotizacion) throws MessagingException {
+    	Yng_Cotizacion cotizacionTemp=cotizacion;
+    	
+    	Yng_User userTemp= userDao.findByUsername(cotizacion.getIdUser());
+    	cotizacion.setIdUser(""+userTemp.getUserId());
+    	cotizacionDao.save(cotizacion);
+    	
+    	 return cotizacionTemp;
+    }
 }
