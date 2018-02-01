@@ -1,5 +1,7 @@
 package com.valework.yingul.controller;
 
+import java.util.List;
+
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,7 +96,7 @@ public class StoreController {
 		}
 		storeDao.save(storeTemp);
 		try {
-			smtpMailSender.send(storeTemp.getUser().getEmail(), "Tienda registrada exitosamente", "Su tienda ya esta registrada puede encontrarla en: "+storeTemp.getName());
+			smtpMailSender.send(storeTemp.getUser().getEmail(), "Tienda registrada exitosamente", "Su tienda ya esta registrada compartela y encuentrala en: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/"+storeTemp.getName());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -106,5 +108,9 @@ public class StoreController {
     public Yng_Store getStoreByName(@PathVariable("nameStore") String nameStore) {
 		Yng_Store store = storeDao.findByName(nameStore);
 		return store;	
+    }
+	@RequestMapping("/all")
+    public List<Yng_Store> getAllStores() {
+		return storeDao.findAll();	
     }
 }
