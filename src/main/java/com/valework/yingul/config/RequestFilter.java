@@ -20,11 +20,11 @@ public class RequestFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpServletRequest request = (HttpServletRequest) req;
         //amazon produccion
-        response.setHeader("Access-Control-Allow-Origin", "http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com");
+        //response.setHeader("Access-Control-Allow-Origin", "http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com");
         //amazon desarrollo
         //response.setHeader("Access-Control-Allow-Origin", "http://yingulportaldev.s3-website-us-west-2.amazonaws.com");
         //local
-        //response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
         response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
         response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
         response.setHeader("Access-Control-Max-Age", "3600");

@@ -55,7 +55,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/buy/**",
             "/motorized/**",
             "/business/**",
-            "/logistics/**"
+            "/logistics/**",
+            "/store/**"
     };
 
     @Override
