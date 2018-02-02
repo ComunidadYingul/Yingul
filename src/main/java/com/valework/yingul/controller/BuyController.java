@@ -332,16 +332,17 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	System.out.println("home:"+buy.getShipping().getTypeShipping()+typeEnvio);
+    	System.out.println("home: "+buy.getShipping().getTypeShipping()+typeEnvio);
 		
 		if(typeEnvio.equals("home")) {
-			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA"," Se realizo la venta del producto:  "+buy.getYng_item().getName()+ "  "+"  Precio:" +buy.getCost()+ "  " +"    los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección:"+buy.getYng_item().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber());
+			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA"," Se realizo la venta del producto :  "+buy.getYng_item().getName()+ "  "+"  Precio:" +buy.getYng_item().getPrice()+ "  " +"    los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección:"+buy.getYng_item().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber());
 		}
 		else {
-		smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","Se realizo la venta de tu producto :  "+buy.getYng_item().getName() +"Descripción : "+buy.getYng_item().getDescription()+ "  " +"  Precio:" +buy.getCost()+"   Se realizo la venta de tu producto:\r\n" + 
-				"      Imprimir la etiqueta de Andreani \r\n" + 
-				"      Preparar y embalar el paquete junto a la etiqueta   \r\n" + 
-				"      Déjalo en la sucursal Andreani más cercana . \r\n" + 
+		smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","Se realizo la venta del producto :  "+buy.getYng_item().getName() +"  Descripción : "+buy.getYng_item().getDescription()+ "  " +"  Precio: " +buy.getYng_item().getPrice()+"   Costo del envio : " +buy.getShipping().getYng_envio().getTarifa()+  
+				"      --Imprimir la etiqueta de Andreani "
+				+ "--Preparar y embalar el paquete junto a la etiqueta " + 
+				"      --Preparar y embalar el paquete junto a la etiqueta   " + 
+				"      --Déjalo en la sucursal Andreani más cercana ." + 
 				"           "+buy.getShipping().getYng_envio().getPdfLink());
 		}
     	return "save";
