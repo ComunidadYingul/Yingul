@@ -173,5 +173,11 @@ public class ItemServiceImpl implements ItemService{
 			
     	}
 		return listItem;
+	}
+
+
+	public List<Yng_Item> findByOrderByItemIdDesc() {
+		
+		return itemDao.findByOrderByItemIdDesc();
 	}	
 }

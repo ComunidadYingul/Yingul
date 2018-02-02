@@ -16,7 +16,7 @@ public class IndexController {
 	
 	@RequestMapping("/item/all")
     public List<Yng_Item> findItemList() {
-        List<Yng_Item> itemList = itemService.findAll();
+        List<Yng_Item> itemList = itemService.findByOrderByItemIdDesc();
         return itemList;
     }
     

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.valework.yingul.dao.ProvinceDao;
 import com.valework.yingul.model.Yng_Ambient;
 import com.valework.yingul.model.Yng_Amenities;
 import com.valework.yingul.model.Yng_Barrio;
@@ -43,6 +45,8 @@ public class UbicationController {
 	@Autowired
 	private BarrioService barrioService;
 	
+	@Autowired
+	private ProvinceDao provinceDao;
 	@RequestMapping("/province/all")
     public List<Yng_Province> findProvinceList() {
         List<Yng_Province> provinceList = provinceService.findAll();
@@ -143,7 +147,7 @@ public class UbicationController {
 	
 	@RequestMapping("/province/Order")
     public List<Yng_Province> findProvinceListOrder() {
-        List<Yng_Province> provinceList = provinceService.findAll();
+        List<Yng_Province> provinceList = provinceDao.findByOrderByNameAsc();
         return provinceList;
     }
 }

@@ -22,7 +22,7 @@ public class CityServiceImpl implements CityService{
 	
 	public List<Yng_City> findByProvince(Yng_Province yng_province) {
 		int provinceId = yng_province.getProvinceId();
-		List<Yng_City> cityList = cityDao.findAll().stream() 			//convert list to stream
+		List<Yng_City> cityList = cityDao.findByOrderByNameAsc().stream() 			//convert list to stream
                 .filter(city -> provinceId==city.getYng_Province().getProvinceId())	//filters the line, equals to username
                 .collect(Collectors.toList());
         return cityList;

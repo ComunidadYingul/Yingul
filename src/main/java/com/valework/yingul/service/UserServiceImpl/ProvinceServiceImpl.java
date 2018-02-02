@@ -15,7 +15,7 @@ public class ProvinceServiceImpl implements ProvinceService{
     private ProvinceDao provinceDao;
 	
 	public List<Yng_Province> findAll() {
-		return provinceDao.findAll();
+		return provinceDao.findByOrderByNameAsc();
 	}
 
 	public Yng_Province findByName(String name) {
