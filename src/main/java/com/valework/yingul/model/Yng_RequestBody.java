@@ -14,9 +14,9 @@ public class Yng_RequestBody {
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long requestBodyId;
-	@Size(max = 500)
+	@Size(max = 1000)
 	private java.lang.String key;
-	@Size(max = 500)
+	@Size(max = 1000)
 	private java.lang.String value;
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "request_id")
