@@ -37,6 +37,17 @@ public class StoreController {
 	@ResponseBody
     public String createStorePost(@Valid @RequestBody Yng_Store store) throws MessagingException {	
 		Yng_Store storeTemp = store;
+		//para el video de youtube
+		if(store.getVideo().contains("embed")){}
+		else {
+			//https://youtu.be/zabDFISMtJI
+			if(store.getVideo().contains("https://youtu.be/")) {
+				storeTemp.setVideo(store.getVideo().replace("https://youtu.be/", "https://www.youtube.com/embed/"));
+			}else {
+				storeTemp.setVideo("https://www.youtube.com/embed/"+store.getVideo().substring(store.getVideo().indexOf("=")+1));
+			}
+		}
+		//fin de video de youtube
 		storeTemp.setName(storeTemp.getName().replace(" ", ""));
 		Yng_User userTemp =userDao.findByUsername(storeTemp.getUser().getUsername());
 		storeTemp.setUser(userTemp);
