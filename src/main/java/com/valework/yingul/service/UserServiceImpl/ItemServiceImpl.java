@@ -61,7 +61,7 @@ public class ItemServiceImpl implements ItemService{
 
 	public List<Yng_Item> findAll() {
 		// TODO Auto-generated method stub
-		return itemDao.findAll();
+		return itemDao.findByOrderByItemIdDesc();
 	}
 
 	public void save(Yng_Item yng_item) {
@@ -71,7 +71,7 @@ public class ItemServiceImpl implements ItemService{
 
 	public List<Yng_Item> findByUser(Yng_User yng_user) {
 		Long userId = yng_user.getUserId();
-		List<Yng_Item> itemList = itemDao.findAll().stream() 			//convert list to stream
+		List<Yng_Item> itemList = itemDao.findByOrderByItemIdDesc().stream() 			//convert list to stream
                 .filter(city -> userId==city.getUser().getUserId())	//filters the line, equals to username
                 .collect(Collectors.toList());
         return itemList;
