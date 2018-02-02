@@ -47,6 +47,8 @@ public class Yng_Item {
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)  
     @JsonBackReference(value="itemImage")
     private Set<Yng_ItemImage> itemImage = new HashSet<>();
+    private double priceNormal;
+    private double priceDiscount;
     
     public Yng_Item() {
     	
@@ -136,6 +138,23 @@ public class Yng_Item {
 		this.video = video;
 	}
 
+	public double getPriceNormal() {
+		return priceNormal;
+	}
+
+	public void setPriceNormal(double priceNormal) {
+		this.priceNormal = priceNormal;
+	}
+
+	public double getPriceDiscount() {
+		return priceDiscount;
+	}
+
+	public void setPriceDiscount(double priceDiscount) {
+		this.priceDiscount = priceDiscount;
+	}
+
+	
 
 
 	

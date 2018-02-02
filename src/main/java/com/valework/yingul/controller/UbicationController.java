@@ -139,4 +139,11 @@ public class UbicationController {
     	return cityList;
     }
 
+    //List<Person> findByLastnameOrderByFirstnameAsc(String lastname);
+	
+	@RequestMapping("/province/Order")
+    public List<Yng_Province> findProvinceListOrder() {
+        List<Yng_Province> provinceList = provinceService.findAll();
+        return provinceList;
+    }
 }

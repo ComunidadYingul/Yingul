@@ -20,6 +20,7 @@ import com.valework.yingul.dao.CategoryDao;
 import com.valework.yingul.dao.FindMotorizedDao;
 import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.MotorizedDao;
+import com.valework.yingul.dao.ProductDao;
 import com.valework.yingul.dao.PropertyDao;
 import com.valework.yingul.dao.QueryDao;
 import com.valework.yingul.dao.ServiceDao;
@@ -85,7 +86,8 @@ public class ItemController {
 	FindMotorizedDao findMotorizedDao;
 	@Autowired
 	PropertyDao propertyDao;
-	
+	@Autowired
+	ProductDao productDao;
 	@RequestMapping("/itemType/{itemId}")
     public String getItemTypeById(@PathVariable("itemId") Long itemId) {
 		Yng_Item yng_Item = itemDao.findByItemId(itemId);
@@ -270,5 +272,17 @@ public class ItemController {
     		Set<Yng_Item> itemList = itemService.searchProperty(propertyList, categoryId, cityId);
             return itemList;
     	}
+    }
+	@RequestMapping("/producto/exist/{itemId}")
+    public boolean getProductByIdItemExist(@PathVariable("itemId") Long itemId) { 
+		boolean exist=productService.findByItemIdExist(itemId);
+		
+		return exist;	
+    }
+    @RequestMapping("/product/all")
+    public List<Yng_Product> findProductList() { 
+    	List<Yng_Product> productsList = productDao.findAll();
+       // Set<Yng_Item> itemList = itemService.findProperty(propertyList);
+        return productsList;
     }
 }

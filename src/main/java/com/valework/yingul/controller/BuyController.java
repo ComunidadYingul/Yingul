@@ -299,6 +299,7 @@ tempEnvio.setPdfLink(pdfLink);
 com.valework.yingul.model.Yng_Envio tempE=envioDao.save(tempEnvio);
 Yng_Shipping tempShipping =new Yng_Shipping();
 tempShipping.setYng_envio(tempE);
+tempShipping.setTypeShipping(typeEnvio);
 tempShipping=shippingDao.save(tempShipping);
 
 
@@ -337,7 +338,11 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA"," Se realizo la venta del producto:  "+buy.getYng_item().getName()+ "  "+"  Precio:" +buy.getCost()+ "  " +"    los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección:"+buy.getYng_item().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber());
 		}
 		else {
-		smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "Venta exitosa","Se realizo la venta del tu producto:" +buy.getYng_item().getDescription()+ "  " +buy.getYng_item().getPrice()+"   Imprime esta etiqueta y pégala en tu envió: "+buy.getShipping().getYng_envio().getPdfLink());
+		smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","Se realizo la venta de tu producto :  "+buy.getYng_item().getName() +"Descripción : "+buy.getYng_item().getDescription()+ "  " +"  Precio:" +buy.getCost()+"   Se realizo la venta de tu producto:\r\n" + 
+				"      Imprimir la etiqueta de Andreani \r\n" + 
+				"      Preparar y embalar el paquete junto a la etiqueta   \r\n" + 
+				"      Déjalo en la sucursal Andreani más cercana . \r\n" + 
+				"           "+buy.getShipping().getYng_envio().getPdfLink());
 		}
     	return "save";
     }
