@@ -323,15 +323,16 @@ public class SellController {
 			e1.printStackTrace();
 		}
 		ubicationTemp.setCodAndreani(""+codAndreani);
-		Yng_Ubication ubicationTempo=ubicationDao.save(ubicationTemp);
+		Yng_Ubication ubicationTempo= new Yng_Ubication();
+		ubicationTempo=ubicationDao.save(ubicationTemp);
         
         itemTemp.setYng_Ubication(ubicationTempo);
 		//para setear el usuario
 		Yng_User userTemp= userDao.findByUsername(itemTemp.getUser().getUsername());
-		userTemp.setPhone(itemTemp.getUser().getPhone());
-		userTemp.setPhone2(itemTemp.getUser().getPhone2());
-		userTemp.setWebSite(itemTemp.getUser().getWebSite());
-		userTemp.setYng_Ubication(ubicationTempo); System.out.println(""+ubicationTempo.toString());
+		//userTemp.setPhone(itemTemp.getUser().getPhone());
+		//userTemp.setPhone2(itemTemp.getUser().getPhone2());
+		//userTemp.setWebSite(itemTemp.getUser().getWebSite());
+		userTemp.setYng_Ubication(ubicationTempo);// System.out.println(""+ubicationTempo.toString());
 		userDao.save(userTemp);
 		itemTemp.setUser(userTemp);
 		//hasta aqui para el usuario
