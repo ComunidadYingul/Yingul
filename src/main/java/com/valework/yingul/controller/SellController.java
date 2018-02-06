@@ -716,19 +716,15 @@ public class SellController {
 	@RequestMapping("/ubication/{username}")
     public Yng_Ubication findQueriesByUser(@PathVariable("username") String username) {
 		String codUbi="";
-		Yng_Ubication yng_Ubication=null;
-		
+		Yng_Ubication yng_Ubication=null;		
     	Yng_User yng_User = userDao.findByUsername(username);
-    	System.out.println("yng_User.getYng_Ubication():"+yng_User.getYng_Ubication());
-        //List<Yng_Query> queryList = queryService.findByUser(yng_User);
-    	
-    	//codUbi=""+yng_User.getYng_Ubication().getUbicationId();
-    	///System.out.println("yng_User.getYng_Ubication().getUbicationId():"+yng_User.getYng_Ubication().getUbicationId());
-    	if(yng_User.getYng_Ubication()!=null) {
-    		yng_Ubication=yng_User.getYng_Ubication();
-    	} 
-    	 
-       // return ""+codUbi;
-    	return yng_Ubication;
-    }
+    	if(yng_User.getYng_Ubication()!=null){
+    		//yng_Ubication=yng_User.getYng_Ubication();
+    		yng_Ubication=ubicationDao.findByUbicationId(yng_User.getYng_Ubication().getUbicationId());
+    		return yng_Ubication;
+    	}    	 
+    	else{
+    		return null;
+    	}
+	}
 }
