@@ -1188,9 +1188,9 @@ public class LogisticsController {
     @RequestMapping(value = "/envio", method = RequestMethod.POST)
 	@ResponseBody
     public String sellServicePost(@Valid @RequestBody Yng_Envio envio) throws MessagingException {
-    	Yng_Envio tempEnvio=envio;
+    	/*Yng_Envio tempEnvio=envio;
     	Yng_Envio yi=tempEnvio;
-    	/*AndreaniApis andrea=new AndreaniApis();
+    	AndreaniApis andrea=new AndreaniApis();
     	andreaniapis.Yng_Envio com=new andreaniapis.Yng_Envio();
    	tempEnvio.setContrato("400006711");
     	 com.setProvincia(yi.getProvincia());
@@ -1218,7 +1218,7 @@ public class LogisticsController {
          com.setDetalleProductosRetiro(yi.getDetalleProductosRetiro());
          com.setVolumen(yi.getVolumen());
          com.setValorDeclarado(yi.getValorDeclarado());
-         com.setPeso(yi.getPeso());*/
+         com.setPeso(yi.getPeso());
          /*
     	 com.setProvincia("Buenos Aires");
          com.setLocalidad("TRUJUI");
@@ -1246,13 +1246,13 @@ public class LogisticsController {
          com.setVolumen("4000");
          com.setValorDeclarado("5000");
          com.setPeso("600");
-*/
+
          
      	String codAndreani="";
-     	//codAndreani=andrea.confirmarEnvio(com);
+     	codAndreani=andrea.confirmarEnvio(com);
      	tempEnvio.setNumeroAndreani(codAndreani);
     	String pdfLink="";
-    	//pdfLink=andrea.linkPdf(codAndreani);
+    	pdfLink=andrea.linkPdf(codAndreani);
     	System.out.println("aqui:"+1);
     	tempEnvio.setPdfLink(pdfLink);
     	/*
@@ -1275,14 +1275,14 @@ public class LogisticsController {
 			e.printStackTrace();
 		}
     	tempEnvio.setPdfLink(pdfLink);
-    	*/
     	
     	
     	
     	
     	
     	
-    	envioDao.save(tempEnvio);
+    	
+    	envioDao.save(tempEnvio);*/
     	
     	 return "save";
     }
@@ -1319,9 +1319,9 @@ public class LogisticsController {
     	}
     }
    
-   /* public Yng_Envio serviceEnvio(Yng_Envio envio) throws MessagingException {
+    public Yng_Envio serviceEnvio(Yng_Envio envio) throws MessagingException {
     	Yng_Envio tempEnvio=envio;
-    	Yng_Envio yi=tempEnvio;
+    	/*Yng_Envio yi=tempEnvio;
     	AndreaniApis andrea=new AndreaniApis();
     	andreaniapis.Yng_Envio com=new andreaniapis.Yng_Envio();
    	tempEnvio.setContrato("400006711");
@@ -1366,10 +1366,10 @@ public class LogisticsController {
     	
     	
     	
-    	envioDao.save(tempEnvio);
+    	envioDao.save(tempEnvio);*/
     	
     	 return tempEnvio;
-    }*/
+    }
      
     @RequestMapping(value = "/cotizacionB", method = RequestMethod.POST)
 	@ResponseBody

@@ -119,11 +119,12 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.7.3</version>
 		</dependency>
-		<!--dependency>
+		<!-- <dependency>
 			<groupId>andreaniapis</groupId>
 			<artifactId>andreaniapis</artifactId>
 			<version>1</version>
-		</dependency-->
+		</dependency>-->
+
 		<!-- hasta aqui cybersource -->
 	</dependencies>
 

@@ -244,7 +244,7 @@ public class BuyController {
     	DateFormat hourdateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     	buy.setTime(hourdateFormat.format(time));
 ////////////////////////////////////////////////////////////
-/*System.out.println("shippingdaniel :"+ buy.getShipping().toString());
+System.out.println("shippingdaniel :"+ buy.getShipping().toString());
 String typeEnvio=buy.getShipping().getTypeShipping();
 if(buy.getShipping().getTypeShipping().equals("home")) {
 //buy.setShipping();
@@ -255,7 +255,7 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 else {
 com.valework.yingul.model.Yng_Envio tempEnvio=buy.getShipping().getYng_envio();
 com.valework.yingul.model.Yng_Envio yi=tempEnvio;
-AndreaniApis andrea=new AndreaniApis();
+/*AndreaniApis andrea=new AndreaniApis();
 
 andreaniapis.Yng_Envio com=new andreaniapis.Yng_Envio();
 tempEnvio.setContrato("400006711");
@@ -293,7 +293,7 @@ String pdfLink="";
 
 pdfLink=andrea.linkPdf(codAndreani);
 
-tempEnvio.setPdfLink(pdfLink);
+tempEnvio.setPdfLink(pdfLink);*/
 
 
 com.valework.yingul.model.Yng_Envio tempE=envioDao.save(tempEnvio);
@@ -309,7 +309,7 @@ buy.setShipping(tempShipping);
 
 buy.setShipping(shippingDao.save(buy.getShipping()));
 }
-*/
+
 
 ////////////////////////////////////////
     	
@@ -332,7 +332,7 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	/*System.out.println("home: "+buy.getShipping().getTypeShipping()+typeEnvio);
+    	System.out.println("home: "+buy.getShipping().getTypeShipping()+typeEnvio);
 		
 		if(typeEnvio.equals("home")) {
 			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA"," Se realizo la venta del producto :  "+buy.getYng_item().getName()+ "  "+"  Precio:" +buy.getYng_item().getPrice()+ "  " +"    los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección:"+buy.getYng_item().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber());
@@ -344,7 +344,7 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 				"      --Preparar y embalar el paquete junto a la etiqueta   " + 
 				"      --Déjalo en la sucursal Andreani más cercana ." + 
 				"           "+buy.getShipping().getYng_envio().getPdfLink());
-		}*/
+		}
     	return "save";
     }
     @RequestMapping(value = "/updateUser", method = RequestMethod.POST)
