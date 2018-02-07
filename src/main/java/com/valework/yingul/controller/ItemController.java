@@ -238,6 +238,7 @@ public class ItemController {
     }
     @RequestMapping("/findMotorized/{categoryId}")
     public Yng_FindMotorized findSearchMotorizedByCategory(@PathVariable("categoryId") Long categoryId) {
+    	//arreglar aqui
     	Yng_FindMotorized yng_FindMotorized = findMotorizedDao.findByCategoryId(categoryId);
         return yng_FindMotorized;
     }
