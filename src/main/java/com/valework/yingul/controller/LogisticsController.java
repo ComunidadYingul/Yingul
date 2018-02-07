@@ -1382,4 +1382,25 @@ public class LogisticsController {
     	
     	 return cotizacionTemp;
     }
+    public String printTicketData(String numberAndreni) {
+ 	   String imprimirEtiqueta="<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:and=\"http://www.andreani.com.ar\">\r\n" + 
+ 		   		"   <soapenv:Header/>\r\n" + 
+ 		   		"   <soapenv:Body>\r\n" + 
+ 		   		"      <and:ImprimirConstancia>\r\n" + 
+ 		   		"         <!--Optional:-->\r\n" + 
+ 		   		"         <and:entities>\r\n" + 
+ 		   		"            <!--Zero or more repetitions:-->\r\n" + 
+ 		   		"            <and:ParamImprimirConstancia>\r\n" + 
+ 		   		"               <and:NumeroAndreani>"
+ 		   		+ numberAndreni
+ 		   		+ "</and:NumeroAndreani>\r\n" + 
+ 		   		"            </and:ParamImprimirConstancia>\r\n" + 
+ 		   		"         </and:entities>\r\n" + 
+ 		   		"      </and:ImprimirConstancia>\r\n" + 
+ 		   		"   </soapenv:Body>\r\n" + 
+ 		   		"</soapenv:Envelope>";
+ 		 
+ 	   
+ 	   return ""+imprimirEtiqueta;
+    }
 }
