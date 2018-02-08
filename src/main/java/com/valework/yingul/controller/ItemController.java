@@ -252,7 +252,14 @@ public class ItemController {
     @RequestMapping("/findMotorized/{categoryId}")
     public Yng_FindMotorized findSearchMotorizedByCategory(@PathVariable("categoryId") Long categoryId) {
     	//arreglar aqui
-    	Yng_FindMotorized yng_FindMotorized = findMotorizedDao.findByCategoryId(categoryId);
+    	if(categoryId==0) {
+    		categoryId=(long) 2001;
+    	}
+    	Yng_Category categoryTemp= categoryDao.findByCategoryId(categoryId);
+    	while(categoryTemp.getLevel()!=0) {
+    		categoryTemp=categoryDao.findByCategoryId(categoryTemp.getFatherId());
+    	}
+    	Yng_FindMotorized yng_FindMotorized = findMotorizedDao.findByCategoryId(categoryTemp.getCategoryId());
         return yng_FindMotorized;
     }
     @RequestMapping("/searchMotorized/{categoryId}/{minPrice}/{maxPrice}/{minYear}/{maxYear}")
