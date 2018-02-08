@@ -3,6 +3,7 @@ package com.valework.yingul.controller;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -224,6 +225,18 @@ public class ItemController {
     	List<Yng_ItemCategory> itemCategoryList = itemCategoryService.findByCategory(yng_Category); 
         return itemCategoryList;
     }
+    
+    @RequestMapping("/itemsByCategory/{categoryId}")
+    public Set<Yng_Item> findOnlyItemsByCategory(@PathVariable("categoryId") Long categoryId) {
+    	Yng_Category yng_Category = categoryDao.findByCategoryId(categoryId);
+    	List<Yng_ItemCategory> itemCategoryList = itemCategoryService.findByCategory(yng_Category); 
+    	Set<Yng_Item> listItemTemp = new HashSet<>();
+    	for (Yng_ItemCategory st : itemCategoryList) {
+    		listItemTemp.add(st.getItem());
+		}
+        return listItemTemp;
+    }
+    
     @RequestMapping("/service/all")
     public Set<Yng_Item> findServiceList() { 
     	List<Yng_Service> serviceList = serviceDao.findAll();
