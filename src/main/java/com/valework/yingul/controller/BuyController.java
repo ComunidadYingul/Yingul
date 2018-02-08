@@ -319,14 +319,6 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
     	//modificar los correos para pagos no con tarjeta
     	System.out.print(buy.getYng_PaymentMethod().getYng_Card().getNumber()%10000);
     	try {
-             System.out.println("home:"+buy.getShipping().getTypeShipping()+typeEnvio);
-    		
-    		if(typeEnvio.equals("home")) {
-    			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA"," Se realizo la venta del producto:  "+buy.getYng_item().getName()+ "  "+"  Precio:" +buy.getCost()+ "  " +"    los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección:"+buy.getYng_item().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber());
-    		}
-    		else {
-    		smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "Venta exitosa","Se realizo la venta del tu producto:" +buy.getYng_item().getDescription()+ "  \\r\\n\"" +buy.getYng_item().getPrice()+"\\r\\n\"    Imprime esta etiqueta y pégala en tu envió: "+buy.getShipping().getYng_envio().getPdfLink());
-    		}
 			smtpMailSender.send(userTemp.getEmail(), "Compra exitosa", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_PaymentMethod().getType()+" "+buy.getYng_PaymentMethod().getYng_Card().getProvider()+" terminada en: "+buy.getYng_PaymentMethod().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible.");
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
