@@ -76,7 +76,7 @@ import com.valework.yingul.model.Yng_Service;
 import com.valework.yingul.model.Yng_Token;
 import com.valework.yingul.model.Yng_User;
 
-import andreaniapis.*;
+//import andreaniapis.*;
  
 
 import com.valework.yingul.dao.CotizacionDao;
@@ -1188,7 +1188,7 @@ public class LogisticsController {
     @RequestMapping(value = "/envio", method = RequestMethod.POST)
 	@ResponseBody
     public String sellServicePost(@Valid @RequestBody Yng_Envio envio) throws MessagingException {
-    	Yng_Envio tempEnvio=envio;
+    	/*Yng_Envio tempEnvio=envio;
     	Yng_Envio yi=tempEnvio;
     	AndreaniApis andrea=new AndreaniApis();
     	andreaniapis.Yng_Envio com=new andreaniapis.Yng_Envio();
@@ -1246,7 +1246,7 @@ public class LogisticsController {
          com.setVolumen("4000");
          com.setValorDeclarado("5000");
          com.setPeso("600");
-*/
+
          
      	String codAndreani="";
      	codAndreani=andrea.confirmarEnvio(com);
@@ -1275,14 +1275,14 @@ public class LogisticsController {
 			e.printStackTrace();
 		}
     	tempEnvio.setPdfLink(pdfLink);
-    	*/
     	
     	
     	
     	
     	
     	
-    	envioDao.save(tempEnvio);
+    	
+    	envioDao.save(tempEnvio);*/
     	
     	 return "save";
     }
@@ -1321,7 +1321,7 @@ public class LogisticsController {
    
     public Yng_Envio serviceEnvio(Yng_Envio envio) throws MessagingException {
     	Yng_Envio tempEnvio=envio;
-    	Yng_Envio yi=tempEnvio;
+    	/*Yng_Envio yi=tempEnvio;
     	AndreaniApis andrea=new AndreaniApis();
     	andreaniapis.Yng_Envio com=new andreaniapis.Yng_Envio();
    	tempEnvio.setContrato("400006711");
@@ -1366,7 +1366,7 @@ public class LogisticsController {
     	
     	
     	
-    	envioDao.save(tempEnvio);
+    	envioDao.save(tempEnvio);*/
     	
     	 return tempEnvio;
     }
@@ -1381,5 +1381,26 @@ public class LogisticsController {
     	cotizacionDao.save(cotizacion);
     	
     	 return cotizacionTemp;
+    }
+    public String printTicketData(String numberAndreni) {
+ 	   String imprimirEtiqueta="<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:and=\"http://www.andreani.com.ar\">\r\n" + 
+ 		   		"   <soapenv:Header/>\r\n" + 
+ 		   		"   <soapenv:Body>\r\n" + 
+ 		   		"      <and:ImprimirConstancia>\r\n" + 
+ 		   		"         <!--Optional:-->\r\n" + 
+ 		   		"         <and:entities>\r\n" + 
+ 		   		"            <!--Zero or more repetitions:-->\r\n" + 
+ 		   		"            <and:ParamImprimirConstancia>\r\n" + 
+ 		   		"               <and:NumeroAndreani>"
+ 		   		+ numberAndreni
+ 		   		+ "</and:NumeroAndreani>\r\n" + 
+ 		   		"            </and:ParamImprimirConstancia>\r\n" + 
+ 		   		"         </and:entities>\r\n" + 
+ 		   		"      </and:ImprimirConstancia>\r\n" + 
+ 		   		"   </soapenv:Body>\r\n" + 
+ 		   		"</soapenv:Envelope>";
+ 		 
+ 	   
+ 	   return ""+imprimirEtiqueta;
     }
 }

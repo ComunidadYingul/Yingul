@@ -58,7 +58,7 @@ import com.valework.yingul.service.CreditCardProviderService;
 import com.valework.yingul.VisaFunds;
 import com.valework.yingul.util.VisaAPIClient;
 
-import andreaniapis.*;
+//import andreaniapis.*;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.json.JSONObject;
@@ -255,7 +255,7 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 else {
 com.valework.yingul.model.Yng_Envio tempEnvio=buy.getShipping().getYng_envio();
 com.valework.yingul.model.Yng_Envio yi=tempEnvio;
-AndreaniApis andrea=new AndreaniApis();
+/*AndreaniApis andrea=new AndreaniApis();
 
 andreaniapis.Yng_Envio com=new andreaniapis.Yng_Envio();
 tempEnvio.setContrato("400006711");
@@ -293,7 +293,7 @@ String pdfLink="";
 
 pdfLink=andrea.linkPdf(codAndreani);
 
-tempEnvio.setPdfLink(pdfLink);
+tempEnvio.setPdfLink(pdfLink);*/
 
 
 com.valework.yingul.model.Yng_Envio tempE=envioDao.save(tempEnvio);
@@ -356,5 +356,25 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
     	return "save";
     }
     
-
+    public String printTicketData(String numberAndreni) {
+ 	   String imprimirEtiqueta="<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:and=\"http://www.andreani.com.ar\">\r\n" + 
+ 		   		"   <soapenv:Header/>\r\n" + 
+ 		   		"   <soapenv:Body>\r\n" + 
+ 		   		"      <and:ImprimirConstancia>\r\n" + 
+ 		   		"         <!--Optional:-->\r\n" + 
+ 		   		"         <and:entities>\r\n" + 
+ 		   		"            <!--Zero or more repetitions:-->\r\n" + 
+ 		   		"            <and:ParamImprimirConstancia>\r\n" + 
+ 		   		"               <and:NumeroAndreani>"
+ 		   		+ numberAndreni
+ 		   		+ "</and:NumeroAndreani>\r\n" + 
+ 		   		"            </and:ParamImprimirConstancia>\r\n" + 
+ 		   		"         </and:entities>\r\n" + 
+ 		   		"      </and:ImprimirConstancia>\r\n" + 
+ 		   		"   </soapenv:Body>\r\n" + 
+ 		   		"</soapenv:Envelope>";
+ 		 
+ 	   
+ 	   return ""+imprimirEtiqueta;
+    }
 }

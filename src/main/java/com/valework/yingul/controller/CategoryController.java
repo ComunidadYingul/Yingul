@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.valework.yingul.dao.CategoryDao;
 import com.valework.yingul.model.Yng_Category;
 import com.valework.yingul.service.CategoryService;
 
@@ -14,6 +16,8 @@ public class CategoryController {
 
 	@Autowired
     private CategoryService categoryService;
+	@Autowired 
+	private CategoryDao categoryDao;
 	
 	@RequestMapping("/all")
     public List<Yng_Category> findCategoryList() {
@@ -53,5 +57,10 @@ public class CategoryController {
     		return "/"+categoryList.get(0).getCategoryId();
         }
 
+    }
+    @RequestMapping("/getCategory/{categoryId}")
+    public Yng_Category findCategoryById(@PathVariable("categoryId") Long categoryId) {
+        Yng_Category categoryTemp = categoryDao.findByCategoryId(categoryId);
+        return categoryTemp;
     }
 }
