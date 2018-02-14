@@ -306,4 +306,38 @@ public class ItemController {
        // Set<Yng_Item> itemList = itemService.findProperty(propertyList);
         return productsList;
     }
+    @RequestMapping("/{itemId}")
+    public String getTypeItem(@PathVariable("itemId") Long itemId) {
+    	if(this.getProductByIdItemExist(itemId)) {
+    		return "Product";
+    	}    	
+    	else {
+    	return "false";
+    	}
+    }
+    @RequestMapping("/product/{itemId}")
+    public Yng_Product findProduct(@PathVariable("itemId") Long itemId) {
+    	if(this.getProductByIdItemExist(itemId)) {
+    	Yng_Product yng_Product=this.getProductByIdItem(itemId);
+    	yng_Product.getYng_Item().getUser().setPassword("");
+        return yng_Product;
+    	}
+    	else return null;
+    }
+    public boolean getPropertyByIdItemExist(Long itemId) { 
+		boolean exist=productService.findByItemIdExist(itemId);
+		
+		return exist;	
+    }
+    @RequestMapping(value = "/product/update", method = RequestMethod.POST)
+	@ResponseBody
+    public String sellProducPost(@Valid @RequestBody Yng_Product product) throws MessagingException {
+    	Yng_Product prod=new Yng_Product();
+    	prod=product;
+    	Yng_Item yng_Item=prod.getYng_Item();
+    	itemDao.save(yng_Item);    	
+    	productDao.save(prod);
+    	return "save";
+    }
+    
 }

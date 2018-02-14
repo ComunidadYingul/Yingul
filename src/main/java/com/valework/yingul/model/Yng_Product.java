@@ -142,6 +142,10 @@ public class Yng_Product {
 				+ productPeso + ", producVolumen=" + producVolumen + ", yng_Item=" + yng_Item + "]";
 	}
 
+	public Yng_Product() {
+		super();
+	}
+
 
 	
 	
