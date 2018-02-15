@@ -323,15 +323,16 @@ public class SellController {
 			e1.printStackTrace();
 		}
 		ubicationTemp.setCodAndreani(""+codAndreani);
-		Yng_Ubication ubicationTempo=ubicationDao.save(ubicationTemp);
+		Yng_Ubication ubicationTempo= new Yng_Ubication();
+		ubicationTempo=ubicationDao.save(ubicationTemp);
         
         itemTemp.setYng_Ubication(ubicationTempo);
 		//para setear el usuario
 		Yng_User userTemp= userDao.findByUsername(itemTemp.getUser().getUsername());
-		userTemp.setPhone(itemTemp.getUser().getPhone());
-		userTemp.setPhone2(itemTemp.getUser().getPhone2());
-		userTemp.setWebSite(itemTemp.getUser().getWebSite());
-		userTemp.setYng_Ubication(ubicationTempo); System.out.println(""+ubicationTempo.toString());
+		//userTemp.setPhone(itemTemp.getUser().getPhone());
+		//userTemp.setPhone2(itemTemp.getUser().getPhone2());
+		//userTemp.setWebSite(itemTemp.getUser().getWebSite());
+		userTemp.setYng_Ubication(ubicationTempo);// System.out.println(""+ubicationTempo.toString());
 		userDao.save(userTemp);
 		itemTemp.setUser(userTemp);
 		//hasta aqui para el usuario
@@ -716,19 +717,15 @@ public class SellController {
 	@RequestMapping("/ubication/{username}")
     public Yng_Ubication findQueriesByUser(@PathVariable("username") String username) {
 		String codUbi="";
-		Yng_Ubication yng_Ubication=null;
-		
+		Yng_Ubication yng_Ubication=null;		
     	Yng_User yng_User = userDao.findByUsername(username);
-    	System.out.println("yng_User.getYng_Ubication():"+yng_User.getYng_Ubication());
-        //List<Yng_Query> queryList = queryService.findByUser(yng_User);
-    	
-    	//codUbi=""+yng_User.getYng_Ubication().getUbicationId();
-    	///System.out.println("yng_User.getYng_Ubication().getUbicationId():"+yng_User.getYng_Ubication().getUbicationId());
-    	if(yng_User.getYng_Ubication()!=null) {
-    		yng_Ubication=yng_User.getYng_Ubication();
-    	} 
-    	 
-       // return ""+codUbi;
-    	return yng_Ubication;
-    }
+    	if(yng_User.getYng_Ubication()!=null){
+    		//yng_Ubication=yng_User.getYng_Ubication();
+    		yng_Ubication=ubicationDao.findByUbicationId(yng_User.getYng_Ubication().getUbicationId());
+    		return yng_Ubication;
+    	}    	 
+    	else{
+    		return null;
+    	}
+	}
 }

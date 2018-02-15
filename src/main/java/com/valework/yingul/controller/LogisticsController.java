@@ -76,7 +76,7 @@ import com.valework.yingul.model.Yng_Service;
 import com.valework.yingul.model.Yng_Token;
 import com.valework.yingul.model.Yng_User;
 
-//import andreaniapis.*;
+import andreaniapis.*;
  
 
 import com.valework.yingul.dao.CotizacionDao;
@@ -1188,7 +1188,7 @@ public class LogisticsController {
     @RequestMapping(value = "/envio", method = RequestMethod.POST)
 	@ResponseBody
     public String sellServicePost(@Valid @RequestBody Yng_Envio envio) throws MessagingException {
-    	/*Yng_Envio tempEnvio=envio;
+    	Yng_Envio tempEnvio=envio;
     	Yng_Envio yi=tempEnvio;
     	AndreaniApis andrea=new AndreaniApis();
     	andreaniapis.Yng_Envio com=new andreaniapis.Yng_Envio();
@@ -1246,7 +1246,7 @@ public class LogisticsController {
          com.setVolumen("4000");
          com.setValorDeclarado("5000");
          com.setPeso("600");
-
+*/
          
      	String codAndreani="";
      	codAndreani=andrea.confirmarEnvio(com);
@@ -1255,7 +1255,7 @@ public class LogisticsController {
     	pdfLink=andrea.linkPdf(codAndreani);
     	System.out.println("aqui:"+1);
     	tempEnvio.setPdfLink(pdfLink);
-    	/*
+    	
     
     	try {
     		tempEnvio.setContrato("400006711");
@@ -1282,7 +1282,7 @@ public class LogisticsController {
     	
     	
     	
-    	envioDao.save(tempEnvio);*/
+    	envioDao.save(tempEnvio);
     	
     	 return "save";
     }
