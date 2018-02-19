@@ -4,15 +4,12 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.mail.MessagingException;
 import javax.validation.Valid;
-
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,11 +19,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.testng.Assert;
-
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.BuyDao;
 import com.valework.yingul.dao.CardDao;
 import com.valework.yingul.dao.CardProviderDao;
+import com.valework.yingul.dao.ConfirmDao;
 import com.valework.yingul.dao.EnvioDao;
 import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.ListCreditCardDao;
@@ -41,9 +38,8 @@ import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.model.Yng_Buy;
 import com.valework.yingul.model.Yng_Card;
 import com.valework.yingul.model.Yng_CardProvider;
+import com.valework.yingul.model.Yng_Confirm;
 import com.valework.yingul.model.Yng_Item;
-import com.valework.yingul.model.Yng_ItemCategory;
-import com.valework.yingul.model.Yng_ItemImage;
 import com.valework.yingul.model.Yng_ListCreditCard;
 import com.valework.yingul.model.Yng_PaymentMethod;
 import com.valework.yingul.model.Yng_Request;
@@ -57,13 +53,9 @@ import com.valework.yingul.service.CardService;
 import com.valework.yingul.service.CreditCardProviderService;
 import com.valework.yingul.VisaFunds;
 import com.valework.yingul.util.VisaAPIClient;
-
 import andreaniapis.*;
-
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.json.JSONObject;
-
-
 
 @RestController
 @RequestMapping("/buy")
@@ -110,6 +102,8 @@ public class BuyController {
 	 EnvioDao  envioDao;
 	@Autowired 
 	CardProviderDao cardProviderDao;
+	@Autowired 
+	ConfirmDao confirmDao;
 	
 	@RequestMapping("/listCreditCard/all")
     public List<Yng_ListCreditCard> findProvinceList() {
@@ -314,36 +308,37 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 ////////////////////////////////////////
     	
     	
-    	
-    	buyDao.save(buy);
+    	Yng_Confirm confirm=new Yng_Confirm();
+    	confirm.setBuy(buyDao.save(buy));
+    	confirm.setBuyerConfirm(false);
+    	confirm.setSellerConfirm(false);
+    	confirm.setCodeConfirm(1000 + (int)(Math.random() * ((9999 - 1000) + 1)));
+    	confirm=confirmDao.save(confirm);
     	//modificar los correos para pagos no con tarjeta
-    	System.out.print(buy.getYng_PaymentMethod().getYng_Card().getNumber()%10000);
-    	try {
-             /*System.out.println("home:"+buy.getShipping().getTypeShipping()+typeEnvio);
-    		
-    		if(typeEnvio.equals("home")) {
-    			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA"," Se realizo la venta del producto:  "+buy.getYng_item().getName()+ "  "+"  Precio:" +buy.getCost()+ "  " +"    los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección:"+buy.getYng_item().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber());
-    		}
-    		else {
-    		smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "Venta exitosa","Se realizo la venta del tu producto:" +buy.getYng_item().getDescription()+ "  \\r\\n\"" +buy.getYng_item().getPrice()+"\\r\\n\"    Imprime esta etiqueta y pégala en tu envió: "+buy.getShipping().getYng_envio().getPdfLink());
-    		}*/
-			smtpMailSender.send(userTemp.getEmail(), "Compra exitosa", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_PaymentMethod().getType()+" "+buy.getYng_PaymentMethod().getYng_Card().getProvider()+" terminada en: "+buy.getYng_PaymentMethod().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible.");
-		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	System.out.println("home: "+buy.getShipping().getTypeShipping()+typeEnvio);
 		
 		if(typeEnvio.equals("home")) {
-			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA"," Se realizo la venta del producto :  "+buy.getYng_item().getName()+ "  "+"  Precio:" +buy.getYng_item().getPrice()+ "  " +"    los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección:"+buy.getYng_item().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber());
+			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA"," Se realizo la venta del producto :  "+buy.getYng_item().getName()+ "  "+"  Precio:" +buy.getYng_item().getPrice()+ "  " +"    los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección:"+buy.getYng_item().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber()
+					+ "Al Momento de entregar el producto al comprador ingresa a: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones"
+					+ "No entregues el producto sin que tu y el vendedor firmen la entrega no aceptaremos reclamos si la confirmacion no esta firmada por ambas partes"
+					+ "Por tu seguridad no entregues el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
+					+ "Despues de entregar el producto tu comprador tiene 7 dias para observar sus condiciones posterior a eso te daremos mas instrucciones para recoger tu dinero");
+			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_PaymentMethod().getType()+" "+buy.getYng_PaymentMethod().getYng_Card().getProvider()+" terminada en: "+buy.getYng_PaymentMethod().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible."
+					+ "Al Momento de recibir el producto dile este codigo a tu vendedor: "+confirm.getCodeConfirm()+"si el producto esta en buenas condiciones"
+					+ "No recibas el producto ni des el código si no estas conforme con el producto no aceptaremos reclamos posteriores"
+					+ "Por tu seguridad no recibas el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
+					+ "Despues de recibir el producto tienes 7 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero");
 		}
 		else {
-		smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","Se realizo la venta del producto :  "+buy.getYng_item().getName() +"  Descripción : "+buy.getYng_item().getDescription()+ "  " +"  Precio: " +buy.getYng_item().getPrice()+"   Costo del envio : " +buy.getShipping().getYng_envio().getTarifa()+  
-				"      --Imprimir la etiqueta de Andreani "
-				+ "--Preparar y embalar el paquete junto a la etiqueta " + 
-				"      --Preparar y embalar el paquete junto a la etiqueta   " + 
-				"      --Déjalo en la sucursal Andreani más cercana ." + 
-				"           "+buy.getShipping().getYng_envio().getPdfLink());
+			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","Se realizo la venta del producto :  "+buy.getYng_item().getName() +"  Descripción : "+buy.getYng_item().getDescription()+ "  " +"  Precio: " +buy.getYng_item().getPrice()+"   Costo del envio : " +buy.getShipping().getYng_envio().getTarifa()+  
+					"      --Imprimir la etiqueta de Andreani "
+					+ "--Preparar y embalar el paquete junto a la etiqueta " + 
+					"      --Preparar y embalar el paquete junto a la etiqueta   " + 
+					"      --Déjalo en la sucursal Andreani más cercana ." + 
+					"           "+buy.getShipping().getYng_envio().getPdfLink()
+					+ "Al Momento de entregar el producto en la sucursal Andreani ingresa a: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/confirmws/"+confirm.getConfirmId()+" donde firmaras la entrega del producto en buenas condiciones"
+					+ "Despues de entregar el producto Andreani tiene 2 dias para entregarlo a tu comprador "
+					+ "Y tu comprador tiene 7 dias para observar sus condiciones, posterior a eso te daremos mas instrucciones para recoger tu dinero");
+			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_PaymentMethod().getType()+" "+buy.getYng_PaymentMethod().getYng_Card().getProvider()+" terminada en: "+buy.getYng_PaymentMethod().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible.");
 		}
     	return "save";
     }
