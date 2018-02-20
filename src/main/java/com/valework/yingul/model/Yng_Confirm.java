@@ -35,6 +35,7 @@ public class Yng_Confirm {
 	private int yearEndClaim;
 	
 	private int codeConfirm;
+	private String status;
 	
 	@OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "buy_id")
@@ -180,4 +181,11 @@ public class Yng_Confirm {
 		this.codeConfirm = codeConfirm;
 	}
 
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 }

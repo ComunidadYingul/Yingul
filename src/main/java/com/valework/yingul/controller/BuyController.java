@@ -313,6 +313,7 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
     	confirm.setBuyerConfirm(false);
     	confirm.setSellerConfirm(false);
     	confirm.setCodeConfirm(1000 + (int)(Math.random() * ((9999 - 1000) + 1)));
+    	confirm.setStatus("pending");
     	confirm=confirmDao.save(confirm);
     	//modificar los correos para pagos no con tarjeta
 		
