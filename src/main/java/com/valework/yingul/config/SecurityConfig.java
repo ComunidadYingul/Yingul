@@ -58,7 +58,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/logistics/**",
             "/store/**",
             "/favorite/**",
-            "/confirm/**"
+            "/confirm/**",
+            "/send/**"
     };
 
     @Override
