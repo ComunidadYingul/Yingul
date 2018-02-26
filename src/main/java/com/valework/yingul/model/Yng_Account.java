@@ -21,6 +21,8 @@ public class Yng_Account {
 	private double releasedMoney;
 	
 	private String currency;
+	private boolean accountNonExpired;
+	private boolean accountNonLocked;
 	
 	@OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
@@ -76,6 +78,22 @@ public class Yng_Account {
 
 	public void setUser(Yng_User user) {
 		this.user = user;
+	}
+
+	public boolean isAccountNonExpired() {
+		return accountNonExpired;
+	}
+
+	public void setAccountNonExpired(boolean accountNonExpired) {
+		this.accountNonExpired = accountNonExpired;
+	}
+
+	public boolean isAccountNonLocked() {
+		return accountNonLocked;
+	}
+
+	public void setAccountNonLocked(boolean accountNonLocked) {
+		this.accountNonLocked = accountNonLocked;
 	}
  
 

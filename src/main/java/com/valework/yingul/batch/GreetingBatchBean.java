@@ -28,13 +28,16 @@ public class GreetingBatchBean {
 	@Autowired
 	AccountDao accountDao;
 	
-	@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
-	//@Scheduled(cron = "0 0 6 * * *")//cada dia a las 6 de la mañana
+	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
+	@Scheduled(cron = "0 0 10 * * *")//cada dia a las 6 de la mañana
 	public void cronJob() {
 		Date date = new Date();
     	DateFormat hourdateFormat = new SimpleDateFormat("dd");
     	DateFormat hourdateFormat1 = new SimpleDateFormat("MM");
     	DateFormat hourdateFormat2 = new SimpleDateFormat("yyyy");
+    	DateFormat hourdateFormat4 = new SimpleDateFormat("HH");
+    	DateFormat hourdateFormat5 = new SimpleDateFormat("mm");
+    	DateFormat hourdateFormat6 = new SimpleDateFormat("ss");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("confirm");
 		for (Yng_Confirm s : listConfirm) {
 			if(s.getDayEndClaim()<=Integer.parseInt(hourdateFormat.format(date))&&s.getMonthEndClaim()<=Integer.parseInt(hourdateFormat1.format(date))&&s.getYearEndClaim()<=Integer.parseInt(hourdateFormat2.format(date))) {
@@ -58,7 +61,13 @@ public class GreetingBatchBean {
 				transactionTemp.setType("Acreditacion");
 				transactionTemp.setYear(Integer.parseInt(hourdateFormat2.format(date)));
 				transactionTemp.setZip("1744");
-				accountTemp.setAvailableMoney(s.getBuy().getYng_item().getPrice());
+				transactionTemp.setHour(Integer.parseInt(hourdateFormat4.format(date)));
+				transactionTemp.setMinute(Integer.parseInt(hourdateFormat5.format(date)));
+				transactionTemp.setSecond(Integer.parseInt(hourdateFormat6.format(date)));
+				transactionTemp.setAWireTransfer(false);
+				transactionTemp.setAYingulTransaction(true);
+				double saldo=accountTemp.getAvailableMoney();
+				accountTemp.setAvailableMoney(saldo+s.getBuy().getYng_item().getPrice());
 				accountDao.save(accountTemp);
 				transactionDao.save(transactionTemp);
 				confirmDao.save(s);

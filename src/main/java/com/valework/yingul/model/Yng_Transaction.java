@@ -20,6 +20,9 @@ public class Yng_Transaction {
 	private int day;
 	private int month;
 	private int year;
+	private int hour;
+	private int minute;
+	private int second;
 	private String type;
 	private String description;
 	//datos de la ip de la transaccion
@@ -32,6 +35,9 @@ public class Yng_Transaction {
 	private String countryCode;
 	private String regionName;
 	private String zip;
+	//mejora 
+	private boolean isAYingulTransaction;
+	private boolean isAWireTransfer;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id")
@@ -183,6 +189,46 @@ public class Yng_Transaction {
 
 	public void setAccount(Yng_Account account) {
 		this.account = account;
+	}
+
+	public int getHour() {
+		return hour;
+	}
+
+	public void setHour(int hour) {
+		this.hour = hour;
+	}
+
+	public int getMinute() {
+		return minute;
+	}
+
+	public void setMinute(int minute) {
+		this.minute = minute;
+	}
+
+	public int getSecond() {
+		return second;
+	}
+
+	public void setSecond(int second) {
+		this.second = second;
+	}
+
+	public boolean isAYingulTransaction() {
+		return isAYingulTransaction;
+	}
+
+	public void setAYingulTransaction(boolean isAYingulTransaction) {
+		this.isAYingulTransaction = isAYingulTransaction;
+	}
+
+	public boolean isAWireTransfer() {
+		return isAWireTransfer;
+	}
+
+	public void setAWireTransfer(boolean isAWireTransfer) {
+		this.isAWireTransfer = isAWireTransfer;
 	}
 
 }

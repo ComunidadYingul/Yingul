@@ -6,4 +6,5 @@ import com.valework.yingul.model.Yng_User;
 
 public interface AccountDao extends CrudRepository<Yng_Account, Long> {
 	Yng_Account findByUser(Yng_User user);
+	Yng_Account findByAccountId(Long accountId);
 }
