@@ -306,7 +306,7 @@ public class ItemController {
        // Set<Yng_Item> itemList = itemService.findProperty(propertyList);
         return productsList;
     }
-    @RequestMapping("/{itemId}")
+    @RequestMapping("/type/{itemId}")
     public String getTypeItem(@PathVariable("itemId") Long itemId) {
     	if(this.getProductByIdItemExist(itemId)) {
     		return "Product";
@@ -337,6 +337,33 @@ public class ItemController {
     	Yng_Item yng_Item=prod.getYng_Item();
     	itemDao.save(yng_Item);    	
     	productDao.save(prod);
+    	return "save";
+    }
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+	@ResponseBody
+    public String updateItemPost(@Valid @RequestBody Yng_Item item) throws MessagingException {    	
+    	Yng_Item yng_Item=item;
+    	itemDao.save(yng_Item);    	
+    	return "save";
+    }
+    @RequestMapping(value = "/motorized/update", method = RequestMethod.POST)
+	@ResponseBody
+    public String updateMotorizedPost(@Valid @RequestBody Yng_Motorized motorized) throws MessagingException {
+    	Yng_Motorized moto=new Yng_Motorized();
+    	moto=motorized;
+    	Yng_Item yng_Item=moto.getYng_Item();
+    	itemDao.save(yng_Item);    	
+    	motorizedDao.save(moto);
+    	return "save";
+    }
+    @RequestMapping(value = "/property/update", method = RequestMethod.POST)
+	@ResponseBody
+    public String updatePropertyPost(@Valid @RequestBody Yng_Property property) throws MessagingException {
+    	Yng_Property prop=new Yng_Property();
+    	prop=property;
+    	Yng_Item yng_Item=prop.getYng_Item();
+    	itemDao.save(yng_Item);    	
+    	propertyDao.save(prop);
     	return "save";
     }
     
