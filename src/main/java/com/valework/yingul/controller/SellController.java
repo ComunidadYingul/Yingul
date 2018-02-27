@@ -39,6 +39,7 @@ import com.valework.yingul.dao.ServiceProvinceDao;
 import com.valework.yingul.dao.SoundDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
+import com.valework.yingul.model.Yng_Commission;
 import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_ItemCategory;
 import com.valework.yingul.model.Yng_ItemImage;
@@ -242,7 +243,10 @@ public class SellController {
 			nombre=nombre+"."+extension;   
 			temp.setPrincipalImage(nombre);
 		}
-		
+		temp.setAMotorized(false);
+		temp.setAProduct(false);
+		temp.setAProperty(false);
+		temp.setAService(true);
 		itemService.save(temp);
 		int k=0;
 		for (Yng_ItemImage st : itemImage) {
@@ -359,6 +363,10 @@ public class SellController {
 		s3Services.uploadFile(nombre,extension, bI);
 		nombre=nombre+"."+extension;   
 		temp.setPrincipalImage(nombre);
+		temp.setAMotorized(false);
+		temp.setAProduct(true);
+		temp.setAProperty(false);
+		temp.setAService(false);
 		itemService.save(temp);
 		int k=0;
 		for (Yng_ItemImage st : itemImage) {
@@ -419,6 +427,11 @@ public class SellController {
 		//obtenemos la lista de categorias
 		Set<Yng_ItemCategory> itemCategory = new HashSet<>();
 		itemCategory=propertyTemp.getYng_Item().getItemCategory();
+		for (Yng_ItemCategory t : itemCategory) {
+			if((t.getCategory().getName()).contains("Alquiler")) {
+				propertyTemp.setCondition("Rental");
+			}
+		}
 		//borramos la lista de cagorias para que no se inserte dos veces
 		propertyTemp.getYng_Item().setItemCategory(null);
 		//para setear la ubicacion del item 
@@ -463,6 +476,10 @@ public class SellController {
 		s3Services.uploadFile(nombre,extension, bI);
 		nombre=nombre+"."+extension;   
 		temp.setPrincipalImage(nombre);
+		temp.setAMotorized(false);
+		temp.setAProduct(false);
+		temp.setAProperty(true);
+		temp.setAService(false);
 		itemService.save(temp);
 		int k=0;
 		for (Yng_ItemImage st : itemImage) {
@@ -603,6 +620,10 @@ public class SellController {
 		s3Services.uploadFile(nombre,extension, bI);
 		nombre=nombre+"."+extension;   
 		temp.setPrincipalImage(nombre);
+		temp.setAMotorized(true);
+		temp.setAProduct(false);
+		temp.setAProperty(false);
+		temp.setAService(false);
 		itemService.save(temp);
 		int k=0;
 		for (Yng_ItemImage st : itemImage) {

@@ -36,7 +36,7 @@ public class Yng_Property {
 	private String propertyDuildedArea;
 	@Column(name="propertyYear")	
 	private String propertyYear;
-	
+	private String condition;
 	@OneToOne 
 	private Yng_Item yng_Item;
 	
@@ -91,13 +91,12 @@ public class Yng_Property {
 	public void setPropertyAmbient(Set<Yng_PropertyAmbient> propertyAmbient) {
 		this.propertyAmbient = propertyAmbient;
 	}
-	@Override
-	public String toString() {
-		return "Yng_Property [propertyId=" + propertyId + ", propertyTotalArea=" + propertyTotalArea
-				+ ", propertyDuildedArea=" + propertyDuildedArea + ", propertyYear=" + propertyYear + ", yng_Item="
-				+ yng_Item + ", propertyAmenities=" + propertyAmenities + ", propertyAmbient=" + propertyAmbient + "]";
+	public String getCondition() {
+		return condition;
 	}
-	
+	public void setCondition(String condition) {
+		this.condition = condition;
+	}
 	
 
 }

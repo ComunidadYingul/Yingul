@@ -2,7 +2,6 @@ package com.valework.yingul.model;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,8 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
@@ -29,9 +26,14 @@ public class Yng_Item {
 	private String description;
 	private String name;
 	private String horario;
-	@Size(max = 500)
+
 	private java.lang.String principalImage;
 	private String video;
+	
+	private boolean isAProduct;
+	private boolean isAService;
+	private boolean isAMotorized;
+	private boolean isAProperty;
 	
 	@OneToOne
 	private Yng_Ubication yng_Ubication;
@@ -120,8 +122,6 @@ public class Yng_Item {
 	public void setItemImage(Set<Yng_ItemImage> itemImage) {
 		this.itemImage = itemImage;
 	}
-
-
 	public java.lang.String getPrincipalImage() {
 		return principalImage;
 	}
@@ -154,13 +154,35 @@ public class Yng_Item {
 		this.priceDiscount = priceDiscount;
 	}
 
-	
+	public boolean isAProduct() {
+		return isAProduct;
+	}
 
+	public void setAProduct(boolean isAProduct) {
+		this.isAProduct = isAProduct;
+	}
 
-	
+	public boolean isAService() {
+		return isAService;
+	}
 
+	public void setAService(boolean isAService) {
+		this.isAService = isAService;
+	}
 
+	public boolean isAMotorized() {
+		return isAMotorized;
+	}
 
+	public void setAMotorized(boolean isAMotorized) {
+		this.isAMotorized = isAMotorized;
+	}
 
+	public boolean isAProperty() {
+		return isAProperty;
+	}
 
+	public void setAProperty(boolean isAProperty) {
+		this.isAProperty = isAProperty;
+	}
 }

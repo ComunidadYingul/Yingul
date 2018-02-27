@@ -18,12 +18,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.valework.yingul.SmtpMailSender;
+import com.valework.yingul.dao.AccountDao;
 import com.valework.yingul.dao.BarrioDao;
 import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.dao.DepartmentDao;
 import com.valework.yingul.dao.ProvinceDao;
 import com.valework.yingul.dao.RoleDao;
 import com.valework.yingul.dao.UbicationDao;
+import com.valework.yingul.model.Yng_Account;
 import com.valework.yingul.model.Yng_Business;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Ubication;
@@ -64,6 +66,8 @@ public class HomeController {
 	DepartmentDao departmentDao;
 	@Autowired 
 	UbicationDao ubicationDao;
+	@Autowired 
+	AccountDao accountDao;
 	
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
 	@ResponseBody
@@ -93,6 +97,17 @@ public class HomeController {
             userService.createUser(user, userRoles);
             Yng_User temp = userService.findByEmail(user.getEmail());
             personService.createPerson(person, temp);
+            //estoy aumentado la cuenta para el usuario cuando se registra como nuevo
+            Yng_Account account = new Yng_Account();   
+            account.setAccountNonExpired(true);
+            account.setAccountNonLocked(true);
+            account.setAvailableMoney(0);
+            account.setCurrency("ARS");
+            account.setReleasedMoney(0);
+            account.setWithheldMoney(0);
+            account.setUser(temp);
+            accountDao.save(account);
+            //
             smtpMailSender.send(user.getEmail(), "Autenticado exitosamente", "Ya esta autenticado su password es:"+password);
             return "save";
         }

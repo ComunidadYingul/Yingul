@@ -8,7 +8,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-//import com.valework.yingul.model.Yng_s;
 
 @Entity
 public class Yng_Buy {
@@ -17,6 +16,8 @@ public class Yng_Buy {
     @Column(name = "buyId", nullable = false, updatable = false)
     private Long buyId;
 	private double cost;
+	private double shippingCost;
+	private double itemCost;
 	private String money;
 	private int quantity;
 	//datos de la compra obtenidos con la ip de comprador
@@ -184,15 +185,6 @@ public class Yng_Buy {
 		this.time = time;
 	}
 
-	@Override
-	public String toString() {
-		return "Yng_Buy [buyId=" + buyId + ", cost=" + cost + ", money=" + money + ", quantity=" + quantity + ", ip="
-				+ ip + ", org=" + org + ", lat=" + lat + ", lon=" + lon + ", city=" + city + ", country=" + country
-				+ ", countryCode=" + countryCode + ", regionName=" + regionName + ", zip=" + zip + ", time=" + time
-				+ ", user=" + user + ", yng_item=" + yng_item + ", yng_PaymentMethod=" + yng_PaymentMethod
-				+ ", shipping=" + shipping + "]";
-	}
-
 	public Yng_Shipping getShipping() {
 		return shipping;
 	}
@@ -201,8 +193,20 @@ public class Yng_Buy {
 		this.shipping = shipping;
 	}
 
-	
-	//daniel actualizas el to string despues de poner la relacion de envio
-	
+	public double getShippingCost() {
+		return shippingCost;
+	}
+
+	public void setShippingCost(double shippingCost) {
+		this.shippingCost = shippingCost;
+	}
+
+	public double getItemCost() {
+		return itemCost;
+	}
+
+	public void setItemCost(double itemCost) {
+		this.itemCost = itemCost;
+	}
 	
 }

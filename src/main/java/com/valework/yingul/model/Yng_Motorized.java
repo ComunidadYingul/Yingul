@@ -31,7 +31,7 @@ public class Yng_Motorized {
 	private String motorizedModel;
 	@Column(name="motorizedUnicoDue")	
 	private String motorizedUnicoDue;
-	
+	private String condition;
 	
 	
 	@OneToOne(fetch = FetchType.EAGER)
@@ -145,17 +145,12 @@ public class Yng_Motorized {
 		this.motorizedExterior = motorizedExterior;
 	}
 
-	@Override
-	public String toString() {
-		return "Yng_Motorized [motorizedId=" + motorizedId + ", motorizedBrand=" + motorizedBrand + ", motorizedYear="
-				+ motorizedYear + ", motorizedModel=" + motorizedModel + ", motorizedUnicoDue=" + motorizedUnicoDue
-				+ ", yng_Item=" + yng_Item + ", motorizedSecurity=" + motorizedSecurity + ", motorizedConfort="
-				+ motorizedConfort + ", motorizedEquipment=" + motorizedEquipment + ", motorizedExterior="
-				+ motorizedExterior + ", motorizedSound=" + motorizedSound + "]";
+	public String getCondition() {
+		return condition;
 	}
 
-	
-	
-	
+	public void setCondition(String condition) {
+		this.condition = condition;
+	}
 
 }
