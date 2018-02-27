@@ -3,9 +3,11 @@ package com.valework.yingul.logistic;
 public class DhlCustomsDetails {
 	String itemDescription="";
 	String countryOfOrigin="";
+	//¿?
 	String hsCode="";
 	int packagedQuantity =0;
 	double itemValue= 0;
+	//¿?
 	String skuNumber="";
 	@Override
 	public String toString() {

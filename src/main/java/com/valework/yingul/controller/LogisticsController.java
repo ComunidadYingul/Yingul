@@ -73,8 +73,10 @@ import com.valework.yingul.model.Yng_Cotizar;
 import com.valework.yingul.model.Yng_Envio;
 import com.valework.yingul.model.Yng_Product;
 import com.valework.yingul.model.Yng_Service;
+import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_Token;
 import com.valework.yingul.model.Yng_User;
+import com.valework.yingul.service.StandardService;
 
 import andreaniapis.*;
  
@@ -111,6 +113,8 @@ public class LogisticsController {
     private Yng_Cotizar yngCotizar= new Yng_Cotizar();
 	@Autowired
 	UserDao userDao;
+	@Autowired
+	StandardService standardService;
 	
     @RequestMapping("/token")
     private String token() {
@@ -403,7 +407,7 @@ public class LogisticsController {
             
         }
       //System.out.println("post  " +strResponse);
-        System.out.println("uno");
+        System.out.println("uno"+strResponse);
        
  
      }
@@ -1010,11 +1014,6 @@ public class LogisticsController {
  		CotizarEnvioResponse cot=null;
  		Yng_AndreaniCotizacion cotizarTemp=cotizar;
  		System.out.println(cotizarTemp.toString()); 		
- 		try {
- 			andreaniPost();
-		} catch (Exception e) {
-						e.printStackTrace();
-		}
  		List<Yng_Cotizar>cotizarList;
  		String ta="";
  		try {
@@ -1023,8 +1022,15 @@ public class LogisticsController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
- 		
+ 		ta=cot.getTarifa();
  		System.out.println("tarifa:"+ta);
+ 		Yng_Standard standard= new Yng_Standard();
+ 		standard=standardService.findByKey("shippingPercentage");
+ 		double porce = 1+Double.parseDouble(standard.getValue())/100;
+ 		double doble = Double.parseDouble(ta)*porce;
+ 		doble=redondearDecimales(doble, 2);
+ 		System.out.println("tarifaFinal:"+doble);
+ 		cot.setTarifa(""+doble);
  		return cot;
  	}
     public CotizarEnvioResponse andreaniCotiza(Yng_AndreaniCotizacion cotizarTemp) throws Exception{ 
@@ -1402,5 +1408,14 @@ public class LogisticsController {
  		 
  	   
  	   return ""+imprimirEtiqueta;
+    }
+    public static double redondearDecimales(double valorInicial, int numeroDecimales) {
+        double parteEntera, resultado;
+        resultado = valorInicial;
+        parteEntera = Math.floor(resultado);
+        resultado=(resultado-parteEntera)*Math.pow(10, numeroDecimales);
+        resultado=Math.round(resultado);
+        resultado=(resultado/Math.pow(10, numeroDecimales))+parteEntera;
+        return resultado;
     }
 }

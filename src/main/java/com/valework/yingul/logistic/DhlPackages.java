@@ -6,7 +6,7 @@ import java.util.List;
 public class DhlPackages {
 	DhlConsigneeAddress consigneeAddress=new DhlConsigneeAddress();
 	DhlReturnAddress returnAddress=new DhlReturnAddress();
-	DhlpackageDetails packageDetails=new DhlpackageDetails();
+	DhlResponsePackageDetails packageDetails=new DhlResponsePackageDetails();
 	List<DhlCustomsDetails> customsDetails=new ArrayList<DhlCustomsDetails>();
 	DhlResponseDetails responseDetails= new DhlResponseDetails();
 	public DhlPackages() {
@@ -25,10 +25,10 @@ public class DhlPackages {
 	public void setReturnAddress(DhlReturnAddress returnAddress) {
 		this.returnAddress = returnAddress;
 	}
-	public DhlpackageDetails getPackageDetails() {
+	public DhlResponsePackageDetails getPackageDetails() {
 		return packageDetails;
 	}
-	public void setPackageDetails(DhlpackageDetails packageDetails) {
+	public void setPackageDetails(DhlResponsePackageDetails packageDetails) {
 		this.packageDetails = packageDetails;
 	}
 	public List<DhlCustomsDetails> getCustomsDetails() {

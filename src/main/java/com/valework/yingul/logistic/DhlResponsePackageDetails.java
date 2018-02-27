@@ -1,6 +1,6 @@
 package com.valework.yingul.logistic;
 
-public class DhlpackageDetails {
+public class DhlResponsePackageDetails {
 	String billingRef1="";
 	String billingRef2="";
 	String currency="";
@@ -15,9 +15,9 @@ public class DhlpackageDetails {
 	String packageDesc="";
 	String packageId="";
 	String packageRefName="";
-	int weight=0;
+	double weight=0;
 	String weightUom="";
-	public DhlpackageDetails() {
+	public DhlResponsePackageDetails() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -105,10 +105,10 @@ public class DhlpackageDetails {
 	public void setPackageRefName(String packageRefName) {
 		this.packageRefName = packageRefName;
 	}
-	public int getWeight() {
+	public double getWeight() {
 		return weight;
 	}
-	public void setWeight(int weight) {
+	public void setWeight(double weight) {
 		this.weight = weight;
 	}
 	public String getWeightUom() {

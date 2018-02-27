@@ -17,4 +17,10 @@ public class StandardServiceImpl implements StandardService{
 		return standardDao.findByStandardId(id);
 	}
 
+	@Override
+	public Yng_Standard findByKey(String key) {
+		// TODO Auto-generated method stub
+		return standardDao.findByKey(key);
+	}
+
 }
