@@ -41,8 +41,8 @@ public class Yng_Buy {
     private Yng_Item yng_item;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "paymentMethod_id")
-    private Yng_PaymentMethod yng_PaymentMethod;
+    @JoinColumn(name = "payment_id")
+    private Yng_Payment yng_Payment;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "shipping_id")
@@ -87,16 +87,15 @@ public class Yng_Buy {
 	public void setYng_item(Yng_Item yng_item) {
 		this.yng_item = yng_item;
 	}
-
-	public Yng_PaymentMethod getYng_PaymentMethod() {
-		return yng_PaymentMethod;
+	
+	public Yng_Payment getYng_Payment() {
+		return yng_Payment;
 	}
 
-	public void setYng_PaymentMethod(Yng_PaymentMethod yng_PaymentMethod) {
-		this.yng_PaymentMethod = yng_PaymentMethod;
+	public void setYng_Payment(Yng_Payment yng_Payment) {
+		this.yng_Payment = yng_Payment;
 	}
-	
-	
+
 	public int getQuantity() {
 		return quantity;
 	}

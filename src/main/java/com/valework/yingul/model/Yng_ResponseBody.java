@@ -14,9 +14,7 @@ public class Yng_ResponseBody {
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long responseBodyId;
-	@Size(max = 500)
 	private java.lang.String key;
-	@Size(max = 500)
 	private java.lang.String value;
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "response_id")

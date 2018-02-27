@@ -7,16 +7,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.Size;
 
 @Entity
 public class Yng_RequestBody {
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long requestBodyId;
-	@Size(max = 1000)
 	private java.lang.String key;
-	@Size(max = 1000)
 	private java.lang.String value;
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "request_id")

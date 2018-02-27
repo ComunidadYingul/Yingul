@@ -10,11 +10,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 @Entity
-public class Yng_PaymentMethod {
+public class Yng_Payment {
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "paymentMethodId", nullable = false, updatable = false)
-    private Long paymentMethodId;
+    @Column(name = "paymentId", nullable = false, updatable = false)
+    private Long paymentId;
 	private String name;
 	private String type;
 	private String paymentPlan;
@@ -27,15 +27,15 @@ public class Yng_PaymentMethod {
 	@JoinColumn(name = "request_id")
     private Yng_Request yng_Request;
 	
-	public Yng_PaymentMethod() {
+	public Yng_Payment() {
 	}
 
-	public Long getPaymentMethodId() {
-		return paymentMethodId;
+	public Long getPaymentId() {
+		return paymentId;
 	}
 
-	public void setPaymentMethodId(Long paymentMethodId) {
-		this.paymentMethodId = paymentMethodId;
+	public void setPaymentId(Long paymentId) {
+		this.paymentId = paymentId;
 	}
 
 	public String getName() {
@@ -78,10 +78,5 @@ public class Yng_PaymentMethod {
 		this.yng_Request = yng_Request;
 	}
 
-	@Override
-	public String toString() {
-		return "Yng_PaymentMethod [paymentMethodId=" + paymentMethodId + ", name=" + name + ", type=" + type
-				+ ", paymentPlan=" + paymentPlan + ", yng_Card=" + yng_Card + ", yng_Request=" + yng_Request + "]";
-	}
 
 }

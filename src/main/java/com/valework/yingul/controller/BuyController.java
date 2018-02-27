@@ -3,14 +3,9 @@ package com.valework.yingul.controller;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
-import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.testng.Assert;
+import com.valework.yingul.PayUFunds;
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.BuyDao;
 import com.valework.yingul.dao.CardDao;
@@ -27,7 +22,7 @@ import com.valework.yingul.dao.ConfirmDao;
 import com.valework.yingul.dao.EnvioDao;
 import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.ListCreditCardDao;
-import com.valework.yingul.dao.PaymentMethodDao;
+import com.valework.yingul.dao.PaymentDao;
 import com.valework.yingul.dao.RequestBodyDao;
 import com.valework.yingul.dao.RequestDao;
 import com.valework.yingul.dao.ResponseBodyDao;
@@ -41,21 +36,14 @@ import com.valework.yingul.model.Yng_CardProvider;
 import com.valework.yingul.model.Yng_Confirm;
 import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_ListCreditCard;
-import com.valework.yingul.model.Yng_PaymentMethod;
-import com.valework.yingul.model.Yng_Request;
-import com.valework.yingul.model.Yng_RequestBody;
-import com.valework.yingul.model.Yng_Response;
-import com.valework.yingul.model.Yng_ResponseBody;
-import com.valework.yingul.model.Yng_ResponseHeader;
+import com.valework.yingul.model.Yng_Payment;
 import com.valework.yingul.model.Yng_Shipping;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.CardService;
 import com.valework.yingul.service.CreditCardProviderService;
-import com.valework.yingul.VisaFunds;
 import com.valework.yingul.util.VisaAPIClient;
 import andreaniapis.*;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.json.JSONObject;
 
 @RestController
 @RequestMapping("/buy")
@@ -73,14 +61,12 @@ public class BuyController {
 	@Autowired
 	CardDao cardDao;
 	@Autowired
-	PaymentMethodDao paymentMethodDao;
+	PaymentDao paymentDao;
 	@Autowired
 	BuyDao buyDao;
 	@Autowired 
 	CardService cardService;
 	//visacybersource
-	@Autowired 
-	VisaFunds visaFunds;
 	CloseableHttpResponse response;
 	String pushFundsRequest;
 	@Autowired
@@ -104,6 +90,8 @@ public class BuyController {
 	CardProviderDao cardProviderDao;
 	@Autowired 
 	ConfirmDao confirmDao;
+	@Autowired
+	PayUFunds payUFunds;
 	
 	@RequestMapping("/listCreditCard/all")
     public List<Yng_ListCreditCard> findProvinceList() {
@@ -148,91 +136,14 @@ public class BuyController {
     	buy.setUser(userTemp);
     	//hasta aqui para el usuario
     	
-    	//setear metodo de pago y realizar el cobro 
-    	//primero verificamos la tarjeta y la guardamos
-    	//verificar la tarjeta
-    	response= visaFunds.salesTransaction(buy.getYng_PaymentMethod().getYng_Card().getNumber(),buy.getCost(),buy.getYng_PaymentMethod().getYng_Card().getDueMonth(),buy.getYng_PaymentMethod().getYng_Card().getDueYear()%100);
-    	//guardar la consulta (request)
-    	Yng_Request requestTemp=new Yng_Request();
-    	requestTemp.setURI("https://sandbox.api.visa.com/cybersource/payments/v1/sales?apikey=NNE6A81AKKK49ODK98SQ21P_n9HIwyoueaU4Wx1IteueI8GLc");
-    	requestTemp.setInfo("Payment Authorization Test");
+    	//Autorización de la tarjeta
+    	Yng_Payment autorized =  payUFunds.authorizeCard(buy,userTemp);
     	//
-    	//guardar la respuesta (response)
-    	Yng_Response responseTemp= visaAPIClient.logResponse(response);
-    	Set<Yng_ResponseHeader> responseHeader=responseTemp.getResponseHeader();
-    	Set<Yng_ResponseBody> responseBody=responseTemp.getResponseBody();
-    	responseTemp.setResponseHeader(null);
-    	responseTemp.setResponseBody(null);
-    	responseTemp=responseDao.save(responseTemp);
-    	requestTemp.setYng_Response(responseTemp);
-    	requestTemp=requestDao.save(requestTemp);
-    	//json para el request
-    	String prem="";
-		if(buy.getYng_PaymentMethod().getYng_Card().getDueMonth()<10) {
-			prem="0";
-		}
-    	String requestBodyString="{\"amount\": \""+buy.getCost()+"\","
-        + "\"currency\": \"USD\","
-        + "\"payment\": {"
-            + "\"cardNumber\": \""+buy.getYng_PaymentMethod().getYng_Card().getNumber()+"\","
-            + "\"cardExpirationMonth\": \""+prem+buy.getYng_PaymentMethod().getYng_Card().getDueMonth()+"\","
-            + "\"cardExpirationYear\": \"20"+buy.getYng_PaymentMethod().getYng_Card().getDueYear()%100+"\""
-            + "}"
-        + "}";
-    	JSONObject  jObject = new JSONObject(requestBodyString);
-        Map<String,String> map = new HashMap<String,String>();
-        Iterator iter = jObject.keys();
-        while(iter.hasNext()){
-            String key = (String)iter.next();
-            String value= jObject.get(key).toString();
-            map.put(key,value);
-            Yng_RequestBody rbTemp= new Yng_RequestBody();
-            rbTemp.setKey(key);
-            rbTemp.setValue(value);
-            rbTemp.setRequest(requestTemp);
-            requestBodyDao.save(rbTemp);
-        }
-    	//
-    	for (Yng_ResponseHeader s : responseHeader) {
-    		s.setResponse(responseTemp);
-    		responseHeaderDao.save(s);
-    	}
-    	for(Yng_ResponseBody t:responseBody) {
-    		t.setResponse(responseTemp);
-    		responseBodyDao.save(t);
-    	}
-    	//fin 
-    	System.out.println("status"+response.getStatusLine().getStatusCode());
-    	System.out.println("code"+HttpStatus.SC_CREATED);
-    	if(response.getStatusLine().getStatusCode()!= HttpStatus.SC_CREATED) {
+    	if(autorized==null) {
     		return "problemCard";
     	}
-    	Assert.assertEquals(response.getStatusLine().getStatusCode(), HttpStatus.SC_CREATED);
-        response.close();
-    	//y realizar el cobro a la tarjeta
-
-    	//guardar la tarjeta
-		Yng_Card cardTemp=buy.getYng_PaymentMethod().getYng_Card();
-		cardTemp.setFullName(cardTemp.getFullName().trim().toUpperCase());
-		cardTemp.setUser(userTemp);
-		cardTemp.setDueYear(cardTemp.getDueYear()%100);
-		if(cardTemp.getType().toString().equals("DEBIT"))
-		{
-			cardTemp.setYng_CardProvider(null);
-		}
-		else {
-			cardTemp.setYng_CardProvider(cardProviderDao.findByCardProviderId(cardTemp.getYng_CardProvider().getCardProviderId()));
-		}
-		Yng_PaymentMethod paymentMethodTemp=buy.getYng_PaymentMethod();
-		//para ver si la tarjeta existe 
-		if (null == cardDao.findByNumberAndUser(cardTemp.getNumber(),buy.getUser())) {
-			paymentMethodTemp.setYng_Card(cardDao.save(cardTemp)); 
-        }
-		else {
-			paymentMethodTemp.setYng_Card(cardTemp);
-		}
-		paymentMethodTemp.setYng_Request(requestTemp);
-		buy.setYng_PaymentMethod(paymentMethodDao.save(paymentMethodTemp));
+    	
+		buy.setYng_Payment(paymentDao.save(autorized));
     	//fin del metodo de pago
     	Date time = new Date();
     	DateFormat hourdateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -323,7 +234,7 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 					+ "No entregues el producto sin que tu y el vendedor firmen la entrega no aceptaremos reclamos si la confirmacion no esta firmada por ambas partes"
 					+ "Por tu seguridad no entregues el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
 					+ "Despues de entregar el producto tu comprador tiene 7 dias para observar sus condiciones posterior a eso te daremos mas instrucciones para recoger tu dinero");
-			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_PaymentMethod().getType()+" "+buy.getYng_PaymentMethod().getYng_Card().getProvider()+" terminada en: "+buy.getYng_PaymentMethod().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible."
+			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible."
 					+ "Al Momento de recibir el producto dile este codigo a tu vendedor: "+confirm.getCodeConfirm()+"si el producto esta en buenas condiciones"
 					+ "No recibas el producto ni des el código si no estas conforme con el producto no aceptaremos reclamos posteriores"
 					+ "Por tu seguridad no recibas el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
@@ -339,7 +250,7 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 					+ "Al Momento de entregar el producto en la sucursal Andreani ingresa a: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/confirmws/"+confirm.getConfirmId()+" donde firmaras la entrega del producto en buenas condiciones"
 					+ "Despues de entregar el producto Andreani tiene 2 dias para entregarlo a tu comprador "
 					+ "Y tu comprador tiene 7 dias para observar sus condiciones, posterior a eso te daremos mas instrucciones para recoger tu dinero");
-			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_PaymentMethod().getType()+" "+buy.getYng_PaymentMethod().getYng_Card().getProvider()+" terminada en: "+buy.getYng_PaymentMethod().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible.");
+			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible.");
 		}
     	return "save";
     }
