@@ -43,9 +43,9 @@ public class Yng_Envio {
 	private String valorACobrar="";
 	private String valorDeclarado="";
 	private String volumen="";
-	
-	
-	
+	private boolean DHL;
+	private boolean Fedex;
+	private boolean Andreani;
 	public String getNumeroAndreani() {
 		return numeroAndreani;
 	}
@@ -233,6 +233,24 @@ public class Yng_Envio {
 	public void setVolumen(String volumen) {
 		this.volumen = volumen;
 	}
+	public boolean isDHL() {
+		return DHL;
+	}
+	public void setDHL(boolean dHL) {
+		DHL = dHL;
+	}
+	public boolean isFedex() {
+		return Fedex;
+	}
+	public void setFedex(boolean fedex) {
+		Fedex = fedex;
+	}
+	public boolean isAndreani() {
+		return Andreani;
+	}
+	public void setAndreani(boolean andreani) {
+		Andreani = andreani;
+	}
 	@Override
 	public String toString() {
 		return "Yng_Envio [envioId=" + envioId + ", numeroAndreani=" + numeroAndreani + ", pdfLink=" + pdfLink
@@ -246,7 +264,12 @@ public class Yng_Envio {
 				+ numeroTelefono + ", numeroTransaccion=" + numeroTransaccion + ", peso=" + peso + ", piso=" + piso
 				+ ", provincia=" + provincia + ", sucursalCliente=" + sucursalCliente + ", sucursalRetiro="
 				+ sucursalRetiro + ", tarifa=" + tarifa + ", tipoDocumento=" + tipoDocumento + ", valorACobrar="
-				+ valorACobrar + ", valorDeclarado=" + valorDeclarado + ", volumen=" + volumen + "]";
+				+ valorACobrar + ", valorDeclarado=" + valorDeclarado + ", volumen=" + volumen + ", DHL=" + DHL
+				+ ", Fedex=" + Fedex + ", Andreani=" + Andreani + "]";
 	}
+	public Yng_Envio() {
+		super();
+	}
+	
 	
 }
