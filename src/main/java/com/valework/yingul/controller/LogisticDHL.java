@@ -62,77 +62,11 @@ public class LogisticDHL {
 
     	try {
     	    HttpPost request = new HttpPost("https://private-anon-e5589704da-dhlgloballabel.apiary-proxy.com/shipping/v1/label?format=PNG&labelSize=4x6");
-    	    StringEntity params =new StringEntity("{\r\n" + 
-    	    		"  \"shipments\": [\r\n" + 
-    	    		"    {\r\n" + 
-    	    		"      \"packages\": [\r\n" + 
-    	    		"        {\r\n" + 
-    	    		"          \"packageDetails\": {\r\n" + 
-    	    		"            \"packageRefName\": \"55555555555555555\",\r\n" + 
-    	    		"            \"insuredValue\": 1,\r\n" + 
-    	    		"            \"weight\": 5.1,\r\n" + 
-    	    		"            \"declaredValue\": 250,\r\n" + 
-    	    		"            \"mailType\": 2,\r\n" + 
-    	    		"            \"height\": 30,\r\n" + 
-    	    		"            \"packageDesc\": \"Desc111\",\r\n" + 
-    	    		"            \"currency\": \"AUD\",\r\n" + 
-    	    		"            \"length\": 20,\r\n" + 
-    	    		"            \"weightUom\": \"G\",\r\n" + 
-    	    		"            \"billingRef2\": \"ref 2\",\r\n" + 
-    	    		"            \"packageId\": \"fybjywwbdt\",\r\n" + 
-    	    		"            \"dutiesPaid\": \"DDU\",\r\n" + 
-    	    		"            \"orderedProduct\": \"PPS\",\r\n" + 
-    	    		"            \"dimensionUom\": \"CM\",\r\n" + 
-    	    		"            \"billingRef1\": \"ref 1\"\r\n" + 
-    	    		"          },\r\n" + 
-    	    		"          \"consigneeAddress\": {\r\n" + 
-    	    		"            \"city\": \"Test City\",\r\n" + 
-    	    		"            \"name\": \"Test Name\",\r\n" + 
-    	    		"            \"address1\": \"Address line 1\",\r\n" + 
-    	    		"            \"address2\": \"apt 123\",\r\n" + 
-    	    		"            \"phone\": \"555-555-5555\",\r\n" + 
-    	    		"            \"state\": \"GA\",\r\n" + 
-    	    		"            \"country\": \"IE\",\r\n" + 
-    	    		"            \"postalCode\": \"99999\",\r\n" + 
-    	    		"            \"email\": \"test@email.com\"\r\n" + 
-    	    		"          },\r\n" + 
-    	    		"          \"customsDetails\": [\r\n" + 
-    	    		"            {\r\n" + 
-    	    		"              \"skuNumber\": \"3333333333333\",\r\n" + 
-    	    		"              \"countryOfOrigin\": \"US\",\r\n" + 
-    	    		"              \"itemDescription\": \"Desc1\",\r\n" + 
-    	    		"              \"itemValue\": 10.1,\r\n" + 
-    	    		"              \"packagedQuantity\": 10,\r\n" + 
-    	    		"              \"hsCode\": \"555555\"\r\n" + 
-    	    		"            },\r\n" + 
-    	    		"            {\r\n" + 
-    	    		"              \"skuNumber\": \"3333333333333\",\r\n" + 
-    	    		"              \"countryOfOrigin\": \"CZ\",\r\n" + 
-    	    		"              \"itemDescription\": \"Desc2\",\r\n" + 
-    	    		"              \"itemValue\": 20.2,\r\n" + 
-    	    		"              \"packagedQuantity\": 20,\r\n" + 
-    	    		"              \"hsCode\": \"555555\"\r\n" + 
-    	    		"            }\r\n" + 
-    	    		"          ],\r\n" + 
-    	    		"          \"returnAddress\": {\r\n" + 
-    	    		"            \"city\": \"Test City\",\r\n" + 
-    	    		"            \"name\": \"John Returns Doe\",\r\n" + 
-    	    		"            \"companyName\": \"Test Company\",\r\n" + 
-    	    		"            \"country\": \"US\",\r\n" + 
-    	    		"            \"state\": \"GA\",\r\n" + 
-    	    		"            \"address1\": \"Address line 1\",\r\n" + 
-    	    		"            \"postalCode\": \"99999\"\r\n" + 
-    	    		"          }\r\n" + 
-    	    		"        }\r\n" + 
-    	    		"      ],\r\n" + 
-    	    		"      \"pickupAccount\": \"5317861\",\r\n" + 
-    	    		"      \"distributionCenter\": \"HKHKG1\"\r\n" + 
-    	    		"    }\r\n" + 
-    	    		"  ]\r\n" + 
-    	    		"}");
+    	    StringEntity params =new StringEntity(envio());
     	    request.addHeader("Content-Type","application/json");
     	    request.addHeader("Accept", "application/json");
     	    request.addHeader("Authorization", "Bearer "+tokenDHL);
+    	    
     	    request.setEntity(params);
     	    HttpResponse response = httpClient.execute(request);
     	    System.out.println("response code:"+response.getStatusLine().getStatusCode() + "");
@@ -445,13 +379,89 @@ public class LogisticDHL {
 		System.out.println("SALIDA JSON: \n" + json);
 		
 	}
-	private void jsonToShipmentsRequest2(DhlRequest shipments) throws JsonProcessingException{
+	private String jsonToShipmentsRequest2(DhlRequest shipments) throws JsonProcessingException{
 		ObjectMapper mapper = new ObjectMapper();
 		  
 		String json = mapper.writerWithDefaultPrettyPrinter()
 		                    .writeValueAsString(shipments);
 
-		System.out.println("SALIDA request JSON: \n" + json);
+		System.out.println("SALIDA request JSON2: \n" + json);
+		return ""+json;
+	}
+	
+	public String envio() {
+		DhlRequest req=new DhlRequest();
 		
+		//DhlRequestPackages packages=new DhlRequestPackages();
+		
+		DhlRequestPackageDetails rqPD=new DhlRequestPackageDetails();
+		rqPD.setPackageRefName("123456");
+		rqPD.setInsuredValue(1);
+		rqPD.setWeight(10);
+		rqPD.setDeclaredValue(300);
+		rqPD.setMailType(2);
+		rqPD.setHeight(30);
+		rqPD.setPackageDesc("camisa larga");
+		rqPD.setCurrency("USD");
+		rqPD.setLength(2000);
+		rqPD.setWeightUom("G");
+		rqPD.setBillingRef2("factura");
+		rqPD.setPackageId("123Id");
+		rqPD.setDutiesPaid("DDU");
+		rqPD.setOrderedProduct("PPS");
+		rqPD.setDimensionUom("CM");
+		rqPD.setBillingRef1("facturacion 2");
+		DhlConsigneeAddress ca=new DhlConsigneeAddress();
+		ca.setCity("Salta");
+		ca.setName("juan consignatario");
+		ca.setAddress1("calle salta 1");
+		ca.setAddress2("calle salta 3");
+		ca.setPhone("60105552");
+		ca.setState("salta");
+		ca.setCountry("AR");
+		ca.setPostalCode("4400");
+		ca.setEmail("patzidaniel@gmail.com");
+		DhlCustomsDetails de=new DhlCustomsDetails();
+		de.setSkuNumber("1236");
+		de.setCountryOfOrigin("AR");
+		de.setItemDescription("camisa blanca");
+		de.setItemValue(120);
+		de.setPackagedQuantity(1);
+		de.setHsCode("has 123");
+		DhlReturnAddress re=new DhlReturnAddress();
+		re.setCity("Moreno");
+		re.setName("juan remitente");
+		re.setCompanyName("yingul");
+		re.setCountry("AR");
+		re.setState("Buenos Aires");
+		re.setAddress1("calle 2 moreno");
+		re.setPostalCode("1744");
+		
+		List<DhlRequestShipments> shipments=new ArrayList<DhlRequestShipments>();
+		DhlRequestShipments e = new DhlRequestShipments();
+		List<DhlRequestPackages> packages = new ArrayList<DhlRequestPackages>();
+		DhlRequestPackages y=new DhlRequestPackages();
+		y.setPackageDetails(rqPD);
+		y.setConsigneeAddress(ca);
+		List<DhlCustomsDetails> customsDetails = new ArrayList<DhlCustomsDetails>();
+		customsDetails.add(de);
+		y.setCustomsDetails(customsDetails );
+		y.setReturnAddress(re);
+		packages.add(y);
+		e.setPackages(packages);
+		e.setPickupAccount("5317861");
+		e.setDistributionCenter("HKHKG1");
+		shipments.add(e);
+		req.setShipments(shipments);
+		String json="";
+		//jsonShipmentsRequest(SD);
+		try {
+			json=jsonToShipmentsRequest2(req);
+		} catch (JsonProcessingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		//jsonToShipmentsRequest
+		return ""+json;
 	}
 }

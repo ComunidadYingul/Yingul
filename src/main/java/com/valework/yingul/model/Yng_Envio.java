@@ -43,9 +43,10 @@ public class Yng_Envio {
 	private String valorACobrar="";
 	private String valorDeclarado="";
 	private String volumen="";
-	private boolean DHL;
-	private boolean Fedex;
-	private boolean Andreani;
+	private boolean dhl=false;
+	private boolean fedex=false;
+	private boolean andreani=false;
+	private java.lang.String respuesta="";
 	public String getNumeroAndreani() {
 		return numeroAndreani;
 	}
@@ -233,23 +234,29 @@ public class Yng_Envio {
 	public void setVolumen(String volumen) {
 		this.volumen = volumen;
 	}
-	public boolean isDHL() {
-		return DHL;
+	public boolean isDhl() {
+		return dhl;
 	}
-	public void setDHL(boolean dHL) {
-		DHL = dHL;
+	public void setDhl(boolean dhl) {
+		this.dhl = dhl;
 	}
 	public boolean isFedex() {
-		return Fedex;
+		return fedex;
 	}
 	public void setFedex(boolean fedex) {
-		Fedex = fedex;
+		this.fedex = fedex;
 	}
 	public boolean isAndreani() {
-		return Andreani;
+		return andreani;
 	}
 	public void setAndreani(boolean andreani) {
-		Andreani = andreani;
+		this.andreani = andreani;
+	}
+	public java.lang.String getRespuesta() {
+		return respuesta;
+	}
+	public void setRespuesta(java.lang.String respuesta) {
+		this.respuesta = respuesta;
 	}
 	@Override
 	public String toString() {
@@ -264,12 +271,14 @@ public class Yng_Envio {
 				+ numeroTelefono + ", numeroTransaccion=" + numeroTransaccion + ", peso=" + peso + ", piso=" + piso
 				+ ", provincia=" + provincia + ", sucursalCliente=" + sucursalCliente + ", sucursalRetiro="
 				+ sucursalRetiro + ", tarifa=" + tarifa + ", tipoDocumento=" + tipoDocumento + ", valorACobrar="
-				+ valorACobrar + ", valorDeclarado=" + valorDeclarado + ", volumen=" + volumen + ", DHL=" + DHL
-				+ ", Fedex=" + Fedex + ", Andreani=" + Andreani + "]";
+				+ valorACobrar + ", valorDeclarado=" + valorDeclarado + ", volumen=" + volumen + ", dhl=" + dhl
+				+ ", fedex=" + fedex + ", andreani=" + andreani + ", respuesta=" + respuesta + "]";
 	}
 	public Yng_Envio() {
 		super();
+		// TODO Auto-generated constructor stub
 	}
+	
 	
 	
 }
