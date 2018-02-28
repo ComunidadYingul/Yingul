@@ -31,6 +31,9 @@ public class Yng_Buy {
 	private String regionName;
 	private String zip;
 	private String time;
+	private String userAgent;
+	private String cookie;
+	private String deviceSessionId;
 
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
@@ -206,6 +209,29 @@ public class Yng_Buy {
 
 	public void setItemCost(double itemCost) {
 		this.itemCost = itemCost;
+	}
+	public String getUserAgent() {
+		return userAgent;
+	}
+
+	public void setUserAgent(String userAgent) {
+		this.userAgent = userAgent;
+	}
+
+	public String getCookie() {
+		return cookie;
+	}
+
+	public void setCookie(String cookie) {
+		this.cookie = cookie;
+	}
+
+	public String getDeviceSessionId() {
+		return deviceSessionId;
+	}
+
+	public void setDeviceSessionId(String deviceSessionId) {
+		this.deviceSessionId = deviceSessionId;
 	}
 	
 }

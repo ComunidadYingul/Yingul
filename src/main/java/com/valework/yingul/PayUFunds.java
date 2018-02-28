@@ -3,11 +3,19 @@ package com.valework.yingul;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.MessageDigest;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.xml.bind.DatatypeConverter;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -30,15 +38,22 @@ import com.valework.yingul.dao.CardDao;
 import com.valework.yingul.dao.CardProviderDao;
 import com.valework.yingul.dao.RequestBodyDao;
 import com.valework.yingul.dao.RequestDao;
+import com.valework.yingul.dao.ResponseBodyDao;
+import com.valework.yingul.dao.ResponseDao;
+import com.valework.yingul.dao.ResponseHeaderDao;
+import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.model.Yng_Buy;
 import com.valework.yingul.model.Yng_Card;
 import com.valework.yingul.model.Yng_Payment;
+import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Request;
 import com.valework.yingul.model.Yng_RequestBody;
 import com.valework.yingul.model.Yng_Response;
 import com.valework.yingul.model.Yng_ResponseBody;
 import com.valework.yingul.model.Yng_ResponseHeader;
+import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_User;
+import com.valework.yingul.service.PersonService;
 import com.valework.yingul.util.VisaAPIClient;
 
 @Component
@@ -52,150 +67,73 @@ public class PayUFunds {
 	RequestDao requestDao;
 	@Autowired 
 	RequestBodyDao requestBodyDao;
+	@Autowired 
+	ResponseDao responseDao;
+	@Autowired
+	ResponseHeaderDao responseHeaderDao;
+	@Autowired
+	ResponseBodyDao responseBodyDao;
+	@Autowired 
+	StandardDao standardDao;
+	@Autowired 
+	PersonService personService;
 	
 	public Yng_Payment authorizeCard(Yng_Buy buy, Yng_User userTemp) throws Exception, ClientProtocolException, IOException{
+		//Datos Principales del comprador 
+		List<Yng_Person> personList= personService.findByUser(buy.getUser());
+		Yng_Person person = personList.get(0);
+		//recuoerar los stanadarts
+		Yng_Standard api = standardDao.findByKey("PAYU_api");
+		Yng_Standard test = standardDao.findByKey("PAYU_test");
+		Yng_Standard apikey = standardDao.findByKey("PAYU_apiKey");
+		Yng_Standard apiLogin = standardDao.findByKey("PAYU_apiLogin");
+		Yng_Standard accountId = standardDao.findByKey("PAYU_accountId");
+		Yng_Standard INSTALLMENTS_NUMBER = standardDao.findByKey("PAYU_INSTALLMENTS_NUMBER");
+		Yng_Standard merchantId = standardDao.findByKey("PAYU_merchantId");
+		//crear el referenceCode y el signature
+		Date time = new Date();
+    	DateFormat hourdateFormat = new SimpleDateFormat("dd/MM/yyyyHH:mm:ss");
+		String referenceCode="Yingul"+hourdateFormat.format(time);
+		String bSignature=apikey.getValue()+"~"+merchantId.getValue()+"~"+referenceCode+"~"+buy.getCost()+"~ARS";
+	    MessageDigest md = MessageDigest.getInstance("MD5");
+	    md.update(bSignature.getBytes());
+	    byte[] digest = md.digest();
+	    String signature = DatatypeConverter
+	      .printHexBinary(digest).toUpperCase();
 		// crear el request 
 		Yng_Request requestTemp = new Yng_Request(); 
-		requestTemp.setURI("https://sandbox.api.payulatam.com/payments-api/4.0/service.cgi");
+		requestTemp.setURI(api.getValue());
 		requestTemp.setInfo("Payment Authorization Test");
 		requestTemp = requestDao.save(requestTemp);
-		
-		Yng_RequestBody language= new Yng_RequestBody(); 
-		language.setKey("language");
-		language.setValue("es");
-		language.setRequest(requestTemp);
-		requestBodyDao.save(language);
-		
-		Yng_RequestBody command= new Yng_RequestBody(); 
-		command.setKey("command");
-		command.setValue("SUBMIT_TRANSACTION");
-		command.setRequest(requestTemp);
-		requestBodyDao.save(command);
-		
-		Yng_RequestBody merchant= new Yng_RequestBody(); 
-		merchant.setKey("merchant");
-		merchant.setValue("{\r\n" + 
-				"\"apiKey\":\"4Vj8eK4rloUd272L48hsrarnUA\",\r\n" + 
-				"\"apiLogin\":\"pRRXKOl8ikMmt9u\"\r\n" + 
-				"}");
-		merchant.setRequest(requestTemp);
-		requestBodyDao.save(merchant);
-		
-		Yng_RequestBody transaction= new Yng_RequestBody(); 
-		transaction.setKey("transaction");
-		transaction.setValue("{\r\n" + 
-				"\"order\":{\r\n" + 
-				"\"accountId\":\"512322\",\r\n" + 
-				"\"referenceCode\":\"2018/02/2711:00\",\r\n" + 
-				"\"description\":\"payment test\",\r\n" + 
-				"\"language\":\"es\",\r\n" + 
-				"\"signature\":\"0656fa6012fb9d81bd1b1080ae0c8385\",\r\n" + 
-				"\"notifyUrl\":\"http://www.tes.com/confirmation\",\r\n" + 
-				"\"additionalValues\":{\r\n" + 
-				"\"TX_VALUE\":{\r\n" + 
-				"\"value\":100,\r\n" + 
-				"\"currency\":\"ARS\"\r\n" + 
-				"}\r\n" + 
-				"},\r\n" + 
-				"\"buyer\":{\r\n" + 
-				"\"merchantBuyerId\":\"1\",\r\n" + 
-				"\"fullName\":\"First name and second buyer name\",\r\n" + 
-				"\"emailAddress\":\"buyer_test@test.com\",\r\n" + 
-				"\"contactPhone\":\"7563126\",\r\n" + 
-				"\"dniNumber\":\"5415668464654\",\r\n" + 
-				"\"shippingAddress\":{\r\n" + 
-				"\"street1\":\"Viamonte\",\r\n" + 
-				"\"street2\":\"1366\",\r\n" + 
-				"\"city\":\"Buenos Aires\",\r\n" + 
-				"\"state\":\"Buenos Aires\",\r\n" + 
-				"\"country\":\"AR\",\r\n" + 
-				"\"postalCode\":\"000000\",\r\n" + 
-				"\"phone\":\"7563126\"\r\n" + 
-				"}\r\n" + 
-				"},\r\n" + 
-				"\"shippingAddress\":{\r\n" + 
-				"\"street1\":\"Viamonte\",\r\n" + 
-				"\"street2\":\"1366\",\r\n" + 
-				"\"city\":\"Buenos Aires\",\r\n" + 
-				"\"state\":\"Buenos Aires\",\r\n" + 
-				"\"country\":\"AR\",\r\n" + 
-				"\"postalCode\":\"0000000\",\r\n" + 
-				"\"phone\":\"7563126\"\r\n" + 
-				"}\r\n" + 
-				"},\r\n" + 
-				"\"payer\":{\r\n" + 
-				"\"merchantPayerId\":\"1\",\r\n" + 
-				"\"fullName\":\"First name and second payer name\",\r\n" + 
-				"\"emailAddress\":\"payer_test@test.com\",\r\n" + 
-				"\"contactPhone\":\"7563126\",\r\n" + 
-				"\"dniNumber\":\"5415668464654\",\r\n" + 
-				"\"billingAddress\":{\r\n" + 
-				"\"street1\":\"Avenida entre rios\",\r\n" + 
-				"\"street2\":\"452\",\r\n" + 
-				"\"city\":\"Plata\",\r\n" + 
-				"\"state\":\"Buenos Aires\",\r\n" + 
-				"\"country\":\"AR\",\r\n" + 
-				"\"postalCode\":\"64000\",\r\n" + 
-				"\"phone\":\"7563126\"\r\n" + 
-				"}\r\n" + 
-				"},\r\n" + 
-				"\"creditCard\":{\r\n" + 
-				"\"number\":\"4850110000000000\",\r\n" + 
-				"\"securityCode\":\"321\",\r\n" + 
-				"\"expirationDate\":\"2018/12\",\r\n" + 
-				"\"name\":\"APPROVED\"\r\n" + 
-				"},\r\n" + 
-				"\"extraParameters\":{\r\n" + 
-				"\"INSTALLMENTS_NUMBER\":1\r\n" + 
-				"},\r\n" + 
-				"\"type\":\"AUTHORIZATION\",\r\n" + 
-				"\"paymentMethod\":\"VISA\",\r\n" + 
-				"\"paymentCountry\":\"AR\",\r\n" + 
-				"\"deviceSessionId\":\"vghs6tvkcle931686k1900o6e1\",\r\n" + 
-				"\"ipAddress\":\"127.0.0.1\",\r\n" + 
-				"\"cookie\":\"pt1t38347bs6jc9ruv2ecpv7o2\",\r\n" + 
-				"\"userAgent\":\"Mozilla/5.0 (Windows NT 5.1; rv:18.0) Gecko/20100101 Firefox/18.0\"\r\n" + 
-				"}");
-		transaction.setRequest(requestTemp);
-		requestBodyDao.save(transaction);
-		
-		Yng_RequestBody test= new Yng_RequestBody(); 
-		test.setKey("test");
-		test.setValue("true");
-		test.setRequest(requestTemp);
-		requestBodyDao.save(command);
-		//
-		
 		//crear el response
 		CloseableHttpClient client = HttpClients.createDefault();
-	    HttpPost httpPost = new HttpPost("https://sandbox.api.payulatam.com/payments-api/4.0/service.cgi");
-	 
+	    HttpPost httpPost = new HttpPost(api.getValue());
 	    String json = "{\r\n" + 
 	    		"   \"language\": \"es\",\r\n" + 
 	    		"   \"command\": \"SUBMIT_TRANSACTION\",\r\n" + 
 	    		"   \"merchant\": {\r\n" + 
-	    		"      \"apiKey\": \"4Vj8eK4rloUd272L48hsrarnUA\",\r\n" + 
-	    		"      \"apiLogin\": \"pRRXKOl8ikMmt9u\"\r\n" + 
+	    		"      \"apiKey\": \""+apikey.getValue()+"\",\r\n" + 
+	    		"      \"apiLogin\": \""+apiLogin.getValue()+"\"\r\n" + 
 	    		"   },\r\n" + 
 	    		"   \"transaction\": {\r\n" + 
 	    		"      \"order\": {\r\n" + 
-	    		"         \"accountId\": \"512322\",\r\n" + 
-	    		"         \"referenceCode\": \"2018/02/2711:00\",\r\n" + 
+	    		"         \"accountId\": \""+accountId.getValue()+"\",\r\n" + 
+	    		"         \"referenceCode\": \""+referenceCode+"\",\r\n" + 
 	    		"         \"description\": \"payment test\",\r\n" + 
 	    		"         \"language\": \"es\",\r\n" + 
-	    		"         \"signature\": \"0656fa6012fb9d81bd1b1080ae0c8385\",\r\n" + 
-	    		"         \"notifyUrl\": \"http://www.tes.com/confirmation\",\r\n" + 
+	    		"         \"signature\": \""+signature+"\",\r\n" + 
+	    		"         \"notifyUrl\": \"http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com\",\r\n" + 
 	    		"         \"additionalValues\": {\r\n" + 
 	    		"            \"TX_VALUE\": {\r\n" + 
-	    		"               \"value\": 100,\r\n" + 
+	    		"               \"value\": "+buy.getCost()+",\r\n" + 
 	    		"               \"currency\": \"ARS\"\r\n" + 
 	    		"            }\r\n" + 
 	    		"         },\r\n" + 
 	    		"         \"buyer\": {\r\n" + 
-	    		"            \"merchantBuyerId\": \"1\",\r\n" + 
-	    		"            \"fullName\": \"First name and second buyer  name\",\r\n" + 
-	    		"            \"emailAddress\": \"buyer_test@test.com\",\r\n" + 
-	    		"            \"contactPhone\": \"7563126\",\r\n" + 
+	    		"            \"merchantBuyerId\": \""+buy.getUser().getUserId()+"\",\r\n" + 
+	    		"            \"fullName\": \""+person.getName()+" "+person.getLastname()+"\",\r\n" + 
+	    		"            \"emailAddress\": \""+buy.getUser().getEmail()+"\",\r\n" + 
+	    		"            \"contactPhone\": \""+buy.getUser().getPhone()+"\",\r\n" + 
 	    		"            \"dniNumber\": \"5415668464654\",\r\n" + 
 	    		"            \"shippingAddress\": {\r\n" + 
 	    		"               \"street1\": \"Viamonte\",\r\n" + 
@@ -218,40 +156,47 @@ public class PayUFunds {
 	    		"         }\r\n" + 
 	    		"      },\r\n" + 
 	    		"      \"payer\": {\r\n" + 
-	    		"         \"merchantPayerId\": \"1\",\r\n" + 
-	    		"         \"fullName\": \"First name and second payer name\",\r\n" + 
-	    		"         \"emailAddress\": \"payer_test@test.com\",\r\n" + 
-	    		"         \"contactPhone\": \"7563126\",\r\n" + 
+	    		"         \"merchantPayerId\": \""+buy.getUser().getUserId()+"\",\r\n" + 
+	    		"         \"fullName\": \""+person.getName()+" "+person.getLastname()+"\",\r\n" + 
+	    		"         \"emailAddress\": \""+buy.getUser().getEmail()+"\",\r\n" + 
+	    		"         \"contactPhone\": \""+buy.getUser().getPhone()+"\",\r\n" + 
 	    		"         \"dniNumber\": \"5415668464654\",\r\n" + 
 	    		"         \"billingAddress\": {\r\n" + 
-	    		"            \"street1\": \"Avenida entre rios\",\r\n" + 
-	    		"            \"street2\": \"452\",\r\n" + 
-	    		"            \"city\": \"Plata\",\r\n" + 
-	    		"            \"state\": \"Buenos Aires\",\r\n" + 
+	    		"            \"street1\": \""+buy.getUser().getYng_Ubication().getStreet()+"\",\r\n" + 
+	    		"            \"street2\": \""+buy.getUser().getYng_Ubication().getNumber()+"\",\r\n" + 
+	    		"            \"city\": \""+buy.getUser().getYng_Ubication().getYng_City().getName()+"\",\r\n" + 
+	    		"            \"state\": \""+buy.getUser().getYng_Ubication().getYng_Province().getName()+"\",\r\n" + 
 	    		"            \"country\": \"AR\",\r\n" + 
-	    		"            \"postalCode\": \"64000\",\r\n" + 
-	    		"            \"phone\": \"7563126\"\r\n" + 
+	    		"            \"postalCode\": \""+buy.getUser().getYng_Ubication().getUbicationId()+"\",\r\n" + 
+	    		"            \"phone\": \""+buy.getUser().getPhone()+"\"\r\n" + 
 	    		"         }\r\n" + 
 	    		"      },\r\n" + 
 	    		"      \"creditCard\": {\r\n" + 
-	    		"         \"number\": \"4850110000000000\",\r\n" + 
-	    		"         \"securityCode\": \"321\",\r\n" + 
-	    		"         \"expirationDate\": \"2018/12\",\r\n" + 
-	    		"         \"name\": \"APPROVED\"\r\n" + 
+	    		"         \"number\": \""+buy.getYng_Payment().getYng_Card().getNumber()+"\",\r\n" + 
+	    		"         \"securityCode\": \""+buy.getYng_Payment().getYng_Card().getSecurityCode()+"\",\r\n" + 
+	    		"         \"expirationDate\": \""+buy.getYng_Payment().getYng_Card().getDueYear()+"/"+buy.getYng_Payment().getYng_Card().getDueMonth()+"\",\r\n" + 
+	    		"         \"name\": \""+buy.getYng_Payment().getYng_Card().getFullName()+"\"\r\n" + 
 	    		"      },\r\n" + 
 	    		"      \"extraParameters\": {\r\n" + 
-	    		"         \"INSTALLMENTS_NUMBER\": 1\r\n" + 
+	    		"         \"INSTALLMENTS_NUMBER\": "+INSTALLMENTS_NUMBER.getValue()+"\r\n" + 
 	    		"      },\r\n" + 
 	    		"      \"type\": \"AUTHORIZATION\",\r\n" + 
 	    		"      \"paymentMethod\": \"VISA\",\r\n" + 
 	    		"      \"paymentCountry\": \"AR\",\r\n" + 
 	    		"      \"deviceSessionId\": \"vghs6tvkcle931686k1900o6e1\",\r\n" + 
-	    		"      \"ipAddress\": \"127.0.0.1\",\r\n" + 
+	    		"      \"ipAddress\": \""+buy.getIp()+"\",\r\n" + 
 	    		"      \"cookie\": \"pt1t38347bs6jc9ruv2ecpv7o2\",\r\n" + 
 	    		"      \"userAgent\": \"Mozilla/5.0 (Windows NT 5.1; rv:18.0) Gecko/20100101 Firefox/18.0\"\r\n" + 
 	    		"   },\r\n" + 
-	    		"   \"test\": true\r\n" + 
+	    		"   \"test\": "+test.getValue()+"\r\n" + 
 	    		"}";
+	    
+	    Yng_RequestBody body= new Yng_RequestBody(); 
+	    body.setKey("body");
+	    body.setValue(json);
+	    body.setRequest(requestTemp);
+		requestBodyDao.save(body);
+	    
 	    StringEntity entity = new StringEntity(json);
 	    httpPost.setEntity(entity);
 	    httpPost.setHeader("Accept", "application/json");
@@ -259,43 +204,82 @@ public class PayUFunds {
 	 
 	    CloseableHttpResponse response = client.execute(httpPost);
 	    Yng_Response responseTemp = this.logResponse(response);
-	    
+	   
+	    Set<Yng_ResponseHeader> responseHeader=responseTemp.getResponseHeader();
+    	Set<Yng_ResponseBody> responseBody=responseTemp.getResponseBody();
+    	responseTemp.setResponseHeader(null);
+    	responseTemp.setResponseBody(null);
+    	responseTemp=responseDao.save(responseTemp);
+    	requestTemp.setYng_Response(responseTemp);
+    	requestTemp=requestDao.save(requestTemp);
         response.close();
 	    client.close();
 		//
-		
-		
-		//guardar la tarjeta
-		Yng_Card cardTemp=buy.getYng_Payment().getYng_Card();
-		cardTemp.setFullName(cardTemp.getFullName().trim().toUpperCase());
-		cardTemp.setUser(userTemp);
-		cardTemp.setDueYear(cardTemp.getDueYear()%100);
-		if(cardTemp.getType().toString().equals("DEBIT"))
-		{
-			cardTemp.setYng_CardProvider(null);
-		}
-		else {
-			cardTemp.setYng_CardProvider(cardProviderDao.findByCardProviderId(cardTemp.getYng_CardProvider().getCardProviderId()));
-		}
-		Yng_Payment paymentTemp=buy.getYng_Payment();
-		//para ver si la tarjeta existe 
-		if (null == cardDao.findByNumberAndUser(cardTemp.getNumber(),buy.getUser())) {
-			paymentTemp.setYng_Card(cardDao.save(cardTemp)); 
-        }
-		else {
-			paymentTemp.setYng_Card(cardTemp);
-		}
-		paymentTemp.setYng_Request(requestTemp);
-		
-		return paymentTemp;
-		
-		
+	    for (Yng_ResponseHeader s : responseHeader) {
+    		s.setResponse(responseTemp);
+    		responseHeaderDao.save(s);
+    	}
+    	for(Yng_ResponseBody t:responseBody) {
+    		t.setResponse(responseTemp);
+    		responseBodyDao.save(t);
+    	}
+    	
+    	
+    	for(Yng_ResponseBody t:responseBody) {
+    		t.setResponse(responseTemp);
+    		if(t.getKey().equals("transactionResponse")) {
+    			if(t.getValue().equals("null")) {
+    				return null;
+    			}else {
+    				JSONObject  jObject = new JSONObject(t.getValue());
+    				Map<String,String> map = new HashMap<String,String>();
+    				Iterator iter = jObject.keys();
+	                while(iter.hasNext()){
+	                    String key = (String)iter.next();
+	                    String value= jObject.get(key).toString();
+	                    map.put(key,value);
+	                    if(key.equals("responseCode")) {
+	                    	if(value.equals("APPROVED")) {
+	                    		//guardar la tarjeta
+	                    		Yng_Card cardTemp=buy.getYng_Payment().getYng_Card();
+	                    		cardTemp.setFullName(cardTemp.getFullName().trim().toUpperCase());
+	                    		cardTemp.setUser(userTemp);
+	                    		cardTemp.setDueYear(cardTemp.getDueYear()%100);
+	                    		if(cardTemp.getType().toString().equals("DEBIT"))
+	                    		{
+	                    			cardTemp.setYng_CardProvider(null);
+	                    		}
+	                    		else {
+	                    			cardTemp.setYng_CardProvider(cardProviderDao.findByCardProviderId(cardTemp.getYng_CardProvider().getCardProviderId()));
+	                    		}
+	                    		Yng_Payment paymentTemp=buy.getYng_Payment();
+	                    		//para ver si la tarjeta existe 
+	                    		if (null == cardDao.findByNumberAndUser(cardTemp.getNumber(),buy.getUser())) {
+	                    			paymentTemp.setYng_Card(cardDao.save(cardTemp)); 
+	                            }
+	                    		else {
+	                    			paymentTemp.setYng_Card(cardTemp);
+	                    		}
+	                    		paymentTemp.setYng_Request(requestTemp);
+	                    		
+	                    		return paymentTemp;
+	                    		
+	                    	}
+	                    	else {
+	                    		return null;
+	                    	}
+	                    }
+	                }
+    			}
+    		}
+    	}
+    	return null;
 
 	}
 
 	
 	public Yng_Response logResponse(CloseableHttpResponse response) throws IOException, JSONException {
-        Yng_Response responseTemp= new Yng_Response();
+		Yng_Response responseTemp= new Yng_Response();
     	Header[] h = response.getAllHeaders();
         
         // Get the response json object
