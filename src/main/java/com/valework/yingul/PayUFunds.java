@@ -175,18 +175,18 @@ public class PayUFunds {
 	    		"         \"number\": \""+buy.getYng_Payment().getYng_Card().getNumber()+"\",\r\n" + 
 	    		"         \"securityCode\": \""+buy.getYng_Payment().getYng_Card().getSecurityCode()+"\",\r\n" + 
 	    		"         \"expirationDate\": \""+buy.getYng_Payment().getYng_Card().getDueYear()+"/"+buy.getYng_Payment().getYng_Card().getDueMonth()+"\",\r\n" + 
-	    		"         \"name\": \""+buy.getYng_Payment().getYng_Card().getFullName()+"\"\r\n" + 
+	    		"         \"name\": \""+buy.getYng_Payment().getYng_Card().getFullName().trim().toUpperCase()+"\"\r\n" + 
 	    		"      },\r\n" + 
 	    		"      \"extraParameters\": {\r\n" + 
 	    		"         \"INSTALLMENTS_NUMBER\": "+INSTALLMENTS_NUMBER.getValue()+"\r\n" + 
 	    		"      },\r\n" + 
 	    		"      \"type\": \"AUTHORIZATION\",\r\n" + 
-	    		"      \"paymentMethod\": \"VISA\",\r\n" + 
+	    		"      \"paymentMethod\": \""+buy.getYng_Payment().getYng_Card().getProvider()+"\",\r\n" + 
 	    		"      \"paymentCountry\": \"AR\",\r\n" + 
 	    		"      \"deviceSessionId\": \"vghs6tvkcle931686k1900o6e1\",\r\n" + 
 	    		"      \"ipAddress\": \""+buy.getIp()+"\",\r\n" + 
 	    		"      \"cookie\": \"pt1t38347bs6jc9ruv2ecpv7o2\",\r\n" + 
-	    		"      \"userAgent\": \"Mozilla/5.0 (Windows NT 5.1; rv:18.0) Gecko/20100101 Firefox/18.0\"\r\n" + 
+	    		"      \"userAgent\": \""+buy.getUserAgent()+"\"\r\n" + 
 	    		"   },\r\n" + 
 	    		"   \"test\": "+test.getValue()+"\r\n" + 
 	    		"}";
@@ -244,7 +244,6 @@ public class PayUFunds {
 	                    		Yng_Card cardTemp=buy.getYng_Payment().getYng_Card();
 	                    		cardTemp.setFullName(cardTemp.getFullName().trim().toUpperCase());
 	                    		cardTemp.setUser(userTemp);
-	                    		cardTemp.setDueYear(cardTemp.getDueYear()%100);
 	                    		if(cardTemp.getType().toString().equals("DEBIT"))
 	                    		{
 	                    			cardTemp.setYng_CardProvider(null);

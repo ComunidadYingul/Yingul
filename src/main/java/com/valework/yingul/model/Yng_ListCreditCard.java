@@ -19,6 +19,7 @@ public class Yng_ListCreditCard {
     @Column(name = "listCreditCardId", nullable = false, updatable = false)
     private Long listCreditCardId;
 	private String name;
+	private String keyPayu;
 	
 	@OneToMany(mappedBy = "listCreditCard", cascade = CascadeType.ALL, fetch = FetchType.LAZY)  
 	@JsonBackReference(value="creditCardProvider")
@@ -50,11 +51,12 @@ public class Yng_ListCreditCard {
 		this.creditCardProvider = creditCardProvider;
 	}
 
-	@Override
-	public String toString() {
-		return "Yng_ListCreditCard [listCreditCardId=" + listCreditCardId + ", name=" + name + ", creditCardProvider="
-				+ creditCardProvider + "]";
+	public String getKeyPayu() {
+		return keyPayu;
 	}
-    
+
+	public void setKeyPayu(String keyPayu) {
+		this.keyPayu = keyPayu;
+	}
 
 }
