@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.valework.yingul.dao.CategoryDao;
-import com.valework.yingul.dao.CityDao;
+//import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.model.Yng_Category;
 import com.valework.yingul.service.CategoryService;
 

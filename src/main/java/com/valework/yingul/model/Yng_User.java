@@ -36,6 +36,8 @@ public class Yng_User implements UserDetails{
     private String phone;
     private String phone2;
     private String webSite;
+	private String documentType="";
+	private String 	documentNumber="";
     private boolean enabled=true;
 
     @OneToOne
@@ -154,11 +156,32 @@ public class Yng_User implements UserDetails{
 		this.phone2 = phone2;
 	}
 
+	public String getDocumentType() {
+		return documentType;
+	}
+
+	public void setDocumentType(String documentType) {
+		this.documentType = documentType;
+	}
+
+	public String getDocumentNumber() {
+		return documentNumber;
+	}
+
+	public void setDocumentNumber(String documentNumber) {
+		this.documentNumber = documentNumber;
+	}
+
+	public Yng_User() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
 	public String toString() {
 		return "Yng_User [userId=" + userId + ", username=" + username + ", password=" + password + ", email=" + email
-				+ ", phone=" + phone + ", phone2=" + phone2 + ", webSite=" + webSite + ", enabled=" + enabled
-				+ ", yng_Ubication=" + yng_Ubication + ", userRoles=" + userRoles + "]";
+				+ ", phone=" + phone + ", phone2=" + phone2 + ", webSite=" + webSite + ", documentType=" + documentType
+				+ ", documentNumber=" + documentNumber + ", enabled=" + enabled + ", yng_Ubication=" + yng_Ubication
+				+ ", userRoles=" + userRoles + "]";
 	}
-	
 }

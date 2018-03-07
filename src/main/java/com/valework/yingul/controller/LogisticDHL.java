@@ -4,12 +4,16 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -21,7 +25,12 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.xml.sax.InputSource;
 
+//import com.example.demo.controller.ImprimirConstanciaHandler;
+//import com.example.demo.controller.ImprimirConstanciaResponse;
+//import com.example.demo.controller.EnvioHandler;
+//import com.example.demo.controller.EnvioResponce;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -41,8 +50,10 @@ import com.valework.yingul.logistic.DhlRequest;
 import com.valework.yingul.logistic.DhlRequestPackageDetails;
 import com.valework.yingul.logistic.DhlResponse;
 import com.valework.yingul.logistic.DhlShipments;
+import com.valework.yingul.logistic.Logistic;
 import com.valework.yingul.logistic.DhlResponsePackageDetails;
 import com.valework.yingul.logistic.DhlReturnAddress;
+import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_Token;
 import com.valework.yingul.service.StandardService;
@@ -463,5 +474,44 @@ public class LogisticDHL {
 		}
 		//jsonToShipmentsRequest
 		return ""+json;
+	}
+	@RequestMapping("/andre")
+	public String da5() throws IOException {
+		Logistic logistic=new Logistic();
+		try {
+			String numberAndreani="";
+			SAXParserFactory saxParseFactory=SAXParserFactory.newInstance();
+	        SAXParser sAXParser=saxParseFactory.newSAXParser();
+	        Yng_Person pers = null;
+			String xml="";//=logistic.andreaniRemitenteWSDL(logistic.andreaniStringRe(pers));
+	        com.valework.yingul.logistic.EnvioHandler handlerS=new com.valework.yingul.logistic.EnvioHandler();
+            
+            sAXParser.parse(new InputSource(new StringReader(xml)), handlerS);
+            ArrayList<com.valework.yingul.logistic.EnvioResponce> envios=handlerS.getEnvioResponse();
+            System.out.println("aniem");
+            for (com.valework.yingul.logistic.EnvioResponce versione : envios) {
+            	numberAndreani=versione.getNumeroAndreani();
+                System.out.println("versione.getNumero1:"+numberAndreani);
+            	}
+            
+            System.out.println("logistic.andreaniPdfLink:"+numberAndreani);
+			System.out.println("res:"+xml);
+			String link=logistic.andreaniPdfLink(numberAndreani);
+			if (link != null) {
+	            //strResponse = link;
+	            com.valework.yingul.logistic.ImprimirConstanciaHandler handlerI=new com.valework.yingul.logistic.ImprimirConstanciaHandler();
+	            sAXParser.parse(new InputSource(new StringReader(link)), handlerI);
+	            ArrayList<com.valework.yingul.logistic.ImprimirConstanciaResponse> impr=handlerI.getImprimirResponce();
+	            for (com.valework.yingul.logistic.ImprimirConstanciaResponse versione : impr) {
+	            	link=versione.getPdfLinkFile();
+	                System.out.println("versione.getNumero2:"+versione.getPdfLinkFile());            
+	            }
+	        }
+	        System.out.println("link: "+link);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "save";
 	}
 }

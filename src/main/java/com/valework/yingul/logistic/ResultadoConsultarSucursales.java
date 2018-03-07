@@ -157,10 +157,10 @@ public class ResultadoConsultarSucursales {
     public String toString() {
         return "ResultadoConsultarSucursales{" + "Descripcion=" + Descripcion + ", Direccion=" + Direccion + ", HoradeTrabajo=" + HoradeTrabajo + ", Latitud=" + Latitud + ", Longitud=" + Longitud + ", Mail=" + Mail + ", Numero=" + Numero + ", Responsable=" + Responsable + ", Resumen=" + Resumen + ", Sucursal=" + Sucursal + ", Telefono1=" + Telefono1 + ", Telefono2=" + Telefono2 + ", Telefono3=" + Telefono3 + ", TipoSucursal=" + TipoSucursal + ", TipoTelefono1=" + TipoTelefono1 + ", TipoTelefono2=" + TipoTelefono2 + ", TipoTelefono3=" + TipoTelefono3 + '}';
     }
-    
-    
-    
-    
-    
+
+	public ResultadoConsultarSucursales() {
+		super();
+		// TODO Auto-generated constructor stub
+	} 
     
 }

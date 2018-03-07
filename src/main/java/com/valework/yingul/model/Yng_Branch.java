@@ -17,13 +17,10 @@ public class Yng_Branch {
     private Long branchId;
 	private String nameMail="";
 	private String street="";
-	private String ubicacion="";
+	private String location="";
 	private String schedules="";
 	private String dateDelivery="";
 	private java.lang.String respuesta="";
-	@OneToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "envio_id")
-	private Yng_Envio yng_Envio;
 	public Yng_Branch() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -46,11 +43,11 @@ public class Yng_Branch {
 	public void setStreet(String street) {
 		this.street = street;
 	}
-	public String getUbicacion() {
-		return ubicacion;
+	public String getLocation() {
+		return location;
 	}
-	public void setUbicacion(String ubicacion) {
-		this.ubicacion = ubicacion;
+	public void setLocation(String location) {
+		this.location = location;
 	}
 	public String getSchedules() {
 		return schedules;
@@ -70,17 +67,12 @@ public class Yng_Branch {
 	public void setRespuesta(java.lang.String respuesta) {
 		this.respuesta = respuesta;
 	}
-	public Yng_Envio getYng_Envio() {
-		return yng_Envio;
-	}
-	public void setYng_Envio(Yng_Envio yng_Envio) {
-		this.yng_Envio = yng_Envio;
-	}
 	@Override
 	public String toString() {
-		return "Yng_Branch [branchId=" + branchId + ", nameMail=" + nameMail + ", street=" + street + ", ubicacion="
-				+ ubicacion + ", schedules=" + schedules + ", dateDelivery=" + dateDelivery + ", respuesta=" + respuesta
-				+ ", yng_Envio=" + yng_Envio + "]";
+		return "Yng_Branch [branchId=" + branchId + ", nameMail=" + nameMail + ", street=" + street + ", location="
+				+ location + ", schedules=" + schedules + ", dateDelivery=" + dateDelivery + ", respuesta=" + respuesta
+				+ "]";
 	}
 	
 }
+

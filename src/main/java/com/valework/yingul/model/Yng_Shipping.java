@@ -15,17 +15,24 @@ public class Yng_Shipping {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "shippingId", nullable = false, updatable = false)
     private Long shippingId;
-	private String typeShipping;
-	//private
+	private String typeShipping="";
+	private boolean dhl=false;
+	private boolean fedex=false;
+	private boolean andreani=false;
+	private String shippingStatus;
+	//crear desde dhl hasta shipment de manera manual 
+	
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "envio_id")
-    private Yng_Envio yng_envio;
+    @JoinColumn(name = "quote_id")
+    private Yng_Quote yng_Quote=new Yng_Quote();
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "shipment_id")
+    private Yng_Shipment yng_Shipment=new Yng_Shipment();
 
-	@Override
-	public String toString() {
-		return "Yng_Shipping [shippingId=" + shippingId + ", typeShipping=" + typeShipping + ", yng_envio=" + yng_envio
-				+ "]";
+	public Yng_Shipping() {
+		super();
 	}
 
 	public Long getShippingId() {
@@ -44,14 +51,52 @@ public class Yng_Shipping {
 		this.typeShipping = typeShipping;
 	}
 
-	public Yng_Envio getYng_envio() {
-		return yng_envio;
+	public boolean isDhl() {
+		return dhl;
 	}
 
-	public void setYng_envio(Yng_Envio yng_envio) {
-		this.yng_envio = yng_envio;
+	public void setDhl(boolean dhl) {
+		this.dhl = dhl;
 	}
-	
-	
+
+	public boolean isFedex() {
+		return fedex;
+	}
+
+	public void setFedex(boolean fedex) {
+		this.fedex = fedex;
+	}
+
+	public boolean isAndreani() {
+		return andreani;
+	}
+
+	public void setAndreani(boolean andreani) {
+		this.andreani = andreani;
+	}
+
+	public String getShippingStatus() {
+		return shippingStatus;
+	}
+
+	public void setShippingStatus(String shippingStatus) {
+		this.shippingStatus = shippingStatus;
+	}
+
+	public Yng_Quote getYng_Quote() {
+		return yng_Quote;
+	}
+
+	public void setYng_Quote(Yng_Quote yng_Quote) {
+		this.yng_Quote = yng_Quote;
+	}
+
+	public Yng_Shipment getYng_Shipment() {
+		return yng_Shipment;
+	}
+
+	public void setYng_Shipment(Yng_Shipment yng_Shipment) {
+		this.yng_Shipment = yng_Shipment;
+	}
 
 }

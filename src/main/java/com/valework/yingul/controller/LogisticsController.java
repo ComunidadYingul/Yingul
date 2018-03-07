@@ -61,28 +61,42 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 import java.io.IOException;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.valework.yingul.logistic.SucursalHandler;
+import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.valework.yingul.model.AndreaniCot;
 import com.valework.yingul.model.Yng_AndreaniCotizacion;
 import com.valework.yingul.model.Yng_AndreaniSucursal;
+import com.valework.yingul.model.Yng_Branch;
 import com.valework.yingul.model.Yng_Cotizacion;
 import com.valework.yingul.model.Yng_Cotizar;
 import com.valework.yingul.model.Yng_Envio;
+import com.valework.yingul.model.Yng_Item;
+import com.valework.yingul.model.Yng_Motorized;
 import com.valework.yingul.model.Yng_Product;
+import com.valework.yingul.model.Yng_Property;
+import com.valework.yingul.model.Yng_Quote;
 import com.valework.yingul.model.Yng_Service;
 import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_Token;
 import com.valework.yingul.model.Yng_User;
+import com.valework.yingul.service.MotorizedService;
+import com.valework.yingul.service.ProductService;
+import com.valework.yingul.service.PropertyService;
+import com.valework.yingul.service.ServiceService;
 import com.valework.yingul.service.StandardService;
 
 import andreaniapis.*;
- 
+import ch.qos.logback.core.net.SyslogOutputStream;
 
 import com.valework.yingul.dao.CotizacionDao;
 import com.valework.yingul.dao.EnvioDao;
+import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.logistic.*;
 
@@ -105,6 +119,7 @@ public class LogisticsController {
 	private final String cotizarDomicilio="/cotizar/precio/a-domicilio?access_token=";
 	private final String cotizarSucursal="/cotizar/precio/a-sucursal?access_token=";
 	private final String cotizarCosto="/cotizar/costo?access_token=";
+	Yng_Standard standard;//= new Yng_Standard();
 	
 	private final String auth="/auth";
 	private String TOKEN;
@@ -115,6 +130,16 @@ public class LogisticsController {
 	UserDao userDao;
 	@Autowired
 	StandardService standardService;
+	@Autowired
+	ItemDao itemDao;
+	@Autowired
+	ServiceService serviceService;
+	@Autowired
+	ProductService productService;
+	@Autowired
+	MotorizedService motorizedService;
+	@Autowired
+	PropertyService propertyService;
 	
     @RequestMapping("/token")
     private String token() {
@@ -893,6 +918,7 @@ public class LogisticsController {
 
  	
  	 public List<ResultadoConsultarSucursales> andreaniSucursalList(Yng_AndreaniSucursal cot) throws Exception{ 
+ 		 System.out.println("cot::"+cot.toString());
     	String body3="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
 				"<env:Envelope\r\n" + 
 				"    xmlns:env=\"http://www.w3.org/2003/05/soap-envelope\"\r\n" + 
@@ -1024,7 +1050,7 @@ public class LogisticsController {
 		}
  		ta=cot.getTarifa();
  		System.out.println("tarifa:"+ta);
- 		Yng_Standard standard= new Yng_Standard();
+ 		//Yng_Standard standard= new Yng_Standard();
  		standard=standardService.findByKey("shippingPercentage");
  		double porce = 1+Double.parseDouble(standard.getValue())/100;
  		double doble = Double.parseDouble(ta)*porce;
@@ -1063,6 +1089,12 @@ public class LogisticsController {
     	{
     	    System.out.println(e);
     	}
+    	standard= new Yng_Standard();
+    	standard=standardService.findByKey("Username");
+    	 cotizarTemp.setUsername(standard.getValue());
+    	 standard=standardService.findByKey("Password");
+    	 cotizarTemp.setPassword(standard.getValue());
+    	 
 	 	String body2="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
 			"<env:Envelope\r\n" + 
 			"    xmlns:env=\"http://www.w3.org/2003/05/soap-envelope\"\r\n" + 
@@ -1157,17 +1189,14 @@ public class LogisticsController {
     String strResponse = null;
     CotizarEnvioResponse cot=null;
     if (entity != null) {
-        strResponse = EntityUtils.toString(entity);
-
-        
+        strResponse = EntityUtils.toString(entity);        
         CotizarHandler handlerC=new CotizarHandler();
         sAXParser.parse(new InputSource(new StringReader(strResponse)), handlerC);
          ArrayList<CotizarEnvioResponse> cotizarEnvioResponses=handlerC.getCotizarEnvioResponse();
         for (CotizarEnvioResponse versione : cotizarEnvioResponses) {
         	numero=versione.getTarifa();
             System.out.println(" log versione:"+versione);
-            cot=versione;
-            
+            cot=versione;            
         
         }
     }
@@ -1325,57 +1354,7 @@ public class LogisticsController {
     	}
     }
    
-    public Yng_Envio serviceEnvio(Yng_Envio envio) throws MessagingException {
-    	Yng_Envio tempEnvio=envio;
-    	/*Yng_Envio yi=tempEnvio;
-    	AndreaniApis andrea=new AndreaniApis();
-    	andreaniapis.Yng_Envio com=new andreaniapis.Yng_Envio();
-   	tempEnvio.setContrato("400006711");
-    	 com.setProvincia(yi.getProvincia());
-         com.setLocalidad(yi.getLocalidad());
-         com.setCodigoPostalDestino(yi.getCodigoPostalDestino());
-         com.setCalle(yi.getCalle());
-         com.setNumero(yi.getNumero());
-         com.setSucursalRetiro(yi.getSucursalRetiro());
-         com.setSucursalCliente(yi.getSucursalCliente());
-         com.setNombreApellido(yi.getNombreApellido());
-         com.setNombreApellidoAlternativo(yi.getNombreApellidoAlternativo());
-         com.setTipoDocumento(yi.getTipoDocumento());
-         com.setNumeroDocumento(yi.getNumeroDocumento());
-         com.setEmail(yi.getEmail());
-         com.setNumeroCelular(yi.getNumeroCelular());
-         com.setNumeroTelefono(yi.getNumeroTelefono());
-         com.setContrato("400006711");
-         com.setNumeroTransaccion(yi.getNumeroTransaccion());
-         com.setTarifa(yi.getTarifa());
-         com.setValorACobrar(yi.getValorACobrar());
-         com.setCategoriaDistancia(yi.getCategoriaDistancia());
-         com.setCategoriaFacturacion(yi.getCategoriaFacturacion());
-         com.setCategoriaPeso(yi.getCategoriaPeso());
-         com.setDetalleProductosEntrega(yi.getDetalleProductosEntrega());
-         com.setDetalleProductosRetiro(yi.getDetalleProductosRetiro());
-         com.setVolumen(yi.getVolumen());
-         com.setValorDeclarado(yi.getValorDeclarado());
-         com.setPeso(yi.getPeso());
 
-         
-     	String codAndreani="";
-     	codAndreani=andrea.confirmarEnvio(com);
-     	tempEnvio.setNumeroAndreani(codAndreani);
-    	String pdfLink="";
-    	pdfLink=andrea.linkPdf(codAndreani);
-    	System.out.println("aqui:"+1);
-    	tempEnvio.setPdfLink(pdfLink);
-
-    	
-    	
-    	
-    	
-    	
-    	envioDao.save(tempEnvio);*/
-    	
-    	 return tempEnvio;
-    }
      
     @RequestMapping(value = "/cotizacionB", method = RequestMethod.POST)
 	@ResponseBody
@@ -1418,4 +1397,247 @@ public class LogisticsController {
         resultado=(resultado/Math.pow(10, numeroDecimales))+parteEntera;
         return resultado;
     }
+    @RequestMapping(value = "/branchList", method = RequestMethod.POST)
+  	@ResponseBody
+      public List<Yng_Branch> branchList(@Valid @RequestBody  Yng_AndreaniSucursal suc){
+ 		System.out.println("sucursal:"+suc.toString());
+ 		
+    	  List<Yng_Branch> branchShipping = new ArrayList<Yng_Branch>();
+    	  List<ResultadoConsultarSucursales> sucursal = new ArrayList<ResultadoConsultarSucursales>();
+    	  Yng_AndreaniSucursal cot=new Yng_AndreaniSucursal();
+    	  cot.setUsername("");
+    	  cot.setPassword("");
+    	  cot.setCodigoPostal("");
+    	  cot.setLocalidad("");
+    	  cot.setProvincia("");
+    	  cot=suc;
+    	  cot.setUsername("STAGING_WS");
+    	  cot.setPassword("ANDREANI");
+   
+    	  System.out.println(cot.toString());
+    	  
+		try {
+			sucursal=andreaniSucursalList(cot);
+			
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		for (ResultadoConsultarSucursales resultadoConsultarSucursales : sucursal) {
+			Yng_Branch bra = new Yng_Branch();
+			bra.setDateDelivery("");
+			bra.setLocation(""+resultadoConsultarSucursales.getDescripcion());
+			bra.setNameMail("Andreni");
+			try {
+				bra.setRespuesta(""+jsonToShipmentsUnit(resultadoConsultarSucursales));
+			} catch (JsonProcessingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			bra.setSchedules(""+resultadoConsultarSucursales.getHoradeTrabajo());
+			bra.setStreet(""+resultadoConsultarSucursales.getDireccion());
+			//bra.setYng_Envio(null);		
+			branchShipping.add(bra);
+			//System.out.println("branchShipping:"+""+branchShipping.toString());
+		}
+		//System.out.println("branchShipping:"+branchShipping.toString());
+       return branchShipping;
+      }
+      
+      private String jsonToShipments(List<ResultadoConsultarSucursales> shipments) throws JsonProcessingException{
+  		ObjectMapper mapper = new ObjectMapper();
+  		  
+  		String json = mapper.writerWithDefaultPrettyPrinter()
+  		                    .writeValueAsString(shipments);
+
+  		System.out.println("SALIDA JSON : \n" + json);
+  		return ""+json;
+  	}
+  	private void jsonResultadoConsultarSucursaless(String json) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+       mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+       ResultadoConsultarSucursales[] resultadoConsultarSucursales;
+		try {
+			resultadoConsultarSucursales= mapper.readValue(json, ResultadoConsultarSucursales[].class);
+			System.out.println("tamaño suc:"+resultadoConsultarSucursales.length);
+			 System.out.println("resultadoConsultarSucursales: "+resultadoConsultarSucursales[0].toString());		 
+		} catch (JsonParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}       
+	}  
+    private String jsonToShipmentsUnit(ResultadoConsultarSucursales shipments) throws JsonProcessingException{
+ 		ObjectMapper mapper = new ObjectMapper(); 		  
+ 		String json = mapper.writerWithDefaultPrettyPrinter()
+ 		                    .writeValueAsString(shipments);
+ 		return ""+json;
+ 	}
+    private String jsonToQuoteUnit(CotizarEnvioResponse shipments) throws JsonProcessingException{
+ 		ObjectMapper mapper = new ObjectMapper(); 		  
+ 		String json = mapper.writerWithDefaultPrettyPrinter()
+ 		                    .writeValueAsString(shipments);
+ 		return ""+json;
+ 	}
+    @RequestMapping(value = "/quote", method = RequestMethod.POST)
+  	@ResponseBody
+      public List<Yng_Quote> quote(@Valid @RequestBody  Yng_Quote quo){
+    	  List<Yng_Quote> quotesList=new ArrayList<Yng_Quote>();
+    	  Yng_Quote quote=new Yng_Quote();
+    	  quote=quo;
+    	  quote.getYng_Item().setUser(userDao.findByUsername(quote.getYng_Item().getUser().getUsername()));
+    	  quote.setYng_User(userDao.findByUsername(quote.getYng_User().getUsername()));  
+   		
+    	  String type=quoteType(quote.getYng_Item().getItemId());
+		  if(type.equals("Producto")) {	    	  
+			    	  
+			    	  standard= new Yng_Standard();
+			    	  standard=standardService.findByKey("Username");
+			     	  String UserNameAndrani=standard.getValue();
+			     	  standard=standardService.findByKey("Password");
+			     	  String PasswordAndreni=standard.getValue();
+			     	 standard=standardService.findByKey("Contrato");
+			    	  String ContratoAndreni=standard.getValue();
+			    	  standard=standardService.findByKey("Cliente");
+			    	  String ClienteAndreni=standard.getValue();
+			
+			    	  //ANDREANI sucursales  
+			    	  List<Yng_Branch> branchShipping = new ArrayList<Yng_Branch>();
+			    	  List<ResultadoConsultarSucursales> sucursal = new ArrayList<ResultadoConsultarSucursales>();
+			    	  Yng_AndreaniSucursal cot=new Yng_AndreaniSucursal();
+			    	  cot.setCodigoPostal(""+quote.getYng_User().getYng_Ubication().getPostalCode());
+			    	  cot.setLocalidad("");
+			    	  cot.setProvincia("");
+			    	  //cot=suc;
+			    	  cot.setUsername(UserNameAndrani);
+			    	  cot.setPassword(PasswordAndreni);   
+			    	  System.out.println(cot.toString());    	  
+					try {
+						sucursal=andreaniSucursalList(cot);
+						System.out.println("sucursal:"+sucursal.toString());
+			
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					for (ResultadoConsultarSucursales resultadoConsultarSucursales : sucursal) {
+						Yng_Branch bra = new Yng_Branch();
+						bra.setDateDelivery("");
+						bra.setLocation(""+resultadoConsultarSucursales.getDescripcion());
+						bra.setNameMail("Andreani");
+						try {
+							bra.setRespuesta(""+jsonToShipmentsUnit(resultadoConsultarSucursales));
+						} catch (JsonProcessingException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						bra.setSchedules(""+resultadoConsultarSucursales.getHoradeTrabajo());
+						bra.setStreet(""+resultadoConsultarSucursales.getDireccion());
+						//bra.setYng_Envio(null);		
+						branchShipping.add(bra);
+						quote.setYng_Branch(bra);
+						//System.out.println("branchShipping:"+""+branchShipping.toString());
+					}
+					if(!branchShipping.isEmpty()) {
+						quote.setYng_Branch(branchShipping.get(0));
+					}    	   	  
+			    	  //
+			    	  Yng_AndreaniCotizacion cotizarAndreani=new Yng_AndreaniCotizacion();
+			    	  
+			    	  cotizarAndreani.setCodigoDeCliente(ClienteAndreni);
+			    	  cotizarAndreani.setCodigoDeSucursal(""+quote.getYng_Item().getYng_Ubication().getCodAndreani());
+			    	  System.out.println("postal:"+quote.getYng_User().getYng_Ubication().getPostalCode());
+			    	  cotizarAndreani.setCodigoPostal(quote.getYng_User().getYng_Ubication().getPostalCode());
+			    	  cotizarAndreani.setNumeroDeContrato(ContratoAndreni);
+			    	  cotizarAndreani.setPassword(PasswordAndreni);
+			    	  cotizarAndreani.setUsername(UserNameAndrani);
+			    	  Yng_Product getProductByIdItem=new Yng_Product();
+			    	  getProductByIdItem=getProductByIdItem(quote.getYng_Item().getItemId());
+			    	  cotizarAndreani.setPeso(""+getProductByIdItem.getProductPeso());
+			    	  cotizarAndreani.setValorDeclarado(""+quote.getYng_Item().getPrice());
+			    	  cotizarAndreani.setVolumen(""+getProductByIdItem.getProducVolumen());
+			    	  CotizarEnvioResponse andreaniQuote=new CotizarEnvioResponse();
+				    	  try {
+				    		  andreaniQuote=andreaniQuote(cotizarAndreani);
+				    		  System.out.println("pro:"+andreaniQuote.toString());
+				    		  
+						} catch (MessagingException e) {
+
+							e.printStackTrace();
+						}			    	  
+			    	  double rate = Double.parseDouble(andreaniQuote.getTarifa());
+			    	  String ta="";		    	   		
+		    	   		standard=standardService.findByKey("shippingPercentage");
+		    	   		double porce = 1+Double.parseDouble(standard.getValue())/100;
+		    	   		double doble = rate*porce;
+		    	   		doble=redondearDecimales(doble, 2);
+			    	  quote.setRate(doble);
+			    	  quote.setRateOrigin(rate);			    	  
+			    	  try {
+			    		  quote.setRespuesta(""+jsonToQuoteUnit(andreaniQuote));
+						} catch (JsonProcessingException e) {
+							e.printStackTrace();
+						}
+			    	  quotesList.add(quote);			    	  
+		  }
+    	 return quotesList; 
+      }
+      
+      public String quoteType(Long itemId) {
+      	System.out.println("itemId:"+itemId);
+  		Yng_Item yng_Item = itemDao.findByItemId(itemId);
+  		List<Yng_Service> serviceList= serviceService.findByItem(yng_Item);
+  		List<Yng_Product> productList= productService.findByItem(yng_Item);
+  		List<Yng_Motorized> motorizedList= motorizedService.findByItem(yng_Item);
+  		List<Yng_Property> propertyList= propertyService.findByItem(yng_Item);
+  		//hacer pára productos, motorizados inmuebles  
+  		if(serviceList.size()==1) {
+  			return "Servicio";
+  		}
+  		if(productList.size()==1) {
+  			return "Producto";
+  		}
+  		if(motorizedList.size()==1) {
+  			return "Vehiculo";
+  		}
+  		if(propertyList.size()==1) {
+  			return "Inmueble";
+  		}
+  		else {
+  			return "otro";
+  		}
+  		
+      }
+      
+      public CotizarEnvioResponse andreaniQuote(Yng_AndreaniCotizacion cotizar) throws MessagingException {
+   		System.out.println("cotizar:"+cotizar.getCodigoPostal());
+   		CotizarEnvioResponse cot=new CotizarEnvioResponse();
+   		Yng_AndreaniCotizacion cotizarTemp=cotizar;
+   		//System.out.println(cotizarTemp.toString()); 		
+   		//List<Yng_Cotizar>cotizarList;
+   		
+   		try {
+   			cot=andreaniCotiza(cotizar);
+  		} catch (Exception e) {
+  			// TODO Auto-generated catch block
+  			e.printStackTrace();
+  		}
+   		
+   		return cot;
+   	}
+      
+      public Yng_Product getProductByIdItem(Long itemId) {
+  		Yng_Item yng_Item = itemDao.findByItemId(itemId);
+  		List<Yng_Product> productList= productService.findByItem(yng_Item);
+  		Yng_Product product = productList.get(0);
+  		System.out.println("pro: "+product);
+  		return product;	
+      }
+      
+  	
 }
