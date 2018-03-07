@@ -3,12 +3,9 @@ package com.valework.yingul.controller;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,62 +13,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.AccountDao;
-import com.valework.yingul.dao.AmbientDao;
-import com.valework.yingul.dao.AmenitiesDao;
 import com.valework.yingul.dao.BankDao;
-import com.valework.yingul.dao.BarrioDao;
-import com.valework.yingul.dao.CategoryDao;
-import com.valework.yingul.dao.CityDao;
-import com.valework.yingul.dao.ConfortDao;
-import com.valework.yingul.dao.DepartmentDao;
-import com.valework.yingul.dao.EquipmentDao;
-import com.valework.yingul.dao.ExteriorDao;
-import com.valework.yingul.dao.ItemCategoryDao;
-import com.valework.yingul.dao.ItemImageDao;
-import com.valework.yingul.dao.MotorizedConfortDao;
-import com.valework.yingul.dao.MotorizedDao;
-import com.valework.yingul.dao.MotorizedEquipmentDao;
-import com.valework.yingul.dao.MotorizedExteriorDao;
-import com.valework.yingul.dao.MotorizedSecurityDao;
-import com.valework.yingul.dao.MotorizedSoundDao;
-import com.valework.yingul.dao.ProductDao;
-import com.valework.yingul.dao.PropertyAmbientDao;
-import com.valework.yingul.dao.PropertyAmenitiesDao;
-import com.valework.yingul.dao.PropertyDao;
-import com.valework.yingul.dao.ProvinceDao;
-import com.valework.yingul.dao.SecurityDao;
-import com.valework.yingul.dao.ServiceDao;
-import com.valework.yingul.dao.ServiceProvinceDao;
-import com.valework.yingul.dao.SoundDao;
 import com.valework.yingul.dao.TransactionDao;
-import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.dao.WireTransferDao;
 import com.valework.yingul.model.Yng_Account;
-import com.valework.yingul.model.Yng_Item;
-import com.valework.yingul.model.Yng_ItemCategory;
-import com.valework.yingul.model.Yng_ItemImage;
-import com.valework.yingul.model.Yng_Motorized;
-import com.valework.yingul.model.Yng_MotorizedConfort;
-import com.valework.yingul.model.Yng_MotorizedEquipment;
-import com.valework.yingul.model.Yng_MotorizedExterior;
-import com.valework.yingul.model.Yng_MotorizedSecurity;
-import com.valework.yingul.model.Yng_MotorizedSound;
-import com.valework.yingul.model.Yng_Product;
-import com.valework.yingul.model.Yng_Property;
-import com.valework.yingul.model.Yng_PropertyAmbient;
-import com.valework.yingul.model.Yng_PropertyAmenities;
-import com.valework.yingul.model.Yng_Service;
-import com.valework.yingul.model.Yng_ServiceProvince;
 import com.valework.yingul.model.Yng_Transaction;
-import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.model.Yng_WireTransfer;
-import com.valework.yingul.service.ItemService;
-import com.valework.yingul.service.S3Services;
-import com.valework.yingul.service.ServiceService;
-import com.valework.yingul.service.UserServiceImpl.S3ServicesImpl;
-import com.valework.yingul.service.StorageService;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -95,6 +44,7 @@ public class WireTransferController {
 	private BankDao bankDao;
 	@Autowired
 	private WireTransferDao wireTransferDao;
+	
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	@ResponseBody
     public String sellServicePost(@Valid @RequestBody Yng_WireTransfer wireTransfer,@RequestHeader("Authorization") String authorization) throws MessagingException {	
@@ -128,6 +78,7 @@ public class WireTransferController {
 				account.setAvailableMoney(saldo-transactionTemp.getAmount());
 				wireTransfer.setBank(bankDao.findByBankId(wireTransfer.getBank().getBankId()));
 				wireTransfer.setTransaction(transactionDao.save(transactionTemp));
+				wireTransfer.setStatus("toDo");
 				wireTransferDao.save(wireTransfer);
 				accountDao.save(account);
 				try {
@@ -142,10 +93,29 @@ public class WireTransferController {
 			}
 		}else {
 			return "Usuario o contraseña Incorrecta";
-		}
-		
-        
+		}   
     }
 	
-	
+	@RequestMapping("/list/all")
+    public List<Yng_WireTransfer> getAllWireTransfer() { 
+        return wireTransferDao.findByOrderByWireTransferIdDesc();
+    }
+    
+    @RequestMapping("/list/toDo")
+    public List<Yng_WireTransfer> getToDoWireTransfer() { 
+        return wireTransferDao.findByStatusOrderByWireTransferIdDesc("toDo");
+    }
+    
+    @RequestMapping("/list/complete")
+    public List<Yng_WireTransfer> getCompleteWireTransfer() { 
+        return wireTransferDao.findByStatusOrderByWireTransferIdDesc("complete");
+    }
+    @RequestMapping("/update/{wireTransferId}")
+    public String updateWireTransfer(@PathVariable("wireTransferId") Long wireTransferId) {
+    	Yng_WireTransfer wireTransfer = wireTransferDao.findByWireTransferId(wireTransferId);
+    	wireTransfer.setStatus("complete");
+    	wireTransferDao.save(wireTransfer);
+        return "save";
+    }
+    
 }

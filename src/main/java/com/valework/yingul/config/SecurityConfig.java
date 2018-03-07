@@ -44,6 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/error/**/*",
             "/console/**",
             "/signup",
+            "/auth/login",
             //eddy recuerda borrar esto por seguridad
             "/sell/**",
             "/ubication/**",
@@ -61,7 +62,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/confirm/**",
             "/account/**",
             "/bank/**",
-            "/wireTransfer/**"
+            "/wireTransfer/**",
+            "/admin/**"
     };
 
     @Override

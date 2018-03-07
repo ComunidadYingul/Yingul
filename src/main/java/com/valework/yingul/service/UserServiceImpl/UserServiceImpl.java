@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.valework.yingul.dao.RoleDao;
 import com.valework.yingul.dao.UserDao;
+import com.valework.yingul.model.Yng_ItemCategory;
 import com.valework.yingul.model.Yng_User;
+import com.valework.yingul.model.security.Yng_Role;
 import com.valework.yingul.model.security.Yng_UserRole;
 import com.valework.yingul.service.UserService;
 
@@ -111,4 +113,15 @@ public class UserServiceImpl implements UserService{
         userDao.save(user);
         System.out.println(username + " is disabled.");
     }
+
+	public boolean isAdmin(Yng_User user) {
+		Set<Yng_UserRole> listUserRole = user.getUserRoles();
+		Yng_Role admin =roleDao.findByName("ADMIN"); 
+		for (Yng_UserRole st : listUserRole) {
+    		if(st.getRole()==admin) {
+    			return true;
+    		}
+		}
+		return false;
+	}
 }

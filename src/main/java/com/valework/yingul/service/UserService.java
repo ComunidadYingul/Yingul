@@ -28,4 +28,6 @@ public interface UserService {
     void enableUser (String username);
 
     void disableUser (String username);
+    
+    boolean isAdmin (Yng_User user);
 }

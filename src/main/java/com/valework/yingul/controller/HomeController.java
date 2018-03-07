@@ -10,9 +10,11 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,10 +26,13 @@ import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.dao.DepartmentDao;
 import com.valework.yingul.dao.ProvinceDao;
 import com.valework.yingul.dao.RoleDao;
+import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.UbicationDao;
+import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.model.Yng_Account;
 import com.valework.yingul.model.Yng_Business;
 import com.valework.yingul.model.Yng_Person;
+import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.model.security.Yng_UserRole;
@@ -40,34 +45,29 @@ public class HomeController {
 	private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 	@Autowired
 	private UserService userService;
-		
 	@Autowired 
 	private PersonService personService;
-	
 	@Autowired
 	private BusinessService businessService;
-	
 	@Autowired
     private RoleDao roleDao;
-	
 	@Autowired
 	private SmtpMailSender smtpMailSender;
-
 	@Autowired
 	BarrioDao barrioDao;
-	
 	@Autowired 
 	CityDao cityDao;
-	
 	@Autowired 
 	ProvinceDao provinceDao;
-	
 	@Autowired
 	DepartmentDao departmentDao;
 	@Autowired 
 	UbicationDao ubicationDao;
 	@Autowired 
 	AccountDao accountDao;
+	@Autowired 
+	StandardDao standardDao;
+
 	
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
 	@ResponseBody
@@ -172,5 +172,37 @@ public class HomeController {
         return principal.getName().toString();
     }
 	
+	@RequestMapping(value = "/auth/login", method = RequestMethod.POST)
+	@ResponseBody
+    public Yng_User login(@Valid @RequestBody Yng_User user,@RequestHeader("X-API-KEY") String XAPIKEY) throws MessagingException {
+		Yng_Standard api = standardDao.findByKey("ANDROID_API_KEY");
+		if(XAPIKEY.equals(api.getValue())) {
+			Yng_User logged = new Yng_User();
+			if(userService.checkEmailExists(user.getUsername())) {
+				logged= userService.findByEmail(user.getUsername());
+				BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
+				if(logged.getEmail().equals(user.getUsername()) && encoder.matches(user.getPassword(), logged.getPassword())){
+					return logged;
+				}else {
+					return null;
+				}
+			}else {
+				if(userService.checkUsernameExists(user.getUsername())) {
+					logged= userService.findByUsername(user.getUsername());
+					BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
+					if(logged.getUsername().equals(user.getUsername()) && encoder.matches(user.getPassword(), logged.getPassword())){
+						return logged;
+					}else {
+						return null;
+					}
+				}else {
+					return null;
+				}
+			}	
+		}else {
+			return null;
+		}
+		
+    }
 	
 }
