@@ -8,12 +8,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.valework.yingul.dao.CountryDao;
 import com.valework.yingul.dao.ProvinceDao;
 import com.valework.yingul.model.Yng_Ambient;
 import com.valework.yingul.model.Yng_Amenities;
 import com.valework.yingul.model.Yng_Barrio;
 import com.valework.yingul.model.Yng_City;
 import com.valework.yingul.model.Yng_Confort;
+import com.valework.yingul.model.Yng_Country;
 import com.valework.yingul.model.Yng_Equipment;
 import com.valework.yingul.model.Yng_Exterior;
 import com.valework.yingul.model.Yng_Item;
@@ -47,10 +49,22 @@ public class UbicationController {
 	
 	@Autowired
 	private ProvinceDao provinceDao;
+	@Autowired
+	private CountryDao countryDao;
 	@RequestMapping("/province/all")
     public List<Yng_Province> findProvinceList() {
         List<Yng_Province> provinceList = provinceService.findAll();
         return provinceList;
+    }
+    @RequestMapping("/province/{countryId}")
+    public List<Yng_Province> findProvinceListByCountry(@PathVariable("countryId") int countryId) {
+        List<Yng_Province> provinceList = provinceService.findByCounttry(countryId);
+        return provinceList;
+    }
+    @RequestMapping("/country/all")
+    public List<Yng_Country> findCountryList() {
+        List<Yng_Country> countryList = countryDao.findByOrderByNameAsc();
+        return countryList;
     }
     @RequestMapping("/city/{provinceId}")
     public List<Yng_City> findCityListByProvince(@PathVariable("provinceId") int provinceId) {

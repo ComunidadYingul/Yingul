@@ -28,6 +28,8 @@ public class Yng_Ubication {
     private Yng_Department yng_Department;
 	@OneToOne
 	private Yng_Barrio yng_Barrio;
+	@OneToOne
+	private Yng_Country yng_Country;
 	
 	public Long getUbicationId() {
 		return ubicationId;
@@ -101,16 +103,11 @@ public class Yng_Ubication {
 	public void setCodAndreani(String codAndreani) {
 		this.codAndreani = codAndreani;
 	}
-	@Override
-	public String toString() {
-		return "Yng_Ubication [ubicationId=" + ubicationId + ", latitud=" + latitud + ", longitud=" + longitud
-				+ ", street=" + street + ", number=" + number + ", postalCode=" + postalCode + ", aditional="
-				+ aditional + ", codAndreani=" + codAndreani + ", yng_City=" + yng_City + ", yng_Province="
-				+ yng_Province + ", yng_Department=" + yng_Department + ", yng_Barrio=" + yng_Barrio + "]";
+	public Yng_Country getYng_Country() {
+		return yng_Country;
 	}
-
-	
-	
-
+	public void setYng_Country(Yng_Country yng_Country) {
+		this.yng_Country = yng_Country;
+	}
 	
 }

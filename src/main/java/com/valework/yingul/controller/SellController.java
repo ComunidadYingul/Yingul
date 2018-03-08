@@ -17,6 +17,7 @@ import com.valework.yingul.dao.BarrioDao;
 import com.valework.yingul.dao.CategoryDao;
 import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.dao.ConfortDao;
+import com.valework.yingul.dao.CountryDao;
 import com.valework.yingul.dao.DepartmentDao;
 import com.valework.yingul.dao.EquipmentDao;
 import com.valework.yingul.dao.ExteriorDao;
@@ -149,7 +150,8 @@ public class SellController {
 	@Autowired
 	PropertyAmenitiesDao propertiesAmenitiesDao;
 	
-	
+	@Autowired 
+	CountryDao countryDao;
 
 	@Autowired
 	SecurityDao securityDao;
@@ -197,9 +199,10 @@ public class SellController {
 		ubicationTemp.setNumber(serviceTemp.getYng_Item().getYng_Ubication().getNumber());
 		ubicationTemp.setPostalCode(serviceTemp.getYng_Item().getYng_Ubication().getPostalCode());
 		ubicationTemp.setAditional(serviceTemp.getYng_Item().getYng_Ubication().getAditional());
+		ubicationTemp.setYng_Country(countryDao.findByCountryId(serviceTemp.getYng_Item().getYng_Ubication().getYng_Country().getCountryId()));
 		ubicationTemp.setYng_Province(provinceDao.findByProvinceId(serviceTemp.getYng_Item().getYng_Ubication().getYng_Province().getProvinceId()));
 		ubicationTemp.setYng_City(cityDao.findByCityId(serviceTemp.getYng_Item().getYng_Ubication().getYng_City().getCityId()));	
-		ubicationTemp.setYng_Barrio(barrioDao.findByBarrioId(serviceTemp.getYng_Item().getYng_Ubication().getYng_Barrio().getBarrioId()));
+		//ubicationTemp.setYng_Barrio(barrioDao.findByBarrioId(serviceTemp.getYng_Item().getYng_Ubication().getYng_Barrio().getBarrioId()));
         Yng_Ubication ubicationTempo=ubicationDao.save(ubicationTemp);
         itemTemp.setYng_Ubication(ubicationTempo);
 		//para setear el usuario
@@ -315,6 +318,7 @@ public class SellController {
 		ubicationTemp.setNumber(productTemp.getYng_Item().getYng_Ubication().getNumber());
 		ubicationTemp.setPostalCode(productTemp.getYng_Item().getYng_Ubication().getPostalCode());
 		ubicationTemp.setAditional(productTemp.getYng_Item().getYng_Ubication().getAditional());
+		ubicationTemp.setYng_Country(countryDao.findByCountryId(productTemp.getYng_Item().getYng_Ubication().getYng_Country().getCountryId()));
 		ubicationTemp.setYng_Province(provinceDao.findByProvinceId(productTemp.getYng_Item().getYng_Ubication().getYng_Province().getProvinceId()));
 		ubicationTemp.setYng_City(cityDao.findByCityId(productTemp.getYng_Item().getYng_Ubication().getYng_City().getCityId()));	
 		//ubicationTemp.setYng_Barrio(barrioDao.findByBarrioId(productTemp.getYng_Item().getYng_Ubication().getYng_Barrio().getBarrioId()));
@@ -351,18 +355,29 @@ public class SellController {
         	itemCategoryDao.save(s);	    
 		}
         //imagen principal
-		
-		logger.info(image);
-		String extension=image.substring(11,14);
-		if(image.charAt(13)=='e') {
-			extension="jpeg";
+        
+        String extension;
+        String nombre;
+        byte[] bI;
+        logger.info(String.valueOf(image.charAt(0)));
+		if(image.charAt(0)=='s') {
+			temp.setPrincipalImage("sin.jpg");
+			logger.info("si funciono");
 		}
-		String nombre="principal"+temp.getItemId();
-		logger.info(extension);
-		byte[] bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
-		s3Services.uploadFile(nombre,extension, bI);
-		nombre=nombre+"."+extension;   
-		temp.setPrincipalImage(nombre);
+		else {
+			logger.info("no funciono");
+			extension=image.substring(11,14);
+			if(image.charAt(13)=='e') {
+				extension="jpeg";
+			}
+			nombre="principal"+temp.getItemId();
+			logger.info(extension);
+			bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
+			s3Services.uploadFile(nombre,extension, bI);
+			nombre=nombre+"."+extension;   
+			temp.setPrincipalImage(nombre);
+		}
+        
 		temp.setAMotorized(false);
 		temp.setAProduct(true);
 		temp.setAProperty(false);
@@ -440,9 +455,10 @@ public class SellController {
 		ubicationTemp.setNumber(propertyTemp.getYng_Item().getYng_Ubication().getNumber());
 		ubicationTemp.setPostalCode(propertyTemp.getYng_Item().getYng_Ubication().getPostalCode());
 		ubicationTemp.setAditional(propertyTemp.getYng_Item().getYng_Ubication().getAditional());
+		ubicationTemp.setYng_Country(countryDao.findByCountryId(propertyTemp.getYng_Item().getYng_Ubication().getYng_Country().getCountryId()));
 		ubicationTemp.setYng_Province(provinceDao.findByProvinceId(propertyTemp.getYng_Item().getYng_Ubication().getYng_Province().getProvinceId()));
 		ubicationTemp.setYng_City(cityDao.findByCityId(propertyTemp.getYng_Item().getYng_Ubication().getYng_City().getCityId()));	
-		ubicationTemp.setYng_Barrio(barrioDao.findByBarrioId(propertyTemp.getYng_Item().getYng_Ubication().getYng_Barrio().getBarrioId()));
+		//ubicationTemp.setYng_Barrio(barrioDao.findByBarrioId(propertyTemp.getYng_Item().getYng_Ubication().getYng_Barrio().getBarrioId()));
         Yng_Ubication ubicationTempo=ubicationDao.save(ubicationTemp);
         itemTemp.setYng_Ubication(ubicationTempo);
 		//para setear el usuario
@@ -465,17 +481,28 @@ public class SellController {
 		}
         //imagen principal
 		
-		logger.info(image);
-		String extension=image.substring(11,14);
-		if(image.charAt(13)=='e') {
-			extension="jpeg";
+        String extension;
+        String nombre;
+        byte[] bI;
+        logger.info(String.valueOf(image.charAt(0)));
+		if(image.charAt(0)=='s') {
+			temp.setPrincipalImage("sin.jpg");
+			logger.info("si funciono");
 		}
-		String nombre="principal"+temp.getItemId();
-		logger.info(extension);
-		byte[] bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
-		s3Services.uploadFile(nombre,extension, bI);
-		nombre=nombre+"."+extension;   
-		temp.setPrincipalImage(nombre);
+		else {
+			logger.info("no funciono");
+			extension=image.substring(11,14);
+			if(image.charAt(13)=='e') {
+				extension="jpeg";
+			}
+			nombre="principal"+temp.getItemId();
+			logger.info(extension);
+			bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
+			s3Services.uploadFile(nombre,extension, bI);
+			nombre=nombre+"."+extension;   
+			temp.setPrincipalImage(nombre);
+		} 
+		
 		temp.setAMotorized(false);
 		temp.setAProduct(false);
 		temp.setAProperty(true);
@@ -584,6 +611,7 @@ public class SellController {
 		ubicationTemp.setNumber(motorizedTemp.getYng_Item().getYng_Ubication().getNumber());
 		ubicationTemp.setPostalCode(motorizedTemp.getYng_Item().getYng_Ubication().getPostalCode());
 		ubicationTemp.setAditional(motorizedTemp.getYng_Item().getYng_Ubication().getAditional());
+		ubicationTemp.setYng_Country(countryDao.findByCountryId(motorizedTemp.getYng_Item().getYng_Ubication().getYng_Country().getCountryId()));
 		ubicationTemp.setYng_Province(provinceDao.findByProvinceId(motorizedTemp.getYng_Item().getYng_Ubication().getYng_Province().getProvinceId()));
 		ubicationTemp.setYng_City(cityDao.findByCityId(motorizedTemp.getYng_Item().getYng_Ubication().getYng_City().getCityId()));	
 		ubicationTemp.setYng_Barrio(barrioDao.findByBarrioId(motorizedTemp.getYng_Item().getYng_Ubication().getYng_Barrio().getBarrioId()));
@@ -609,17 +637,28 @@ public class SellController {
 		}
         //imagen principal
 		
-		logger.info(image);
-		String extension=image.substring(11,14);
-		if(image.charAt(13)=='e') {
-			extension="jpeg";
+        String extension;
+        String nombre;
+        byte[] bI;
+        logger.info(String.valueOf(image.charAt(0)));
+		if(image.charAt(0)=='s') {
+			temp.setPrincipalImage("sin.jpg");
+			logger.info("si funciono");
 		}
-		String nombre="principal"+temp.getItemId();
-		logger.info(extension);
-		byte[] bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
-		s3Services.uploadFile(nombre,extension, bI);
-		nombre=nombre+"."+extension;   
-		temp.setPrincipalImage(nombre);
+		else {
+			logger.info("no funciono");
+			extension=image.substring(11,14);
+			if(image.charAt(13)=='e') {
+				extension="jpeg";
+			}
+			nombre="principal"+temp.getItemId();
+			logger.info(extension);
+			bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
+			s3Services.uploadFile(nombre,extension, bI);
+			nombre=nombre+"."+extension;   
+			temp.setPrincipalImage(nombre);
+		}
+		
 		temp.setAMotorized(true);
 		temp.setAProduct(false);
 		temp.setAProperty(false);
