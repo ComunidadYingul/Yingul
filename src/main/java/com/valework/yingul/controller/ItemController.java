@@ -366,5 +366,9 @@ public class ItemController {
     	propertyDao.save(prop);
     	return "save";
     }
-    
+    @RequestMapping("/over/{sw}")
+    public List<Yng_Item> findItemsOver(@PathVariable("sw") boolean sw) {
+        List<Yng_Item> itemList = itemDao.findByIsOverOrderByItemIdDesc(sw);
+        return itemList;
+    }
 }

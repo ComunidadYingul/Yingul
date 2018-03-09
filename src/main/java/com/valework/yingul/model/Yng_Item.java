@@ -35,6 +35,9 @@ public class Yng_Item {
 	private boolean isAMotorized;
 	private boolean isAProperty;
 	private boolean isOver;
+	private int dayPublication;
+	private int monthPublication;
+	private int yearPublication;
 	
 	@OneToOne
 	private Yng_Ubication yng_Ubication;
@@ -194,5 +197,30 @@ public class Yng_Item {
 	public void setOver(boolean isOver) {
 		this.isOver = isOver;
 	}
+
+	public int getDayPublication() {
+		return dayPublication;
+	}
+
+	public void setDayPublication(int dayPublication) {
+		this.dayPublication = dayPublication;
+	}
+
+	public int getMonthPublication() {
+		return monthPublication;
+	}
+
+	public void setMonthPublication(int monthPublication) {
+		this.monthPublication = monthPublication;
+	}
+
+	public int getYearPublication() {
+		return yearPublication;
+	}
+
+	public void setYearPublication(int yearPublication) {
+		this.yearPublication = yearPublication;
+	}
+	
 	
 }

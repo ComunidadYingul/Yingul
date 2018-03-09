@@ -131,9 +131,11 @@ public class BuyController {
     	buy.setYng_item(itemTemp);
     	//fin setear el item
    
-    	//para setear el usuario
+    	//para setear el usuario y el vendedor 
     	Yng_User userTemp= userDao.findByUsername(buy.getUser().getUsername());
     	buy.setUser(userTemp);
+    	Yng_User sellerTemp = userDao.findByUsername(itemTemp.getUser().getUsername());
+    	buy.setSeller(sellerTemp);
     	//hasta aqui para el usuario
     	
     	//Autorización de la tarjeta
@@ -284,4 +286,16 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
   	   
   	   return ""+imprimirEtiqueta;
      }
+    @RequestMapping("/getPurchaseByUser/{username}")
+    public List<Yng_Buy> findPurchaseByUser(@PathVariable("username") String username) {
+    	Yng_User yng_User = userDao.findByUsername(username);
+        List<Yng_Buy> buyList = buyDao.findByUserOrderByBuyIdDesc(yng_User);
+        return buyList;
+    }
+    @RequestMapping("/getSalesByUser/{username}")
+    public List<Yng_Buy> findSalesByUser(@PathVariable("username") String username) {
+    	Yng_User yng_User = userDao.findByUsername(username);
+        List<Yng_Buy> buyList = buyDao.findBySellerOrderByBuyIdDesc(yng_User);
+        return buyList;
+    }
 }
