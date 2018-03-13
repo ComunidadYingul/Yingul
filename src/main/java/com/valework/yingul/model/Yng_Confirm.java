@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 @Entity
@@ -36,6 +37,14 @@ public class Yng_Confirm {
 	
 	private int codeConfirm;
 	private String status;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "seller_id")
+    private Yng_User seller;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "buyer_id")
+    private Yng_User buyer;
 	
 	@OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "buy_id")
@@ -188,4 +197,21 @@ public class Yng_Confirm {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
+	public Yng_User getSeller() {
+		return seller;
+	}
+
+	public void setSeller(Yng_User seller) {
+		this.seller = seller;
+	}
+
+	public Yng_User getBuyer() {
+		return buyer;
+	}
+
+	public void setBuyer(Yng_User buyer) {
+		this.buyer = buyer;
+	}
+	
 }

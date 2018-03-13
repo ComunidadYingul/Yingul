@@ -63,4 +63,13 @@ public class CategoryController {
         Yng_Category categoryTemp = categoryDao.findByCategoryId(categoryId);
         return categoryTemp;
     }
+    @RequestMapping("/getTypeCategory/{categoryId}")
+    public String findTypeCategoryById(@PathVariable("categoryId") Long categoryId) {
+        Yng_Category categoryTemp = categoryDao.findByCategoryId(categoryId);
+        while(categoryTemp.getLevel()!=0) {
+        	categoryTemp=categoryDao.findByCategoryId(categoryTemp.getFatherId());
+        }
+        return categoryTemp.getItemType();
+    }
+    
 }

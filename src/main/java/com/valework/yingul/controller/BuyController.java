@@ -227,20 +227,24 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
     	confirm.setSellerConfirm(false);
     	confirm.setCodeConfirm(1000 + (int)(Math.random() * ((9999 - 1000) + 1)));
     	confirm.setStatus("pending");
+    	confirm.setBuyer(buy.getUser());
+    	confirm.setSeller(buy.getSeller());
     	confirm=confirmDao.save(confirm);
     	//modificar los correos para pagos no con tarjeta
 		
 		if(typeEnvio.equals("home")) {
 			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA"," Se realizo la venta del producto :  "+buy.getYng_item().getName()+ "  "+"  Precio:" +buy.getYng_item().getPrice()+ "  " +"    los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección:"+buy.getYng_item().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber()
-					+ "Al Momento de entregar el producto al comprador ingresa a: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones"
-					+ "No entregues el producto sin que tu y el vendedor firmen la entrega no aceptaremos reclamos si la confirmacion no esta firmada por ambas partes"
-					+ "Por tu seguridad no entregues el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
-					+ "Despues de entregar el producto tu comprador tiene 7 dias para observar sus condiciones posterior a eso te daremos mas instrucciones para recoger tu dinero");
-			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible."
-					+ "Al Momento de recibir el producto dile este codigo a tu vendedor: "+confirm.getCodeConfirm()+"si el producto esta en buenas condiciones"
-					+ "No recibas el producto ni des el código si no estas conforme con el producto no aceptaremos reclamos posteriores"
-					+ "Por tu seguridad no recibas el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
-					+ "Despues de recibir el producto tienes 7 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero");
+					+ "<br/> - Al Momento de entregar el producto al comprador ingresa a: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones "
+					+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
+					+ "<br/> - No entregues el producto sin que tu y el vendedor firmen la entrega no aceptaremos reclamos si la confirmacion no esta firmada por ambas partes"
+					+ "<br/> - Por tu seguridad no entregues el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
+					+ "<br/> - Despues de entregar el producto tu comprador tiene 7 dias para observar sus condiciones posterior a eso te daremos mas instrucciones para recoger tu dinero");
+			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" Cumpla las siguientes instrucciones:."
+					+ "<br/> - Al Momento de recibir el producto dile este codigo a tu vendedor: "+confirm.getCodeConfirm()+" si el producto esta en buenas condiciones "
+					+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
+					+ "<br/> - No recibas el producto ni des el código si no estas conforme con el producto no aceptaremos reclamos posteriores"
+					+ "<br/> - Por tu seguridad no recibas el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
+					+ "<br/> - Despues de recibir el producto tienes 7 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero");
 		}
 		else {
 			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","Se realizo la venta del producto :  "+buy.getYng_item().getName() +"  Descripción : "+buy.getYng_item().getDescription()+ "  " +"  Precio: " +buy.getYng_item().getPrice()+"   Costo del envio : " +buy.getShipping().getYng_envio().getTarifa()+  
@@ -290,12 +294,18 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
     public List<Yng_Buy> findPurchaseByUser(@PathVariable("username") String username) {
     	Yng_User yng_User = userDao.findByUsername(username);
         List<Yng_Buy> buyList = buyDao.findByUserOrderByBuyIdDesc(yng_User);
+        for (Yng_Buy s : buyList) {
+        	s.setYng_Payment(null);
+        }
         return buyList;
     }
     @RequestMapping("/getSalesByUser/{username}")
     public List<Yng_Buy> findSalesByUser(@PathVariable("username") String username) {
     	Yng_User yng_User = userDao.findByUsername(username);
         List<Yng_Buy> buyList = buyDao.findBySellerOrderByBuyIdDesc(yng_User);
+        for (Yng_Buy s : buyList) {
+        	s.setYng_Payment(null);
+        }
         return buyList;
     }
 }

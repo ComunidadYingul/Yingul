@@ -13,6 +13,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+
+import org.springframework.beans.factory.annotation.Value;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
@@ -34,6 +37,7 @@ public class Yng_Item {
 	private boolean isAService;
 	private boolean isAMotorized;
 	private boolean isAProperty;
+	@Value("${some.key:false}")
 	private boolean isOver;
 	private int dayPublication;
 	private int monthPublication;
