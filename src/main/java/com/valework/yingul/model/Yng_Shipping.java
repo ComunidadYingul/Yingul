@@ -19,7 +19,9 @@ public class Yng_Shipping {
 	private boolean dhl=false;
 	private boolean fedex=false;
 	private boolean andreani=false;
-	private String shippingStatus;
+	private String shippingStatus="";
+	private String nameContact="";
+	private String phoneContact="";
 	//crear desde dhl hasta shipment de manera manual 
 	
 	
@@ -99,4 +101,30 @@ public class Yng_Shipping {
 		this.yng_Shipment = yng_Shipment;
 	}
 
+	public String getNameContact() {
+		return nameContact;
+	}
+
+	public void setNameContact(String nameContact) {
+		this.nameContact = nameContact;
+	}
+
+	public String getPhoneContact() {
+		return phoneContact;
+	}
+
+	public void setPhoneContact(String phoneContact) {
+		this.phoneContact = phoneContact;
+	}
+
+	@Override
+	public String toString() {
+		return "Yng_Shipping [shippingId=" + shippingId + ", typeShipping=" + typeShipping + ", dhl=" + dhl + ", fedex="
+				+ fedex + ", andreani=" + andreani + ", shippingStatus=" + shippingStatus + ", nameContact="
+				+ nameContact + ", phoneContact=" + phoneContact + ", yng_Quote=" + yng_Quote + ", yng_Shipment="
+				+ yng_Shipment + "]";
+	}
+
+
+	
 }

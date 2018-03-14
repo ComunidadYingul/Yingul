@@ -43,7 +43,7 @@ public class GreetingBatchBean {
 	@Autowired
 	StandardDao standardDao;
 	
-	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
+	@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 6 * * *")//cada dia a las 6 de la mañana
 	public void cronJob() {
 		Date date = new Date();
@@ -80,81 +80,6 @@ public class GreetingBatchBean {
 			}
     	}
 	}
-	/*@Scheduled(cron = "0,55 * * * * *")//para cada 45 s
-	public void con() throws IOException {
-		String urlDomiciliio="https://private-anon-ee29acebcf-efulfillment1.apiary-proxy.com/efulfillment/v1/auth/accesstoken";
-
- 		
- 		URL obj = new URL(urlDomiciliio);
- 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
- 		 //System.out.println("token:"+token.toString());
-			Yng_Standard standard=new Yng_Standard();
-			//standard.setStandardId(standardId);
-			standard=standardDao.findByKey("Client_id");
-			String Client_id=""+standard.getValue();
-			standard=standardDao.findByKey("Client_secret");
-			String Client_secret=""+standard.getValue();
-			org.apache.commons.codec.binary.Base64 decoder = new org.apache.commons.codec.binary.Base64();
-			byte[] decodedBytes = decoder.decode("ZTllZDgyYTgtNDIzNy00MTg1LThlMzYtNDcyNjRhYTllNzE4OmIxZWQxYmZhLTY4OWItNGQ1Yi1iYmYyLTM5ZGRlNjRjY2I2NA==");
-			System.out.println(new String(decodedBytes) + "\n") ;
-			byte[] encodedBytes = org.apache.commons.codec.binary.Base64.encodeBase64((Client_id+":"+Client_secret).getBytes());
-			String base64CIS=new String(encodedBytes);
-			System.out.println("keytokken: " + new String(encodedBytes));
-			byte[] decodedBytes1 = org.apache.commons.codec.binary.Base64.decodeBase64(encodedBytes);
-			System.out.println("decodedBytes: " + new String(decodedBytes1));
- 		// optional default is GET
- 		con.setRequestMethod("GET");
- 		con.setRequestProperty("Accept", "application/json");
- 		con.setRequestProperty("Authorization", "Basic "+base64CIS);
- 		con.setRequestProperty("Content-Type", "application/json");
-
- 		//add request header
- 		//con.setRequestProperty("User-Agent", USER_AGENT);
-
- 		int responseCode = con.getResponseCode();
- 		//System.out.println("\nSending 'GET' request to URL : " + url);
- 		System.out.println("Response Code : " + responseCode);
-
- 		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
- 		String inputLine;
- 		StringBuffer response = new StringBuffer();
-
- 		while ((inputLine = in.readLine()) != null) {
- 			response.append(inputLine);
- 		}
- 		in.close();
-
- 		jsonToken(response.toString());
-		System.out.println("anime");
-	}
-	*/
-	private void jsonToken(String json) {
-        ObjectMapper mapper = new ObjectMapper();
-        AccessTokenDHL token;
-		try {
-			token = mapper.readValue(json, AccessTokenDHL.class);
-			// System.out.println(token.toString());
-			 System.out.println("token:"+token.toString());
-				Yng_Standard standard=new Yng_Standard();
-				//standard.setStandardId(standardId);
-				standard=standardDao.findByKey("access_token");
-				standard.setKey("access_token");
-				standard.setValue(token.getAccess_token());
-				standard.setType("String");
-				standard.setDescription("token dhl");
-				standardDao.save(standard);
-			 //TOKEN=token.getAccess_token();
-			 
-		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}       
-	}
+	
 	
 }

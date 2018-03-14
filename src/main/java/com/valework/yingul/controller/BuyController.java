@@ -31,12 +31,15 @@ import com.valework.yingul.dao.BranchDao;
 import com.valework.yingul.dao.BuyDao;
 import com.valework.yingul.dao.CardDao;
 import com.valework.yingul.dao.CardProviderDao;
+import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.dao.ConfirmDao;
+import com.valework.yingul.dao.DepartmentDao;
 import com.valework.yingul.dao.EnvioDao;
 import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.ListCreditCardDao;
 import com.valework.yingul.dao.PaymentMethodDao;
 import com.valework.yingul.dao.PersonDao;
+import com.valework.yingul.dao.ProvinceDao;
 import com.valework.yingul.dao.QuoteDao;
 import com.valework.yingul.dao.RequestBodyDao;
 import com.valework.yingul.dao.RequestDao;
@@ -45,6 +48,7 @@ import com.valework.yingul.dao.ResponseDao;
 import com.valework.yingul.dao.ResponseHeaderDao;
 import com.valework.yingul.dao.ShipmentDao;
 import com.valework.yingul.dao.ShippingDao;
+import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.logistic.Logistic;
 import com.valework.yingul.model.Yng_Branch;
@@ -65,6 +69,7 @@ import com.valework.yingul.model.Yng_ResponseBody;
 import com.valework.yingul.model.Yng_ResponseHeader;
 import com.valework.yingul.model.Yng_Shipment;
 import com.valework.yingul.model.Yng_Shipping;
+import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.CardService;
 import com.valework.yingul.service.CreditCardProviderService;
@@ -132,6 +137,14 @@ public class BuyController {
 	com.valework.yingul.service.PersonService  personService;
 	@Autowired
 	ProductService 	productService;
+	@Autowired 
+	UbicationDao ubicationDao;
+	@Autowired 
+	ProvinceDao provinceDao;	
+	@Autowired
+	DepartmentDao departmentDao;
+	@Autowired 
+	CityDao cityDao;
 	@RequestMapping("/listCreditCard/all")
     public List<Yng_ListCreditCard> findProvinceList() {
         List<Yng_ListCreditCard> creditCardList = listCreditCardDao.findAll();
@@ -511,4 +524,34 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
   		System.out.println("pro: "+product);
   		return product;	
       }
+    @RequestMapping(value = "/updateUserUbication", method = RequestMethod.POST)
+    @ResponseBody
+    public String updateUserUbication(@Valid @RequestBody Yng_User yng_user) throws MessagingException {	
+    	Yng_User userTemp= userDao.findByUsername(yng_user.getUsername());
+    			Yng_Ubication ubicationTemp = new Yng_Ubication();
+    			ubicationTemp.setStreet(yng_user.getYng_Ubication().getStreet());
+    			ubicationTemp.setNumber(yng_user.getYng_Ubication().getNumber());
+    			ubicationTemp.setPostalCode(yng_user.getYng_Ubication().getPostalCode());
+    			ubicationTemp.setAditional(yng_user.getYng_Ubication().getAditional());
+    			ubicationTemp.setWithinStreets(yng_user.getYng_Ubication().getWithinStreets());
+    			ubicationTemp.setDepartment(yng_user.getYng_Ubication().getDepartment());
+    			ubicationTemp.setYng_Province(provinceDao.findByProvinceId(yng_user.getYng_Ubication().getYng_Province().getProvinceId()));
+    			ubicationTemp.setYng_City(cityDao.findByCityId(yng_user.getYng_Ubication().getYng_City().getCityId()));	
+    			//ubicationTemp.setYng_Barrio(barrioDao.findByBarrioId(productTemp.getYng_Item().getYng_Ubication().getYng_Barrio().getBarrioId()));
+    			
+    			String codAndreani="";
+    			LogisticsController log=new LogisticsController();
+    			try {
+    				codAndreani=log.andreaniSucursales(ubicationTemp.getPostalCode(), "", "");
+    			} catch (Exception e1) {
+    				// TODO Auto-generated catch block
+    				e1.printStackTrace();
+    			}
+    			ubicationTemp.setCodAndreani(""+codAndreani);
+    			Yng_Ubication ubicationTempo= new Yng_Ubication();
+    			ubicationTempo=ubicationDao.save(ubicationTemp);
+    			userTemp.setYng_Ubication(ubicationTempo);
+    	userDao.save(userTemp);
+    	return "save";
+    }
 }

@@ -1517,7 +1517,7 @@ public class LogisticsController {
 			    	  //cot=suc;
 			    	  cot.setUsername(UserNameAndrani);
 			    	  cot.setPassword(PasswordAndreni);   
-			    	  System.out.println(cot.toString());    	  
+			    	  System.out.println("cot212:"+cot.toString());    	  
 					try {
 						sucursal=andreaniSucursalList(cot);
 						System.out.println("sucursal:"+sucursal.toString());

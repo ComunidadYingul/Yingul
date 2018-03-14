@@ -21,6 +21,8 @@ public class Yng_Ubication {
 	private String aditional;
 	private String codAndreani="";
 	private String Country="";
+	private String department="";
+	private String withinStreets="";
 	@OneToOne
     private Yng_City yng_City;
 	@OneToOne
@@ -29,7 +31,10 @@ public class Yng_Ubication {
     private Yng_Department yng_Department;
 	@OneToOne
 	private Yng_Barrio yng_Barrio;
-	
+	public Yng_Ubication() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	public Long getUbicationId() {
 		return ubicationId;
 	}
@@ -72,6 +77,30 @@ public class Yng_Ubication {
 	public void setAditional(String aditional) {
 		this.aditional = aditional;
 	}
+	public String getCodAndreani() {
+		return codAndreani;
+	}
+	public void setCodAndreani(String codAndreani) {
+		this.codAndreani = codAndreani;
+	}
+	public String getCountry() {
+		return Country;
+	}
+	public void setCountry(String country) {
+		Country = country;
+	}
+	public String getDepartment() {
+		return department;
+	}
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+	public String getWithinStreets() {
+		return withinStreets;
+	}
+	public void setWithinStreets(String withinStreets) {
+		this.withinStreets = withinStreets;
+	}
 	public Yng_City getYng_City() {
 		return yng_City;
 	}
@@ -96,29 +125,16 @@ public class Yng_Ubication {
 	public void setYng_Barrio(Yng_Barrio yng_Barrio) {
 		this.yng_Barrio = yng_Barrio;
 	}
-	public String getCodAndreani() {
-		return codAndreani;
-	}
-	public void setCodAndreani(String codAndreani) {
-		this.codAndreani = codAndreani;
-	}
-	public String getCountry() {
-		return Country;
-	}
-	public void setCountry(String country) {
-		Country = country;
-	}
-	public Yng_Ubication() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 	@Override
 	public String toString() {
 		return "Yng_Ubication [ubicationId=" + ubicationId + ", latitud=" + latitud + ", longitud=" + longitud
 				+ ", street=" + street + ", number=" + number + ", postalCode=" + postalCode + ", aditional="
-				+ aditional + ", codAndreani=" + codAndreani + ", Country=" + Country + ", yng_City=" + yng_City
-				+ ", yng_Province=" + yng_Province + ", yng_Department=" + yng_Department + ", yng_Barrio=" + yng_Barrio
-				+ "]";
+				+ aditional + ", codAndreani=" + codAndreani + ", Country=" + Country + ", department=" + department
+				+ ", withinStreets=" + withinStreets + ", yng_City=" + yng_City + ", yng_Province=" + yng_Province
+				+ ", yng_Department=" + yng_Department + ", yng_Barrio=" + yng_Barrio + "]";
 	}
+	
+	
+	
 	
 }
