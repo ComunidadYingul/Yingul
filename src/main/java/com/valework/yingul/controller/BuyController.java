@@ -30,6 +30,7 @@ import com.valework.yingul.dao.CardDao;
 import com.valework.yingul.dao.CardProviderDao;
 import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.dao.ConfirmDao;
+import com.valework.yingul.dao.CountryDao;
 import com.valework.yingul.dao.DepartmentDao;
 import com.valework.yingul.dao.EnvioDao;
 import com.valework.yingul.dao.ItemDao;
@@ -144,7 +145,8 @@ public class BuyController {
 	DepartmentDao departmentDao;
 	@Autowired 
 	CityDao cityDao;
-
+	@Autowired 
+	CountryDao countryDao;
 	@RequestMapping("/listCreditCard/all")
     public List<Yng_ListCreditCard> findProvinceList() {
         List<Yng_ListCreditCard> creditCardList = listCreditCardDao.findAll();
@@ -460,8 +462,9 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
     			ubicationTemp.setDepartment(yng_user.getYng_Ubication().getDepartment());
     			ubicationTemp.setYng_Province(provinceDao.findByProvinceId(yng_user.getYng_Ubication().getYng_Province().getProvinceId()));
     			ubicationTemp.setYng_City(cityDao.findByCityId(yng_user.getYng_Ubication().getYng_City().getCityId()));	
+    			ubicationTemp.setYng_Country(countryDao.findByCountryId(yng_user.getYng_Ubication().getYng_Country().getCountryId()));
     			//ubicationTemp.setYng_Barrio(barrioDao.findByBarrioId(productTemp.getYng_Item().getYng_Ubication().getYng_Barrio().getBarrioId()));
-    			
+    			System.out.println("Ubi:"+ubicationTemp.toString());
     			String codAndreani="";
     			LogisticsController log=new LogisticsController();
     			try {

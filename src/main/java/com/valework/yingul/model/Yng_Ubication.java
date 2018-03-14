@@ -31,6 +31,8 @@ public class Yng_Ubication {
     private Yng_Department yng_Department;
 	@OneToOne
 	private Yng_Barrio yng_Barrio;
+	@OneToOne
+	private Yng_Country yng_Country;
 	public Yng_Ubication() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -125,16 +127,21 @@ public class Yng_Ubication {
 	public void setYng_Barrio(Yng_Barrio yng_Barrio) {
 		this.yng_Barrio = yng_Barrio;
 	}
+	public Yng_Country getYng_Country() {
+		return yng_Country;
+	}
+	public void setYng_Country(Yng_Country yng_Country) {
+		this.yng_Country = yng_Country;
+	}
 	@Override
 	public String toString() {
 		return "Yng_Ubication [ubicationId=" + ubicationId + ", latitud=" + latitud + ", longitud=" + longitud
 				+ ", street=" + street + ", number=" + number + ", postalCode=" + postalCode + ", aditional="
 				+ aditional + ", codAndreani=" + codAndreani + ", Country=" + Country + ", department=" + department
 				+ ", withinStreets=" + withinStreets + ", yng_City=" + yng_City + ", yng_Province=" + yng_Province
-				+ ", yng_Department=" + yng_Department + ", yng_Barrio=" + yng_Barrio + "]";
+				+ ", yng_Department=" + yng_Department + ", yng_Barrio=" + yng_Barrio + ", yng_Country=" + yng_Country
+				+ "]";
 	}
-	
-	
 	
 	
 }

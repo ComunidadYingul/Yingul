@@ -8,6 +8,5 @@ public interface ProvinceDao extends CrudRepository<Yng_Province, Long>{
 	Yng_Province findByName(String name);
 	List<Yng_Province> findAll();
 	Yng_Province findByProvinceId(int provinceId);
-	List<Yng_Province> 	findByOrderByNameAsc();
-	
+	List<Yng_Province> 	findByOrderByNameAsc();	
 }

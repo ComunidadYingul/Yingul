@@ -34,6 +34,7 @@ public class Yng_Item {
 	private boolean isAService;
 	private boolean isAMotorized;
 	private boolean isAProperty;
+	private boolean isOver;
 	
 	@OneToOne
 	private Yng_Ubication yng_Ubication;
@@ -185,4 +186,13 @@ public class Yng_Item {
 	public void setAProperty(boolean isAProperty) {
 		this.isAProperty = isAProperty;
 	}
+
+	public boolean isOver() {
+		return isOver;
+	}
+
+	public void setOver(boolean isOver) {
+		this.isOver = isOver;
+	}
+	
 }
