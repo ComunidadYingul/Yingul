@@ -65,7 +65,6 @@ public class Yng_Standard {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
-
-
 }
+
+

@@ -1,5 +1,12 @@
 package com.valework.yingul.batch;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -7,16 +14,28 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.valework.yingul.dao.AccountDao;
 import com.valework.yingul.dao.CommissionDao;
 import com.valework.yingul.dao.ConfirmDao;
+import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.TransactionDao;
+import com.valework.yingul.logistic.AccessTokenDHL;
 import com.valework.yingul.model.Yng_Account;
 import com.valework.yingul.model.Yng_Commission;
 import com.valework.yingul.model.Yng_Confirm;
+
 import com.valework.yingul.model.Yng_Motorized;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Property;
+
+import com.valework.yingul.model.Yng_Standard;
+
 import com.valework.yingul.model.Yng_Transaction;
 import com.valework.yingul.service.MotorizedService;
 import com.valework.yingul.service.PersonService;
@@ -31,6 +50,7 @@ public class GreetingBatchBean {
 	TransactionDao transactionDao;
 	@Autowired
 	AccountDao accountDao;
+
 	@Autowired 
 	CommissionDao commissionDao;
 	@Autowired
@@ -39,6 +59,10 @@ public class GreetingBatchBean {
 	PropertyService propertyService;
 	@Autowired 
 	MotorizedService motorizedService;
+
+	@Autowired
+	StandardDao standardDao;
+
 	
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	@Scheduled(cron = "0 0 10 * * *")//cada dia a las 6 de la mañana
@@ -132,5 +156,6 @@ public class GreetingBatchBean {
 			}
     	}
 	}
+	
 	
 }

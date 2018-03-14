@@ -71,6 +71,10 @@ public class Yng_AndreaniCotizacion {
 	public void setValorDeclarado(String valorDeclarado) {
 		this.valorDeclarado = valorDeclarado;
 	}
+	public Yng_AndreaniCotizacion() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	
 	
 	

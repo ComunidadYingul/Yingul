@@ -23,36 +23,29 @@ public class EnvioHandler  extends DefaultHandler{
 
     public ArrayList<EnvioResponce> getEnvioResponse() {
         return envioResponse;
-    }
-    
-    
-    
-    
+    }    
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-        buffer.append(ch, start, length);
-        
+        buffer.append(ch, start, length);       
     }
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         switch(qName){
-            case "NumeroAndreani":
+            case "a:NumeroAndreani":
                 enviar.setNumeroAndreani(buffer.toString());
                 break;
-
-       }
-        
+        }        
     }
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
                 switch(qName){
-             case "ConfirmarCompraResult":
+             case "GenerarEnvioConDatosDeImpresionYRemitenteResult":
                    enviar=new EnvioResponce();
                    envioResponse.add(enviar);
                      break;
-            case "NumeroAndreani":
+            case "a:NumeroAndreani":
                 buffer.delete(0, buffer.length());
                 break;
 
