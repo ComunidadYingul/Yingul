@@ -20,7 +20,7 @@ public class Yng_Ubication {
 	private String postalCode;
 	private String aditional;
 	private String codAndreani="";
-	private String Country="";
+	
 	private String department="";
 	private String withinStreets="";
 	@OneToOne
@@ -85,12 +85,7 @@ public class Yng_Ubication {
 	public void setCodAndreani(String codAndreani) {
 		this.codAndreani = codAndreani;
 	}
-	public String getCountry() {
-		return Country;
-	}
-	public void setCountry(String country) {
-		Country = country;
-	}
+	
 	public String getDepartment() {
 		return department;
 	}
@@ -137,11 +132,12 @@ public class Yng_Ubication {
 	public String toString() {
 		return "Yng_Ubication [ubicationId=" + ubicationId + ", latitud=" + latitud + ", longitud=" + longitud
 				+ ", street=" + street + ", number=" + number + ", postalCode=" + postalCode + ", aditional="
-				+ aditional + ", codAndreani=" + codAndreani + ", Country=" + Country + ", department=" + department
-				+ ", withinStreets=" + withinStreets + ", yng_City=" + yng_City + ", yng_Province=" + yng_Province
-				+ ", yng_Department=" + yng_Department + ", yng_Barrio=" + yng_Barrio + ", yng_Country=" + yng_Country
-				+ "]";
+				+ aditional + ", codAndreani=" + codAndreani + ", department=" + department + ", withinStreets="
+				+ withinStreets + ", yng_City=" + yng_City + ", yng_Province=" + yng_Province + ", yng_Department="
+				+ yng_Department + ", yng_Barrio=" + yng_Barrio + ", yng_Country=" + yng_Country + "]";
 	}
+	
+	
 	
 	
 }

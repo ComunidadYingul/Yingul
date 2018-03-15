@@ -169,7 +169,8 @@ public class BuyController {
     public boolean getSwForUser(@PathVariable("username") String username) {
     	Yng_User yng_User = userDao.findByUsername(username);
         System.out.println(yng_User.getPhone());
-        if(yng_User.getPhone()==null) {
+        if(yng_User.getPhone()==null||(yng_User.getDocumentNumber().equals("")||yng_User.getDocumentNumber()==null)) {
+        	
         	return false;
         }
         else {
@@ -417,6 +418,8 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
     public String updateUser(@Valid @RequestBody Yng_User yng_user) throws MessagingException {	
     	Yng_User userTemp= userDao.findByUsername(yng_user.getUsername());
     	userTemp.setPhone(yng_user.getPhone());
+    	userTemp.setDocumentNumber(yng_user.getDocumentNumber());
+    	userTemp.setDocumentType(yng_user.getDocumentType());
     	userDao.save(userTemp);
     	return "save";
     }
@@ -452,7 +455,11 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
     @RequestMapping(value = "/updateUserUbication", method = RequestMethod.POST)
     @ResponseBody
     public String updateUserUbication(@Valid @RequestBody Yng_User yng_user) throws MessagingException {	
+    	
+    	//Yng_User userTemp=new Yng_User();
+    	
     	Yng_User userTemp= userDao.findByUsername(yng_user.getUsername());
+    	System.out.println("userTemp:"+userTemp.getUsername());
     			Yng_Ubication ubicationTemp = new Yng_Ubication();
     			ubicationTemp.setStreet(yng_user.getYng_Ubication().getStreet());
     			ubicationTemp.setNumber(yng_user.getYng_Ubication().getNumber());
@@ -475,6 +482,9 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
     			}
     			ubicationTemp.setCodAndreani(""+codAndreani);
     			Yng_Ubication ubicationTempo= new Yng_Ubication();
+    			System.out.println("ubicationTempo:"+
+    			ubicationTempo.toString()+
+    			" userTemp:"+userTemp.getUsername());
     			ubicationTempo=ubicationDao.save(ubicationTemp);
     			userTemp.setYng_Ubication(ubicationTempo);
     	userDao.save(userTemp);
