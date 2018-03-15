@@ -63,7 +63,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/account/**",
             "/bank/**",
             "/wireTransfer/**",
-            "/admin/**"
+            "/admin/**",
+            "/claim/**"
     };
 
     @Override

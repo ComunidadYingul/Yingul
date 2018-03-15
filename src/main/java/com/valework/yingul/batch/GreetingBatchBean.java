@@ -76,7 +76,7 @@ public class GreetingBatchBean {
     	DateFormat hourdateFormat6 = new SimpleDateFormat("ss");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("confirm");
 		for (Yng_Confirm s : listConfirm) {
-			if(s.getDayEndClaim()<=Integer.parseInt(hourdateFormat.format(date))&&s.getMonthEndClaim()<=Integer.parseInt(hourdateFormat1.format(date))&&s.getYearEndClaim()<=Integer.parseInt(hourdateFormat2.format(date))) {
+			if(s.getDayEndClaim()<Integer.parseInt(hourdateFormat.format(date))&&s.getMonthEndClaim()<Integer.parseInt(hourdateFormat1.format(date))&&s.getYearEndClaim()<Integer.parseInt(hourdateFormat2.format(date))) {
 				s.setStatus("closed");
 				Yng_Account accountTemp= accountDao.findByUser(s.getBuy().getYng_item().getUser());
 				Yng_Transaction transactionTemp = new Yng_Transaction();

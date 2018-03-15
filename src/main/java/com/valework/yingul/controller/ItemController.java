@@ -237,6 +237,40 @@ public class ItemController {
         return listItemTemp;
     }
     
+    @RequestMapping("/ProductsByCategory/{categoryId}")
+    public Set<Yng_Product> findOnlyProductsByCategory(@PathVariable("categoryId") Long categoryId) {
+    	Yng_Category yng_Category = categoryDao.findByCategoryId(categoryId);
+    	List<Yng_ItemCategory> itemCategoryList = itemCategoryService.findByCategory(yng_Category); 
+    	Set<Yng_Item> listItemTemp = new HashSet<>();
+    	Set<Yng_Product> listProductTemp = new HashSet<>();
+    	for (Yng_ItemCategory st : itemCategoryList) {
+    		listItemTemp.add(st.getItem());
+		}
+    	for (Yng_Item st : listItemTemp) {
+    		List<Yng_Product> productList= productService.findByItem(st);
+    		Yng_Product product = productList.get(0);
+    		listProductTemp.add(product);
+		}
+        return listProductTemp;
+    }
+    
+    @RequestMapping("/MotorizedByCategory/{categoryId}")
+    public Set<Yng_Motorized> findOnlyMotorizedByCategory(@PathVariable("categoryId") Long categoryId) {
+    	Yng_Category yng_Category = categoryDao.findByCategoryId(categoryId);
+    	List<Yng_ItemCategory> itemCategoryList = itemCategoryService.findByCategory(yng_Category); 
+    	Set<Yng_Item> listItemTemp = new HashSet<>();
+    	Set<Yng_Motorized> listMotorizedTemp = new HashSet<>();
+    	for (Yng_ItemCategory st : itemCategoryList) {
+    		listItemTemp.add(st.getItem());
+		}
+    	for (Yng_Item st : listItemTemp) {
+    		List<Yng_Motorized> motorizedList= motorizedService.findByItem(st);
+    		Yng_Motorized motorized = motorizedList.get(0);
+    		listMotorizedTemp.add(motorized);
+		}
+        return listMotorizedTemp;
+    }
+    
     @RequestMapping("/service/all")
     public Set<Yng_Item> findServiceList() { 
     	List<Yng_Service> serviceList = serviceDao.findAll();
@@ -248,6 +282,11 @@ public class ItemController {
     	List<Yng_Motorized> motorizedList = motorizedDao.findAll();
         Set<Yng_Item> itemList = itemService.findMotorized(motorizedList);
         return itemList;
+    }
+    @RequestMapping("/onlyMotorized/all")
+    public List<Yng_Motorized> findOnlyMotorizedList() { 
+    	List<Yng_Motorized> motorizedList = motorizedDao.findAll();
+        return motorizedList;
     }
     @RequestMapping("/findMotorized/{categoryId}")
     public Yng_FindMotorized findSearchMotorizedByCategory(@PathVariable("categoryId") Long categoryId) {
@@ -366,5 +405,9 @@ public class ItemController {
     	propertyDao.save(prop);
     	return "save";
     }
-    
+    @RequestMapping("/over/{sw}")
+    public List<Yng_Item> findItemsOver(@PathVariable("sw") boolean sw) {
+        List<Yng_Item> itemList = itemDao.findByIsOverOrderByItemIdDesc(sw);
+        return itemList;
+    }
 }

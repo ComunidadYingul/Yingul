@@ -40,6 +40,10 @@ public class Yng_Buy {
     private Yng_User user;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "seller_id")
+    private Yng_User seller;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "item_id")
     private Yng_Item yng_item;
 	
@@ -233,5 +237,15 @@ public class Yng_Buy {
 	public void setDeviceSessionId(String deviceSessionId) {
 		this.deviceSessionId = deviceSessionId;
 	}
+
+	public Yng_User getSeller() {
+		return seller;
+	}
+
+	public void setSeller(Yng_User seller) {
+		this.seller = seller;
+	}
+	
+	
 	
 }

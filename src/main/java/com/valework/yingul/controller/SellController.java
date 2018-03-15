@@ -1,5 +1,8 @@
 package com.valework.yingul.controller;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import javax.mail.MessagingException;
@@ -184,6 +187,15 @@ public class SellController {
 		String ruta="Servicios";
 		Yng_Service serviceTemp = service;
 		Yng_Item itemTemp=serviceTemp.getYng_Item();
+		//setear fecha de publicacion del item
+		Date date = new Date();
+    	DateFormat hourdateFormat = new SimpleDateFormat("dd");
+    	DateFormat hourdateFormat1 = new SimpleDateFormat("MM");
+    	DateFormat hourdateFormat2 = new SimpleDateFormat("yyyy");
+    	itemTemp.setDayPublication(Integer.parseInt(hourdateFormat.format(date)));
+    	itemTemp.setMonthPublication(Integer.parseInt(hourdateFormat1.format(date)));
+    	itemTemp.setYearPublication(Integer.parseInt(hourdateFormat2.format(date)));
+		//
 		//obtenemos la lista de las imagenes 
 		Set<Yng_ItemImage> itemImage=serviceTemp.getYng_Item().getItemImage();
 		//borramos las imagenes 
@@ -300,7 +312,13 @@ public class SellController {
 
 		Yng_Product productTemp=product;
 		Yng_Item itemTemp=productTemp.getYng_Item();
-		
+		Date date = new Date();
+    	DateFormat hourdateFormat = new SimpleDateFormat("dd");
+    	DateFormat hourdateFormat1 = new SimpleDateFormat("MM");
+    	DateFormat hourdateFormat2 = new SimpleDateFormat("yyyy");
+    	itemTemp.setDayPublication(Integer.parseInt(hourdateFormat.format(date)));
+    	itemTemp.setMonthPublication(Integer.parseInt(hourdateFormat1.format(date)));
+    	itemTemp.setYearPublication(Integer.parseInt(hourdateFormat2.format(date)));
 		   	//Yng_Service serviceTemp = service;
 			//Yng_Item itemTemp=serviceTemp.getYng_Item();
 		//obtenemos la lista de las imagenes 
@@ -432,7 +450,13 @@ public class SellController {
 
 		Yng_Property propertyTemp=property;
 		Yng_Item itemTemp=propertyTemp.getYng_Item();
-		
+		Date date = new Date();
+    	DateFormat hourdateFormat = new SimpleDateFormat("dd");
+    	DateFormat hourdateFormat1 = new SimpleDateFormat("MM");
+    	DateFormat hourdateFormat2 = new SimpleDateFormat("yyyy");
+    	itemTemp.setDayPublication(Integer.parseInt(hourdateFormat.format(date)));
+    	itemTemp.setMonthPublication(Integer.parseInt(hourdateFormat1.format(date)));
+    	itemTemp.setYearPublication(Integer.parseInt(hourdateFormat2.format(date)));
 		   	//Yng_Service serviceTemp = service;
 			//Yng_Item itemTemp=serviceTemp.getYng_Item();
 		//obtenemos la lista de las imagenes 
@@ -593,7 +617,13 @@ public class SellController {
 		
 		
 		Yng_Item itemTemp=motorizedTemp.getYng_Item();
-		
+		Date date = new Date();
+    	DateFormat hourdateFormat = new SimpleDateFormat("dd");
+    	DateFormat hourdateFormat1 = new SimpleDateFormat("MM");
+    	DateFormat hourdateFormat2 = new SimpleDateFormat("yyyy");
+    	itemTemp.setDayPublication(Integer.parseInt(hourdateFormat.format(date)));
+    	itemTemp.setMonthPublication(Integer.parseInt(hourdateFormat1.format(date)));
+    	itemTemp.setYearPublication(Integer.parseInt(hourdateFormat2.format(date)));
 		   	//Yng_Service serviceTemp = service;
 			//Yng_Item itemTemp=serviceTemp.getYng_Item();
 		//obtenemos la lista de las imagenes 

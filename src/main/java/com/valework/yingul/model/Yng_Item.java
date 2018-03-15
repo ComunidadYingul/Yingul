@@ -13,6 +13,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+
+import org.springframework.beans.factory.annotation.Value;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
@@ -34,7 +37,11 @@ public class Yng_Item {
 	private boolean isAService;
 	private boolean isAMotorized;
 	private boolean isAProperty;
+	@Value("${some.key:false}")
 	private boolean isOver;
+	private int dayPublication;
+	private int monthPublication;
+	private int yearPublication;
 	
 	@OneToOne
 	private Yng_Ubication yng_Ubication;
@@ -194,5 +201,30 @@ public class Yng_Item {
 	public void setOver(boolean isOver) {
 		this.isOver = isOver;
 	}
+
+	public int getDayPublication() {
+		return dayPublication;
+	}
+
+	public void setDayPublication(int dayPublication) {
+		this.dayPublication = dayPublication;
+	}
+
+	public int getMonthPublication() {
+		return monthPublication;
+	}
+
+	public void setMonthPublication(int monthPublication) {
+		this.monthPublication = monthPublication;
+	}
+
+	public int getYearPublication() {
+		return yearPublication;
+	}
+
+	public void setYearPublication(int yearPublication) {
+		this.yearPublication = yearPublication;
+	}
+	
 	
 }
