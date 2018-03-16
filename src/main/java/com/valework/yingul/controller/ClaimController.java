@@ -40,6 +40,13 @@ public class ClaimController {
     	confirmTemp.setStatus("claiming");
     	confirmTemp=confirmDao.save(confirmTemp);
     	claim.setConfirm(confirmTemp);
+    	claim.setStatus("pending");
+    	claim.setBack(false);
+    	claim.setChange(false);
+    	claim.setMinuse(false);
+    	claim.setCodeBack(0);
+    	claim.setCodeChange(0);
+    	claim.setCodeMinuse(0);
     	claim=claimDao.save(claim);
     	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(), "RECLAMO URGENTE","Tu comprador hizo un reclamo respecto a :  "+confirmTemp.getBuy().getYng_item().getName() +"  Descripción : "+confirmTemp.getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +confirmTemp.getBuy().getYng_item().getPrice()
     			+ "<br/> La acreditacion de Yingul a tu cuenta se encuentra temporalmente congelada "
@@ -72,6 +79,55 @@ public class ClaimController {
 			}
 		}
 		return null;
+    }
+	
+	@RequestMapping(value = "/updateClaim", method = RequestMethod.POST)
+    @ResponseBody
+    public String updateClaim(@Valid @RequestBody Yng_Claim claim,@RequestHeader("Authorization") String authorization) throws Exception {	
+		String token =new String(org.apache.commons.codec.binary.Base64.decodeBase64(authorization));
+		String[] parts = token.split(":");
+		Yng_Claim claimTemp = claimDao.findByClaimId(claim.getClaimId());
+		Yng_User seller= claimTemp.getConfirm().getSeller();
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
+		if(seller.getUsername().equals(parts[0]) && encoder.matches(parts[1], seller.getPassword())){
+			int codeConfirm=(1000 + (int)(Math.random() * ((9999 - 1000) + 1)));
+			String agreement="";
+			if(claim.isBack()) {
+				claimTemp.setBack(true);
+				claimTemp.setCodeBack(codeConfirm);
+				claimTemp.setChange(false);
+				claimTemp.setCodeChange(0);
+				claimTemp.setMinuse(false);
+				claimTemp.setCodeMinuse(0);
+				agreement="DEVOLUCIÓN DE PRODUCTO DEFECTUOSO";
+			}
+			if(claim.isChange()) {
+				claimTemp.setBack(false);
+				claimTemp.setCodeBack(0);
+				claimTemp.setChange(true);
+				claimTemp.setCodeChange(codeConfirm);
+				claimTemp.setMinuse(false);
+				claimTemp.setCodeMinuse(0);
+				agreement="CAMBIO DE PRODUCTO DEFECTUOSO";
+			}
+			if(claim.isMinuse()) {
+				claimTemp.setBack(false);
+				claimTemp.setCodeBack(0);
+				claimTemp.setChange(false);
+				claimTemp.setCodeChange(0);
+				claimTemp.setMinuse(true);
+				claimTemp.setCodeMinuse(codeConfirm);
+				agreement="MALA MANIPULACIÓN DEL PRODUCTO";
+			}
+		
+			claimTemp=claimDao.save(claimTemp);
+			smtpMailSender.send(claimTemp.getConfirm().getBuy().getUser().getEmail(), "CÓDIGO DE ACUERDO", "Tú y tu vendedor llegaron al cuerdo de "+agreement+"  respecto a :  "+claimTemp.getConfirm().getBuy().getYng_item().getName() +"  Descripción : "+claimTemp.getConfirm().getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +claimTemp.getConfirm().getBuy().getYng_item().getPrice() 
+					+ "<br/> Tu reclamo fue : "+ claim.getClaimText()
+					+ "<br/> Dale este código ("+codeConfirm+")a tu vendedor si estas de acuerdo y espera mas instrucciones antes de devolver el producto a tu vendedor o no podremos devolverte tu dinero");
+			return "save";
+		}else {
+			return "prohibited";
+		}
     }
  
 }
