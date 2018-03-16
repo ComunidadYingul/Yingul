@@ -174,7 +174,13 @@ public class PayUFunds {
 	    		"      \"creditCard\": {\r\n" + 
 	    		"         \"number\": \""+buy.getYng_Payment().getYng_Card().getNumber()+"\",\r\n" + 
 	    		"         \"securityCode\": \""+buy.getYng_Payment().getYng_Card().getSecurityCode()+"\",\r\n" + 
-	    		"         \"expirationDate\": \""+buy.getYng_Payment().getYng_Card().getDueYear()+"/"+buy.getYng_Payment().getYng_Card().getDueMonth()+"\",\r\n" + 
+	    		"         \"expirationDate\": \""+buy.getYng_Payment().getYng_Card().getDueYear()+"/";
+	    		if(buy.getYng_Payment().getYng_Card().getDueMonth()>=10) {
+	    			json+=buy.getYng_Payment().getYng_Card().getDueMonth();
+	    		}else{
+	    			json+="0"+buy.getYng_Payment().getYng_Card().getDueMonth();
+	    		}
+	    		json+="\",\r\n" + 
 	    		"         \"name\": \""+buy.getYng_Payment().getYng_Card().getFullName().trim().toUpperCase()+"\"\r\n" + 
 	    		"      },\r\n" + 
 	    		"      \"extraParameters\": {\r\n" + 
