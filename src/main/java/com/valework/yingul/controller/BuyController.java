@@ -285,6 +285,8 @@ tempShipping.setShippingStatus("imprecionTicket");
 Yng_Branch branchTemp=branchDao.save(buy.getShipping().getYng_Quote().getYng_Branch());
 Yng_Quote quote=new Yng_Quote();
 quote=buy.getShipping().getYng_Quote();
+quote.setYng_Item(buy.getYng_item());
+quote.setYng_User(buy.getUser());
 quote.setYng_Branch(branchTemp);
 
 quote=quoteDao.save(buy.getShipping().getYng_Quote());
@@ -328,9 +330,19 @@ tempShipping.setYng_Quote(quote);
 		System.out.println("res:"+xml);
         yng_Shipment.setRespuesta(xml);
         int i = 0;
-
-
-		link=logistic.andreaniPdfLink("310000003392422");
+System.out.println("numberAndreani  daniel :"+numberAndreani);
+System.out.println(":"+numberAndreani+":");
+        
+        
+		//link=logistic.andreaniPdfLink("310000003497162");
+		link=logistic.andreaniPdfLink(numberAndreani +"");
+        while (link.equals(logistic.errorPDF())) {          //Condición trivial: siempre cierta
+            i++;
+            link=logistic.andreaniPdfLink(numberAndreani +"");
+            System.out.println ("Valor de i: " + i);
+            if (i==9) { break;}
+        } 
+		System.out.println("linkda: "+link);
 		if (link != null) {
             //strResponse = link;
             com.valework.yingul.logistic.ImprimirConstanciaHandler handlerI=new com.valework.yingul.logistic.ImprimirConstanciaHandler();
@@ -341,12 +353,8 @@ tempShipping.setYng_Quote(quote);
                 System.out.println("versione.getNumero2:"+versione.getPdfLinkFile());            
             }
         }
-        while (link.equals(logistic.errorPDF())) {          //Condición trivial: siempre cierta
-            i++;
-            System.out.println ("Valor de i: " + i);
-            if (i==9) { break;}
-        } 
-        System.out.println("link: "+pdf);
+
+        System.out.println("link pdf : "+pdf);
 	} catch (Exception e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

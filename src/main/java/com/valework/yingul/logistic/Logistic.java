@@ -74,8 +74,8 @@ public class Logistic {
 		return ""+outputString;
 		}
 	public String andreaniStringRe(Yng_Person per,Yng_Shipping shi,Yng_Person perItem,Yng_Product pro) {
-		LogisticsController  logisticsController=new LogisticsController();
-		Yng_Product prod = logisticsController.getProductByIdItem(shi.getYng_Quote().getYng_Item().getItemId());
+		//LogisticsController  logisticsController=new LogisticsController();
+		//Yng_Product prod = logisticsController.getProductByIdItem(shi.getYng_Quote().getYng_Item().getItemId());
 		   String confirmarcompra="<soapenv:Envelope \r\n" + 
 		   		"xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" \r\n" + 
 		   		"xmlns:tem=\"http://tempuri.org/\" \r\n" + 
@@ -276,6 +276,7 @@ public class Logistic {
 		   return andreaniHttpConection(andr);
 	   }
     public String andreaniPdfLink(String numberAndreani) throws Exception{
+    	System.out.println("numeroAndre: "+numberAndreani);
  	   AndreaniProperty andr=new AndreaniProperty();
  	   andr.setHost("integraciones.andreani.com:5000");
  	   andr.setSOAPAction("http://www.andreani.com.ar/IImprimirConstancia/ImprimirConstancia");

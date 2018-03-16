@@ -1631,12 +1631,12 @@ public class LogisticsController {
    		return cot;
    	}
       
-      public Yng_Product getProductByIdItem(Long itemId) {
-  		Yng_Item yng_Item = itemDao.findByItemId(itemId);
-  		List<Yng_Product> productList= productService.findByItem(yng_Item);
-  		Yng_Product product = productList.get(0);
-  		System.out.println("pro: "+product);
-  		return product;	
+      public Yng_Product getProductByIdItem(Long itemId) {System.out.println("itemId:"+itemId);
+      Yng_Item yng_Item = itemDao.findByItemId(itemId);
+		List<Yng_Product> productList= productService.findByItem(yng_Item);
+		Yng_Product product = productList.get(0);
+		//System.out.println("pro: "+product);
+		return product;	
       }
       
   	
