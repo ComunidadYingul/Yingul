@@ -55,6 +55,7 @@ import com.valework.yingul.model.Yng_Buy;
 import com.valework.yingul.model.Yng_Card;
 import com.valework.yingul.model.Yng_CardProvider;
 import com.valework.yingul.model.Yng_Confirm;
+import com.valework.yingul.model.Yng_Country;
 import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_ListCreditCard;
 import com.valework.yingul.model.Yng_Payment;
@@ -185,9 +186,12 @@ public class BuyController {
     	Yng_Item itemTemp=itemDao.findByItemId(buy.getYng_item().getItemId());
     	buy.setYng_item(itemTemp);
     	//fin setear el item
-   
     	//para setear el usuario y el vendedor 
     	Yng_User userTemp= userDao.findByUsername(buy.getUser().getUsername());
+    	Yng_Country countrySw=countryDao.findByCountryId(userTemp.getYng_Ubication().getYng_Country().getCountryId());
+		if(!countrySw.isToBuy()) {
+			return "Tu país todavia no esta habilitado para comprar en Yingul estamos trabjando en ello";
+		}
     	buy.setUser(userTemp);
     	Yng_User sellerTemp = userDao.findByUsername(itemTemp.getUser().getUsername());
     	buy.setSeller(sellerTemp);

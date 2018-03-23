@@ -1,8 +1,5 @@
 package com.valework.yingul.controller;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -181,41 +178,6 @@ public class ItemController {
     	Yng_Item yng_Item = itemDao.findByItemId(itemId);
         List<Yng_Query> queryList = queryService.findByItem(yng_Item);
         return queryList;
-    }
-    
-    //etse metodo tambien debe pedir autenticacion basica
-    @RequestMapping(value = "/query", method = RequestMethod.POST)
-	@ResponseBody
-    public String queryItemPost(@Valid @RequestBody Yng_Query query) throws MessagingException {
-    	//filtro de comentarios
-    	String s = query.getQuery();
-    	String[] words = s.split("\\s+");
-    	query.setQuery("");
-    	for (int i = 0; i < words.length; i++) {
-    		if(words[i].indexOf('@')==-1||words[i].indexOf(".com")==-1) {
-    			query.setQuery(query.getQuery()+words[i]+" ");
-    		}
-    	}
-    	Date date = new Date();
-    	DateFormat hourdateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-    	query.setDate(hourdateFormat.format(date));
-    	//fin del filtro de comentarios
-    	query.setYng_Item(itemDao.findByItemId(query.getYng_Item().getItemId()));
-    	query.setUser(userDao.findByUsername(query.getUser().getUsername()));
-    	//filtro para que no se pueda comentar un item propio
-    	if(query.getUser().getUsername()==query.getYng_Item().getUser().getUsername()) {
-    		return "no puedes comentar producos, servicios, inmuebles o vehiculos propios";
-    	}
-    	else {
-			queryDao.save(query);
-		    try {
-				smtpMailSender.send(query.getYng_Item().getUser().getEmail(), "Consulta urgente sobre su Item", query.getUser().getUsername()+" pregunto "+query.getQuery()+" sobre el Item "+query.getYng_Item().getName()+". Puedes responder las consultas en: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/query");
-			} catch (MessagingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return "save";
-    	}
     }
     
     //talvez estos metodos deberan ir en otro controlador 

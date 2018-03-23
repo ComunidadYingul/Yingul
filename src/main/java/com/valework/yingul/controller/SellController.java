@@ -44,6 +44,7 @@ import com.valework.yingul.dao.SoundDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.model.Yng_Commission;
+import com.valework.yingul.model.Yng_Country;
 import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_ItemCategory;
 import com.valework.yingul.model.Yng_ItemImage;
@@ -211,6 +212,10 @@ public class SellController {
 		ubicationTemp.setNumber(serviceTemp.getYng_Item().getYng_Ubication().getNumber());
 		ubicationTemp.setPostalCode(serviceTemp.getYng_Item().getYng_Ubication().getPostalCode());
 		ubicationTemp.setAditional(serviceTemp.getYng_Item().getYng_Ubication().getAditional());
+		Yng_Country countrySw=countryDao.findByCountryId(serviceTemp.getYng_Item().getYng_Ubication().getYng_Country().getCountryId());
+		if(!countrySw.isToSell()) {
+			return "Tu país todavia no esta habilitado para vender en Yingul estamos trabjando en ello";
+		}
 		ubicationTemp.setYng_Country(countryDao.findByCountryId(serviceTemp.getYng_Item().getYng_Ubication().getYng_Country().getCountryId()));
 		ubicationTemp.setYng_Province(provinceDao.findByProvinceId(serviceTemp.getYng_Item().getYng_Ubication().getYng_Province().getProvinceId()));
 		ubicationTemp.setYng_City(cityDao.findByCityId(serviceTemp.getYng_Item().getYng_Ubication().getYng_City().getCityId()));	
@@ -336,7 +341,11 @@ public class SellController {
 		ubicationTemp.setNumber(productTemp.getYng_Item().getYng_Ubication().getNumber());
 		ubicationTemp.setPostalCode(productTemp.getYng_Item().getYng_Ubication().getPostalCode());
 		ubicationTemp.setAditional(productTemp.getYng_Item().getYng_Ubication().getAditional());
-		ubicationTemp.setYng_Country(countryDao.findByCountryId(productTemp.getYng_Item().getYng_Ubication().getYng_Country().getCountryId()));
+		Yng_Country countrySw=countryDao.findByCountryId(productTemp.getYng_Item().getYng_Ubication().getYng_Country().getCountryId());
+		if(!countrySw.isToSell()) {
+			return "Tu país todavia no esta habilitado para vender en Yingul estamos trabjando en ello";
+		}
+		ubicationTemp.setYng_Country(countrySw);
 		ubicationTemp.setYng_Province(provinceDao.findByProvinceId(productTemp.getYng_Item().getYng_Ubication().getYng_Province().getProvinceId()));
 		ubicationTemp.setYng_City(cityDao.findByCityId(productTemp.getYng_Item().getYng_Ubication().getYng_City().getCityId()));	
 		//ubicationTemp.setYng_Barrio(barrioDao.findByBarrioId(productTemp.getYng_Item().getYng_Ubication().getYng_Barrio().getBarrioId()));
@@ -479,6 +488,10 @@ public class SellController {
 		ubicationTemp.setNumber(propertyTemp.getYng_Item().getYng_Ubication().getNumber());
 		ubicationTemp.setPostalCode(propertyTemp.getYng_Item().getYng_Ubication().getPostalCode());
 		ubicationTemp.setAditional(propertyTemp.getYng_Item().getYng_Ubication().getAditional());
+		Yng_Country countrySw=countryDao.findByCountryId(propertyTemp.getYng_Item().getYng_Ubication().getYng_Country().getCountryId());
+		if(!countrySw.isToSell()) {
+			return "Tu país todavia no esta habilitado para vender en Yingul estamos trabjando en ello";
+		}
 		ubicationTemp.setYng_Country(countryDao.findByCountryId(propertyTemp.getYng_Item().getYng_Ubication().getYng_Country().getCountryId()));
 		ubicationTemp.setYng_Province(provinceDao.findByProvinceId(propertyTemp.getYng_Item().getYng_Ubication().getYng_Province().getProvinceId()));
 		ubicationTemp.setYng_City(cityDao.findByCityId(propertyTemp.getYng_Item().getYng_Ubication().getYng_City().getCityId()));	
@@ -641,6 +654,10 @@ public class SellController {
 		ubicationTemp.setNumber(motorizedTemp.getYng_Item().getYng_Ubication().getNumber());
 		ubicationTemp.setPostalCode(motorizedTemp.getYng_Item().getYng_Ubication().getPostalCode());
 		ubicationTemp.setAditional(motorizedTemp.getYng_Item().getYng_Ubication().getAditional());
+		Yng_Country countrySw=countryDao.findByCountryId(motorizedTemp.getYng_Item().getYng_Ubication().getYng_Country().getCountryId());
+		if(!countrySw.isToSell()) {
+			return "Tu país todavia no esta habilitado para vender en Yingul estamos trabjando en ello";
+		}
 		ubicationTemp.setYng_Country(countryDao.findByCountryId(motorizedTemp.getYng_Item().getYng_Ubication().getYng_Country().getCountryId()));
 		ubicationTemp.setYng_Province(provinceDao.findByProvinceId(motorizedTemp.getYng_Item().getYng_Ubication().getYng_Province().getProvinceId()));
 		ubicationTemp.setYng_City(cityDao.findByCityId(motorizedTemp.getYng_Item().getYng_Ubication().getYng_City().getCityId()));	
