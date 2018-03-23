@@ -91,8 +91,8 @@ public class ItemController {
 	ProductDao productDao;
 	@RequestMapping("/itemType/{itemId}")
     public String getItemTypeById(@PathVariable("itemId") Long itemId) {
-		Yng_Item yng_Item = itemDao.findByItemId(itemId);
-		List<Yng_Service> serviceList= serviceService.findByItem(yng_Item);
+		Yng_Item yng_Item = itemDao.findByItemId(itemId);System.out.println("itemId 1 :"+itemId);
+		List<Yng_Service> serviceList= serviceService.findByItem(yng_Item);System.out.println("itemId 1 :"+itemId);
 		List<Yng_Product> productList= productService.findByItem(yng_Item);
 		List<Yng_Motorized> motorizedList= motorizedService.findByItem(yng_Item);
 		List<Yng_Property> propertyList= propertyService.findByItem(yng_Item);
@@ -347,6 +347,16 @@ public class ItemController {
     }
     @RequestMapping("/type/{itemId}")
     public String getTypeItem(@PathVariable("itemId") Long itemId) {
+    	String type="false";
+    	boolean existProd=productService.findByItemIdExist(itemId);
+    	boolean existServ=serviceService.findByItemIdExist(itemId);
+    	boolean existProp=propertyService.findByItemIdExist(itemId);
+    	boolean existMoto=motorizedService.findByItemIdExist(itemId);
+    	if(existProd==true) {type= "Producto";}
+    	if(existServ==true) {type= "Service";}
+    	if(existProp==true) {type= "Inmueble";}
+    	if(existMoto==true) {type= "Vehiculo";}
+    	System.out.println("type");
     	if(this.getProductByIdItemExist(itemId)) {
     		return "Product";
     	}    	
@@ -410,4 +420,26 @@ public class ItemController {
         List<Yng_Item> itemList = itemDao.findByIsOverOrderByItemIdDesc(sw);
         return itemList;
     }
+    @RequestMapping(value = "/service/update", method = RequestMethod.POST)
+   	@ResponseBody
+       public String updateServicePost(@Valid @RequestBody Yng_Service service) throws MessagingException {
+    	Yng_Service serv=new Yng_Service();
+    	serv=service;
+       	Yng_Item yng_Item=serv.getYng_Item();
+       	itemDao.save(yng_Item);    	
+       	serviceDao.save(serv);
+       	return "save";
+       }
+   /* @RequestMapping("/motorized/{itemId}")
+    public Yng_Product findMotorized(@PathVariable("itemId") Long itemId) {
+    	List<Yng_Motorized> motTem=motorizedDao.findByYng_Item(itemId);
+    	System.out.println(motTem.size()+" string: "+motTem.toString());
+    	if(this.getProductByIdItemExist(itemId)) {
+    	Yng_Product yng_Product=this.getProductByIdItem(itemId);
+    	yng_Product.getYng_Item().getUser().setPassword("");
+        return yng_Product;
+    	}
+    	else return null;
+    }*/
+    
 }

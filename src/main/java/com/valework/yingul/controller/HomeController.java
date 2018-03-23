@@ -90,6 +90,7 @@ public class HomeController {
 		LOG.info(user.getUsername());
 		user.setEmail(user.getEmail().trim().toLowerCase());
 		if (userService.checkEmailExists(user.getEmail())) {
+			System.out.println("llego :email exist");
             return "email exist";
         } else {     	
         	Set<Yng_UserRole> userRoles = new HashSet<>();
@@ -109,6 +110,7 @@ public class HomeController {
             accountDao.save(account);
             //
             smtpMailSender.send(user.getEmail(), "Autenticado exitosamente", "Ya esta autenticado su password es:"+password);
+            System.out.println("llego :save");
             return "save";
         }
     }

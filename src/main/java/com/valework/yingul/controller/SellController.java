@@ -223,7 +223,7 @@ public class SellController {
 		userTemp.setPhone2(itemTemp.getUser().getPhone2());
 		userTemp.setWebSite(itemTemp.getUser().getWebSite());
 		userTemp.setYng_Ubication(ubicationTempo);
-		userDao.save(userTemp);
+		userTemp=userDao.save(userTemp);
 		itemTemp.setUser(userTemp);
 		//hasta aqui para el usuario
 		//volvemos la imagen nulo para que no guarde en la base de datos
@@ -359,7 +359,7 @@ public class SellController {
 		//userTemp.setPhone2(itemTemp.getUser().getPhone2());
 		//userTemp.setWebSite(itemTemp.getUser().getWebSite());
 		userTemp.setYng_Ubication(ubicationTempo);// System.out.println(""+ubicationTempo.toString());
-		userDao.save(userTemp);
+		userTemp=userDao.save(userTemp);
 		itemTemp.setUser(userTemp);
 		//hasta aqui para el usuario
 		//volvemos la imagen nulo para que no guarde en la base de datos
@@ -490,7 +490,7 @@ public class SellController {
 		userTemp.setPhone(itemTemp.getUser().getPhone());
 		userTemp.setPhone2(itemTemp.getUser().getPhone2());
 		userTemp.setWebSite(itemTemp.getUser().getWebSite());
-		userDao.save(userTemp);
+		userTemp=userDao.save(userTemp);
 		itemTemp.setUser(userTemp);
 		//hasta aqui para el usuario
 		//volvemos la imagen nulo para que no guarde en la base de datos
@@ -652,7 +652,7 @@ public class SellController {
 		userTemp.setPhone(itemTemp.getUser().getPhone());
 		userTemp.setPhone2(itemTemp.getUser().getPhone2());
 		userTemp.setWebSite(itemTemp.getUser().getWebSite());
-		userDao.save(userTemp);
+		userTemp=userDao.save(userTemp);		
 		itemTemp.setUser(userTemp);
 		//hasta aqui para el usuario
 		//volvemos la imagen nulo para que no guarde en la base de datos

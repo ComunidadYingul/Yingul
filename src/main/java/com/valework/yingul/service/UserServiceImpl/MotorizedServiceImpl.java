@@ -24,4 +24,18 @@ public class MotorizedServiceImpl implements MotorizedService{
         return motorizedList;
 	}
 
+	@Override
+	public boolean findByItemIdExist(Long idItem) {
+		Long itemId=idItem;
+		boolean exist=false;
+		List<Yng_Motorized> listMotorized =motorizedDao.findAll();
+		for (Yng_Motorized m : listMotorized) {
+			Long id=m.getYng_Item().getItemId();
+			if(id.equals(itemId)) {				
+				exist=true;
+			};			
+		}		
+		return exist;
+	}
+
 }

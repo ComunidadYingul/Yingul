@@ -41,9 +41,9 @@ public class Yng_Product {
 	@Column(name="productPaymentMethod")	
 	private String productPaymentMethod;
 	@Column(name="productWarranty")	
-	private String productWarranty;
+	private String productWarranty="";
 	@Column(name="productPagoEnvio")
-	private String productPagoEnvio;
+	private String productPagoEnvio="";
 	private String productPeso="";
 	private String producVolumen="";
 	//private String 

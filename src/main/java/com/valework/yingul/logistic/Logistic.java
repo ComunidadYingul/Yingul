@@ -555,5 +555,90 @@ public class Logistic {
 				"";
 		return ""+XML;
 	}
-	
+	public String andreaniStringShippingStatus() {
+	    	String status="<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:and=\"http://www.andreani.com.ar\" xmlns:req=\"http://www.andreani.com.ar/req\">\r\n" + 
+	    			"   <soap:Header/>\r\n" + 
+	    			"   <soap:Body>\r\n" + 
+	    			"      <and:ObtenerTrazabilidad>\r\n" + 
+	    			"         <!--Optional:-->\r\n" + 
+	    			"         <and:Pieza>\r\n" + 
+	    			"            <req:NroPieza></req:NroPieza>\r\n" + 
+	    			"            <req:NroAndreani>310000003518239</req:NroAndreani>\r\n" + 
+	    			"            <req:CodigoCliente>CL0003750</req:CodigoCliente>\r\n" + 
+	    			"         </and:Pieza>\r\n" + 
+	    			"      </and:ObtenerTrazabilidad>\r\n" + 
+	    			"   </soap:Body>\r\n" + 
+	    			"</soap:Envelope>";
+	    	return ""+status;
+	 }
+	 public String andreaniShippingStatusWSDL(String b) throws MalformedURLException, IOException{
+		 
+		 AndreaniProperty andr=new AndreaniProperty();
+		   andr.setHost("www.e-andreani.com");
+		   andr.setSOAPAction("http://www.andreani.com.ar/IService/ObtenerTrazabilidad");
+		   andr.setWsURL("https://www.e-andreani.com/eAndreaniWS/Service.svc/soap12");
+		   andr.setXmlInput(b);			  
+		   return andreaniHttpConection(andr);
+	 }
+	 public String andreaniSeguimiento() throws MalformedURLException, IOException {
+			//Code to make a webservice HTTP request
+			String responseString = "";
+			String outputString = "";
+			URL url = new URL("https://www.e-andreani.com/eAndreaniWS/Service.svc/soap12");
+			URLConnection connection = url.openConnection();
+			HttpURLConnection httpConn = (HttpURLConnection)connection;
+			ByteArrayOutputStream bout = new ByteArrayOutputStream();
+			String xmlInput = "<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:and=\"http://www.andreani.com.ar\" xmlns:req=\"http://www.andreani.com.ar/req\">\r\n" + 
+					"   <soap:Header/>\r\n" + 
+					"   <soap:Body>\r\n" + 
+					"      <and:ObtenerTrazabilidad>\r\n" + 
+					"         <!--Optional:-->\r\n" + 
+					"         <and:Pieza>\r\n" + 
+					"            <req:NroPieza></req:NroPieza>\r\n" + 
+					"            <req:NroAndreani>310000003518239</req:NroAndreani>\r\n" + 
+					"            <req:CodigoCliente>CL0003750</req:CodigoCliente>\r\n" + 
+					"         </and:Pieza>\r\n" + 
+					"      </and:ObtenerTrazabilidad>\r\n" + 
+					"   </soap:Body>\r\n" + 
+					"</soap:Envelope>";
+			byte[] buffer = new byte[xmlInput.length()];
+			buffer = xmlInput.getBytes();
+			bout.write(buffer);
+			byte[] b = bout.toByteArray();
+			httpConn.setRequestProperty("Content-Length",String.valueOf(b.length));
+			httpConn.setRequestProperty("Accept-Encoding", "gzip,deflate");
+			httpConn.setRequestProperty("Content-Type", "text/xml;charset=UTF-8");
+			httpConn.setRequestProperty("action", "http://www.andreani.com.ar/IService/ObtenerTrazabilidad");
+			httpConn.setRequestProperty("Host","www.e-andreani.com");
+			httpConn.setRequestProperty("Connection", "Keep-Alive");
+			httpConn.setRequestMethod("POST");
+			httpConn.setDoOutput(true);
+			httpConn.setDoInput(true);
+			OutputStream out = httpConn.getOutputStream();
+			//Write the content of the request to the outputstream of the HTTP Connection.
+			out.write(b);
+			out.close();
+			//Ready with sending the request.
+
+			//Read the response.
+			InputStreamReader isr = null;
+			if (httpConn.getResponseCode() == 200) {
+			  isr = new InputStreamReader(httpConn.getInputStream());
+			} else {
+			  isr = new InputStreamReader(httpConn.getErrorStream());
+			}
+
+			BufferedReader in = new BufferedReader(isr);
+
+			//Write the SOAP message response to a String.
+			int a=0;
+			while ((responseString = in.readLine()) != null) {
+				if(a>0) {
+					outputString = outputString + responseString;
+				}	a++;	
+			System.out.println("outputString:"+responseString);
+			}
+			System.out.println("outputString1 :"+outputString);
+			return ""+outputString;
+			}
 }

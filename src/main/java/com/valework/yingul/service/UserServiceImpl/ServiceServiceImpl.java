@@ -58,4 +58,16 @@ public class ServiceServiceImpl implements ServiceService{
         return serviceList;
 	}
 
+	@Override
+	public boolean findByItemIdExist(Long idItem) {
+		boolean exist=false;
+		
+		List<Yng_Service> serviseList=serviceDao.findAll();
+		for (Yng_Service s : serviseList) {
+			Long id=s.getYng_Item().getItemId();
+			if(id==idItem) exist=true;
+		}
+		return exist;
+	}
+
 }

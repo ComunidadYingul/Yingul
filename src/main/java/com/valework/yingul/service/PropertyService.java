@@ -6,4 +6,5 @@ import com.valework.yingul.model.Yng_Property;
 
 public interface PropertyService {
 	List<Yng_Property> findByItem(Yng_Item yng_item);
+	boolean findByItemIdExist(Long idItem);
 }

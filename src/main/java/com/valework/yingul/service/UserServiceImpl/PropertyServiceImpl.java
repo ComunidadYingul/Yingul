@@ -23,4 +23,18 @@ public class PropertyServiceImpl implements PropertyService{
                 .collect(Collectors.toList());
         return propertyList;
 	}
+
+	@Override
+	public boolean findByItemIdExist(Long idItem) {
+		Long itemId=idItem;
+		boolean exist=false;
+		List<Yng_Property> pro=propertyDao.findAll();
+		for (Yng_Property p : pro) {
+			Long id=p.getYng_Item().getItemId();
+			if(id.equals(itemId)) {				
+				exist=true;
+			};	
+		}
+		return exist;
+	}
 }
