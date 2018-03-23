@@ -18,7 +18,8 @@ public class Yng_Country {
 	private int countryId;
 	private String name;
 	private String zip;
-	
+	private boolean toBuy;
+	private boolean toSell;
 	public Yng_Country() {
 	}
 
@@ -44,6 +45,22 @@ public class Yng_Country {
 
 	public void setZip(String zip) {
 		this.zip = zip;
+	}
+
+	public boolean isToBuy() {
+		return toBuy;
+	}
+
+	public void setToBuy(boolean toBuy) {
+		this.toBuy = toBuy;
+	}
+
+	public boolean isToSell() {
+		return toSell;
+	}
+
+	public void setToSell(boolean toSell) {
+		this.toSell = toSell;
 	}
 	
 }

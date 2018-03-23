@@ -65,7 +65,7 @@ public class GreetingBatchBean {
 
 	
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
-	@Scheduled(cron = "0 0 10 * * *")//cada dia a las 6 de la mañana
+	@Scheduled(cron = "0 0 6 * * *")//cada dia a las 6 de la mañana
 	public void cronJob() {
 		Date date = new Date();
     	DateFormat hourdateFormat = new SimpleDateFormat("dd");

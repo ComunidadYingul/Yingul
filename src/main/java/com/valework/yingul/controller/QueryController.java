@@ -7,13 +7,16 @@ import java.util.List;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.valework.yingul.SmtpMailSender;
+import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.QueryDao;
 import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.model.Yng_Query;
@@ -31,6 +34,45 @@ public class QueryController {
 	QueryDao queryDao;
 	@Autowired
 	QueryService queryService;
+	@Autowired
+	ItemDao itemDao;
+	
+	@RequestMapping(value = "/create", method = RequestMethod.POST)
+	@ResponseBody
+    public String createQuery(@Valid @RequestBody Yng_Query query) throws MessagingException {
+    	//filtro de comentarios
+    	String s = query.getQuery();
+    	String[] words = s.split("\\s+");
+    	query.setQuery("");
+    	for (int i = 0; i < words.length; i++) {
+    		if(words[i].indexOf('@')==-1||words[i].indexOf(".com")==-1) {
+    			query.setQuery(query.getQuery()+words[i]+" ");
+    		}
+    	}
+    	Date date = new Date();
+    	DateFormat hourdateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    	query.setDate(hourdateFormat.format(date));
+    	//fin del filtro de comentarios
+    	query.setYng_Item(itemDao.findByItemId(query.getYng_Item().getItemId()));
+    	query.setUser(userDao.findByUsername(query.getUser().getUsername()));
+    	query.setSeller(userDao.findByUsername(query.getYng_Item().getUser().getUsername()));
+    	query.setStatus("pending");
+    	//filtro para que no se pueda comentar un item propio
+    	if(query.getUser().getUsername()==query.getYng_Item().getUser().getUsername()) {
+    		return "no puedes comentar producos, servicios, inmuebles o vehiculos propios";
+    	}
+    	else {
+			queryDao.save(query);
+		    try {
+				smtpMailSender.send(query.getYng_Item().getUser().getEmail(), "Consulta urgente sobre su Item", query.getUser().getUsername()+" pregunto "+query.getQuery()+" sobre el Item "+query.getYng_Item().getName()+". Puedes responder las consultas en: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/userFront/sales/query");
+			} catch (MessagingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return "save";
+    	}
+    }
+	
 	
 	@RequestMapping("/Number/{username}")
     public int numberQueryByUser(@PathVariable("username") String username) {
@@ -38,10 +80,28 @@ public class QueryController {
         List<Yng_Query> queryList = queryService.findByUser(yng_User);
         return queryList.size();
     }
-	@RequestMapping("/Queries/{username}")
-    public List<Yng_Query> findQueriesByUser(@PathVariable("username") String username) {
+    @RequestMapping("/queryBySeller/{username}")
+    public List<Yng_Query> findQueriesBySeller(@PathVariable("username") String username) {
     	Yng_User yng_User = userDao.findByUsername(username);
-        List<Yng_Query> queryList = queryService.findByUser(yng_User);
+        List<Yng_Query> queryList = queryDao.findBySellerOrderByQueryId(yng_User);
+        return queryList;
+    }
+    @RequestMapping("/queryByBuyer/{username}")
+    public List<Yng_Query> findQueriesByBuyer(@PathVariable("username") String username) {
+    	Yng_User yng_User = userDao.findByUsername(username);
+        List<Yng_Query> queryList = queryDao.findByUserOrderByQueryId(yng_User);
+        return queryList;
+    }
+    @RequestMapping("/queryBySellerAndStatus/{username}/{status}")
+    public List<Yng_Query> findQueriesBySellerAndStatus(@PathVariable("username") String username,@PathVariable("status") String status) {
+    	Yng_User yng_User = userDao.findByUsername(username);
+        List<Yng_Query> queryList = queryDao.findBySellerAndStatusOrderByQueryId(yng_User,status);
+        return queryList;
+    }
+    @RequestMapping("/queryByBuyerAndStatus/{username}/{status}")
+    public List<Yng_Query> findQueriesByBuyerAndStatus(@PathVariable("username") String username,@PathVariable("status") String status) {
+    	Yng_User yng_User = userDao.findByUsername(username);
+        List<Yng_Query> queryList = queryDao.findByUserAndStatusOrderByQueryId(yng_User,status);
         return queryList;
     }
     //este metodo tambien deberia pedir autenticacion basica o algun metodo de seguridad
@@ -64,8 +124,9 @@ public class QueryController {
     	Date date = new Date();
     	DateFormat hourdateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     	queryTemp.setDate(hourdateFormat.format(date));
+    	queryTemp.setStatus("responded");
     	try {
-			smtpMailSender.send(queryTemp.getUser().getEmail(), "Respuesta sobre "+queryTemp.getYng_Item().getName(), queryTemp.getYng_Item().getUser().getUsername()+" respondio!!! sobre" +queryTemp.getYng_Item().getName()+". Puedes ver la repuesta en: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/itemDetail/"+queryTemp.getYng_Item().getItemId());
+			smtpMailSender.send(queryTemp.getUser().getEmail(), "Respuesta sobre "+queryTemp.getYng_Item().getName(), queryTemp.getYng_Item().getUser().getUsername()+" respondio!!! sobre" +queryTemp.getYng_Item().getName()+". Puedes ver la repuesta en: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/itemDetail/"+queryTemp.getYng_Item().getItemId()+" o ver todas las respuestas en http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/userFront/purchases/query");
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -73,6 +134,22 @@ public class QueryController {
     	//fin de la fecha de respuesta
     	queryDao.save(queryTemp);
 		return "save";
+    }
+    @RequestMapping("/delete/{queryId}")
+    public String deleteQuery(@PathVariable("queryId") Long queryId,@RequestHeader("Authorization") String authorization) {
+		Yng_Query query=queryDao.findByQueryId(queryId);
+		String token =new String(org.apache.commons.codec.binary.Base64.decodeBase64(authorization));
+		String[] parts = token.split(":");
+		Yng_User yng_User = query.getSeller();
+		Yng_User yng_User1 = query.getUser();
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();  
+		if((yng_User.getUsername().equals(parts[0]) && encoder.matches(parts[1], yng_User.getPassword()))||(yng_User1.getUsername().equals(parts[0]) && encoder.matches(parts[1], yng_User1.getPassword()))){
+			queryDao.delete(query);
+			return "save";
+		}
+		else {
+			return "algo salio mal vuelve a intentarlo";
+		}
     }
 
 }
