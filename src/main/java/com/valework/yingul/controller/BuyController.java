@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.valework.yingul.PayUFunds;
 import org.testng.Assert;
 import org.xml.sax.InputSource;
@@ -49,6 +50,7 @@ import com.valework.yingul.dao.ShipmentDao;
 import com.valework.yingul.dao.ShippingDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
+import com.valework.yingul.logistic.GetStateSend;
 import com.valework.yingul.logistic.Logistic;
 import com.valework.yingul.model.Yng_Branch;
 import com.valework.yingul.model.Yng_Buy;
@@ -70,6 +72,7 @@ import com.valework.yingul.model.Yng_ResponseBody;
 import com.valework.yingul.model.Yng_ResponseHeader;
 import com.valework.yingul.model.Yng_Shipment;
 import com.valework.yingul.model.Yng_Shipping;
+import com.valework.yingul.model.Yng_StateShipping;
 import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.CardService;
@@ -528,5 +531,18 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
         }
         return buyList;
 
+    }
+    @RequestMapping("/getStateBuy/{codnumber}")
+    public Yng_StateShipping getCodState(@PathVariable("codnumber") String codnumber) {
+    	Yng_StateShipping stateShipping=new Yng_StateShipping();
+    	GetStateSend getState = new GetStateSend();
+    	try {
+    		stateShipping=getState.sendState(codnumber);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	    	
+        return stateShipping;
     }
 }
