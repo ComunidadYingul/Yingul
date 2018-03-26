@@ -173,7 +173,7 @@ public class BuyController {
     public boolean getSwForUser(@PathVariable("username") String username) {
     	Yng_User yng_User = userDao.findByUsername(username);
         System.out.println(yng_User.getPhone());
-        if(yng_User.getPhone()==null||(yng_User.getDocumentNumber().equals("")||yng_User.getDocumentNumber()==null)) {
+        if(yng_User.getPhone()==null||(yng_User.getDocumentNumber()==null)) {
         	
         	return false;
         }
@@ -205,9 +205,11 @@ public class BuyController {
     	//
     	if(autorized==null) {
     		return "problemCard";
+    	}else {
+    		buy.setYng_Payment(paymentDao.save(autorized));
     	}
     	
-		buy.setYng_Payment(paymentDao.save(autorized));
+		
     	//fin del metodo de pago
     	Date time = new Date();
     	DateFormat hourdateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -218,7 +220,7 @@ String typeEnvio=buy.getShipping().getTypeShipping();
 if(buy.getShipping().getTypeShipping().equals("home")) {
 //buy.setShipping();
 //buy.getShipping().setYng_envio(null);
-buy.setShipping(shippingDao.save(buy.getShipping()));
+buy.setShipping(null);
 
 }
 else {

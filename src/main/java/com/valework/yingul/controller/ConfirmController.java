@@ -62,7 +62,7 @@ public class ConfirmController {
     	List<Yng_Confirm> listConfirm = confirmDao.findByBuyerAndStatusOrderByConfirmIdDesc(yng_User,"confirm");
     	Set<Yng_Confirm> setConfirm = new HashSet<>();
     	for (Yng_Confirm s : listConfirm) {
-			if(s.getDayEndClaim()>=Integer.parseInt(hourdateFormat.format(date))&&s.getMonthEndClaim()>=Integer.parseInt(hourdateFormat1.format(date))&&s.getYearEndClaim()>=Integer.parseInt(hourdateFormat2.format(date))) {
+			if(s.getDayEndClaim()<=Integer.parseInt(hourdateFormat.format(date))&&s.getMonthEndClaim()<=Integer.parseInt(hourdateFormat1.format(date))&&s.getYearEndClaim()<=Integer.parseInt(hourdateFormat2.format(date))) {
 				setConfirm.add(s);
 			}
     	}
