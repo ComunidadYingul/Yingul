@@ -213,5 +213,17 @@ public class Yng_Confirm {
 	public void setBuyer(Yng_User buyer) {
 		this.buyer = buyer;
 	}
+
+	@Override
+	public String toString() {
+		return "Yng_Confirm [confirmId=" + confirmId + ", sellerConfirm=" + sellerConfirm + ", daySellerConfirm="
+				+ daySellerConfirm + ", monthSellerConfirm=" + monthSellerConfirm + ", yearSellerConfirm="
+				+ yearSellerConfirm + ", buyerConfirm=" + buyerConfirm + ", dayBuyerConfirm=" + dayBuyerConfirm
+				+ ", monthBuyerConfirm=" + monthBuyerConfirm + ", yearBuyerConfirm=" + yearBuyerConfirm
+				+ ", dayInitClaim=" + dayInitClaim + ", monthInitClaim=" + monthInitClaim + ", yearInitiClaim="
+				+ yearInitiClaim + ", dayEndClaim=" + dayEndClaim + ", monthEndClaim=" + monthEndClaim
+				+ ", yearEndClaim=" + yearEndClaim + ", codeConfirm=" + codeConfirm + ", status=" + status + ", seller="
+				+ seller + ", buyer=" + buyer + ", buy=" + buy + "]";
+	}
 	
 }

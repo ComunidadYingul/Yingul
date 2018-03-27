@@ -2,7 +2,9 @@ package com.valework.yingul.controller;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,8 +22,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.ConfirmDao;
+import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.UserDao;
+import com.valework.yingul.logistic.GetStateSend;
 import com.valework.yingul.model.Yng_Confirm;
+import com.valework.yingul.model.Yng_StateShipping;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.ConfirmService;
 
@@ -36,6 +41,8 @@ public class ConfirmController {
 	ConfirmService confirmService;
 	@Autowired
 	UserDao userDao;
+	@Autowired
+	StandardDao standarDao;
 	
     @RequestMapping("/getConfirmForId/{confirmId}")
     public Yng_Confirm findConfirmForId(@PathVariable("confirmId") Long confirmId) {
@@ -108,4 +115,121 @@ public class ConfirmController {
     		return "el codigo es incorrecto!!!";
     	}
     }
+    @RequestMapping("/findNumber")
+    public String findNumber() {
+    	
+    	Calendar fechaInicial = null; 
+    	Calendar fechaFinal = null;
+    	 int diffDays= 0;
+    	  //mientras la fecha inicial sea menor o igual que la fecha final se cuentan los dias
+    	  while (fechaInicial.before(fechaFinal) || fechaInicial.equals(fechaFinal)) {
+
+    	  //si el dia de la semana de la fecha minima es diferente de sabado o domingo
+    	  if (fechaInicial.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY || fechaInicial.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY) {
+    	   //se aumentan los días de diferencia entre min y max
+    	   diffDays++;
+    	   }
+    	  //se suma 1 dia para hacer la validación del siguiente dia.
+    	  fechaInicial.add(Calendar.DATE, 1);
+    	  }
+    	//return diffDays;
+    	
+    	return "save";
+    }
+    @RequestMapping(value = "/updateConfirmApi", method = RequestMethod.POST)
+   	@ResponseBody
+       public String queryItemPostApi(@Valid @RequestBody Yng_Confirm confirm) throws MessagingException {
+       	Yng_Confirm confirmTemp=confirmDao.findByConfirmId(confirm.getConfirmId());
+       	/*******************************************************************************/
+       	//codeConfirmAndreani
+       	String confirmStateDao=standarDao.findByKey("codeConfirmAndreani").getValue();
+       	//System.out.println("confirmTemp:"+confirmTemp.toString()+" value:"+);
+       	Yng_StateShipping stateShipping=new Yng_StateShipping();
+    	GetStateSend getState = new GetStateSend();
+    	String confirmState=confirmTemp.getBuy().getShipping().getYng_Shipment().getShipmentCod();
+    	String stateApi ="";
+    	try {
+    		stateShipping=getState.sendState(""+confirmState);
+    		stateApi=stateShipping.getEstado();
+    		System.out.println("state:"+stateApi+":"+confirmStateDao);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}       	 
+       	 /**************************************/
+       	if(confirmStateDao.equals(stateApi)) {
+       		confirmTemp.setBuyerConfirm(true);
+       		confirmTemp.setSellerConfirm(true);
+       		Date date = new Date();
+           	DateFormat hourdateFormat = new SimpleDateFormat("dd");
+           	DateFormat hourdateFormat1 = new SimpleDateFormat("MM");
+           	DateFormat hourdateFormat2 = new SimpleDateFormat("yyyy");
+           	
+           	int dd;
+            dd=Integer.parseInt(hourdateFormat.format(date));
+            int mm;
+            mm=Integer.parseInt(hourdateFormat1.format(date));
+            int yy;
+            yy=Integer.parseInt(hourdateFormat2.format(date));
+            GregorianCalendar calendar = new GregorianCalendar(yy, mm-1, dd);
+            //GregorianCalendar calendar = new GregorianCalendar(2018, 12-1, 9);
+            DateTime seni = new DateTime( date );
+            DateTime endSend = null;
+            //int i = calendar.get(Calendar.DAY_OF_WEEK);
+            String Valor_dia = null;
+             int diaSemana = calendar.get(Calendar.DAY_OF_WEEK);
+                 if (diaSemana == 1) {
+                Valor_dia = "Domingo";
+                endSend= seni.plusDays( 4 );
+                } else if (diaSemana == 2) {
+                Valor_dia = "Lunes";
+                endSend= seni.plusDays( 4 );
+                } else if (diaSemana == 3) {
+                Valor_dia = "Martes";
+                endSend= seni.plusDays( 6 );
+                } else if (diaSemana == 4) {
+                Valor_dia = "Miercoles";
+                endSend= seni.plusDays( 6 );
+                } else if (diaSemana == 5) {
+                Valor_dia = "Jueves";
+                endSend= seni.plusDays( 6 );
+                } else if (diaSemana == 6) {
+                Valor_dia = "Viernes";
+                endSend= seni.plusDays( 6 );
+                } else if (diaSemana == 7) {
+                Valor_dia = "Sabado";
+                endSend= seni.plusDays( 5 );
+                }
+                System.out.println("dayOfTheWeek:"+Valor_dia);
+                
+                DateTime now = new DateTime( endSend );
+               	DateTime endClaim = now.plusDays( 7 );
+           	confirmTemp.setDaySellerConfirm(Integer.parseInt(hourdateFormat.format(date)));
+           	confirmTemp.setMonthSellerConfirm(Integer.parseInt(hourdateFormat1.format(date)));
+           	confirmTemp.setYearSellerConfirm(Integer.parseInt(hourdateFormat2.format(date)));
+           	
+           	
+           	confirmTemp.setDayBuyerConfirm(Integer.parseInt(hourdateFormat.format(endSend.toDate())));           	
+           	confirmTemp.setMonthBuyerConfirm(Integer.parseInt(hourdateFormat1.format(endSend.toDate())));           	
+           	confirmTemp.setYearBuyerConfirm(Integer.parseInt(hourdateFormat2.format(endSend.toDate())));
+           	
+           	confirmTemp.setDayInitClaim(Integer.parseInt(hourdateFormat.format(endSend.toDate())));
+           	confirmTemp.setMonthInitClaim(Integer.parseInt(hourdateFormat1.format(endSend.toDate())));
+           	confirmTemp.setYearInitiClaim(Integer.parseInt(hourdateFormat2.format(endSend.toDate())));
+           	
+           	confirmTemp.setDayEndClaim(Integer.parseInt(hourdateFormat.format(endClaim.toDate())));
+           	confirmTemp.setMonthEndClaim(Integer.parseInt(hourdateFormat1.format(endClaim.toDate())));
+           	confirmTemp.setYearEndClaim(Integer.parseInt(hourdateFormat2.format(endClaim.toDate())));
+           	confirmTemp.setStatus("confirm");
+           	confirmDao.save(confirmTemp);
+           	System.out.println("Eddy:"+confirmTemp.getBuy().getYng_item().getUser().getEmail());
+           	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(), "CONFIRMACIÓN DE ENTREGA EXITOSA","Se realizo la confirmacion de la entrega del producto :  "+confirmTemp.getBuy().getYng_item().getName() +"  Descripción : "+confirmTemp.getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +confirmTemp.getBuy().getYng_item().getPrice()
+           			+ "<br/> --Si tu comprador no tiene ninguna observacion del producto en 7 días podras recoger tu dinero ingresando a : http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/frontYingulPay");
+   			smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "CONFIRMACIÓN DE RECEPCIÓN EXITOSA", "Se realizo la confirmacion de la entrega del producto : "+confirmTemp.getBuy().getQuantity()+" "+confirmTemp.getBuy().getYng_item().getName()+" a:"+confirmTemp.getBuy().getCost()
+   					+ "<br/> --Tiene 7 días de garantia con Yingul para realizar alguna observación ingrese a: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/userFront/purchases despues de ese lapso no se aceptaran reclamos");
+       		return "save";
+       	}else {
+       		return "el codigo es incorrecto!!!";
+       	}
+       }
 }

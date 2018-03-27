@@ -245,6 +245,21 @@ public class Yng_Buy {
 	public void setSeller(Yng_User seller) {
 		this.seller = seller;
 	}
+
+	@Override
+	public String toString() {
+		return "Yng_Buy [buyId=" + buyId + ", cost=" + cost + ", shippingCost=" + shippingCost + ", itemCost="
+				+ itemCost + ", money=" + money + ", quantity=" + quantity + ", ip=" + ip + ", org=" + org + ", lat="
+				+ lat + ", lon=" + lon + ", city=" + city + ", country=" + country + ", countryCode=" + countryCode
+				+ ", regionName=" + regionName + ", zip=" + zip + ", time=" + time + ", userAgent=" + userAgent
+				+ ", cookie=" + cookie + ", deviceSessionId=" + deviceSessionId + ", user=" + user + ", seller="
+				+ seller + ", yng_item=" + yng_item + ", yng_Payment=" + yng_Payment + ", shipping=" + shipping + "]";
+	}
+
+	public Yng_Buy() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	
 	
 	

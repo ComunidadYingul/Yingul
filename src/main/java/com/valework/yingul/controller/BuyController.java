@@ -218,8 +218,9 @@ String typeEnvio=buy.getShipping().getTypeShipping();
 if(buy.getShipping().getTypeShipping().equals("home")) {
 //buy.setShipping();
 //buy.getShipping().setYng_envio(null);
-buy.setShipping(shippingDao.save(buy.getShipping()));
-
+//buy.setShipping(shippingDao.save(buy.getShipping()));
+	Yng_Shipping shipping=null;
+	buy.setShipping(shipping);
 }
 else {
 /*com.valework.yingul.model.Yng_Envio tempEnvio=buy.getShipping().getYng_envio();
@@ -347,7 +348,7 @@ System.out.println(":"+numberAndreani+":");
             i++;
             link=logistic.andreaniPdfLink(numberAndreani +"");
             System.out.println ("Valor de i: " + i);
-            if (i==9) { break;}
+            if (i==11) { break;}
         } 
 		System.out.println("linkda: "+link);
 		if (link != null) {
@@ -393,10 +394,10 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 
 
 ////////////////////////////////////////
-    	
-    	
+    	System.out.println("buy:"+buy.toString());
+    	buy=buyDao.save(buy);    	
     	Yng_Confirm confirm=new Yng_Confirm();
-    	confirm.setBuy(buyDao.save(buy));
+    	confirm.setBuy(buy);
     	confirm.setBuyerConfirm(false);
     	confirm.setSellerConfirm(false);
     	confirm.setCodeConfirm(1000 + (int)(Math.random() * ((9999 - 1000) + 1)));
