@@ -1,6 +1,7 @@
 package com.valework.yingul.controller;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -53,16 +54,27 @@ public class ConfirmController {
     }
     
     @RequestMapping("/getConfirmToClaimForUser/{username}")
-    public Set<Yng_Confirm> findConfirmToClaimForUser(@PathVariable("username") String username) {
+    public Set<Yng_Confirm> findConfirmToClaimForUser(@PathVariable("username") String username) throws ParseException {
     	Date date = new Date();
-    	DateFormat hourdateFormat = new SimpleDateFormat("dd");
-    	DateFormat hourdateFormat1 = new SimpleDateFormat("MM");
-    	DateFormat hourdateFormat2 = new SimpleDateFormat("yyyy");
     	Yng_User yng_User = userDao.findByUsername(username);
     	List<Yng_Confirm> listConfirm = confirmDao.findByBuyerAndStatusOrderByConfirmIdDesc(yng_User,"confirm");
     	Set<Yng_Confirm> setConfirm = new HashSet<>();
     	for (Yng_Confirm s : listConfirm) {
-			if(s.getDayEndClaim()<=Integer.parseInt(hourdateFormat.format(date))&&s.getMonthEndClaim()<=Integer.parseInt(hourdateFormat1.format(date))&&s.getYearEndClaim()<=Integer.parseInt(hourdateFormat2.format(date))) {
+    		String str_date="";
+    		if(s.getDayEndClaim()>=10) {
+    			str_date=""+s.getDayEndClaim();
+    		}else{
+    			str_date="0"+s.getDayEndClaim();
+    		}
+    		if(s.getMonthEndClaim()>=10) {
+    			str_date+="-"+s.getMonthEndClaim();
+    		}else {
+    			str_date+="-0"+s.getMonthEndClaim();
+    		}
+    		str_date += "-"+s.getYearEndClaim();
+    		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");;
+    		Date endClaim= formatter.parse(str_date);
+			if(date.before(endClaim)) {
 				setConfirm.add(s);
 			}
     	}

@@ -42,6 +42,8 @@ public class Yng_Item {
 	private int dayPublication;
 	private int monthPublication;
 	private int yearPublication;
+	private String productPagoEnvio;
+	private String logisticsName;
 	
 	@OneToOne
 	private Yng_Ubication yng_Ubication;
@@ -224,6 +226,22 @@ public class Yng_Item {
 
 	public void setYearPublication(int yearPublication) {
 		this.yearPublication = yearPublication;
+	}
+
+	public String getProductPagoEnvio() {
+		return productPagoEnvio;
+	}
+
+	public void setProductPagoEnvio(String productPagoEnvio) {
+		this.productPagoEnvio = productPagoEnvio;
+	}
+
+	public String getLogisticsName() {
+		return logisticsName;
+	}
+
+	public void setLogisticsName(String logisticsName) {
+		this.logisticsName = logisticsName;
 	}
 	
 	
