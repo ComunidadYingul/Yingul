@@ -6,4 +6,5 @@ import com.valework.yingul.model.Yng_User;
 
 public interface ResetPasswordDao extends CrudRepository<Yng_ResetPassword, Long>{
 	Yng_ResetPassword findByUser(Yng_User user);
+	Yng_ResetPassword findByResetpasswordId(Long resetPasswordId);
 }

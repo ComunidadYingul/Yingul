@@ -1,41 +1,24 @@
 package com.valework.yingul.batch;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.valework.yingul.dao.AccountDao;
 import com.valework.yingul.dao.CommissionDao;
 import com.valework.yingul.dao.ConfirmDao;
 import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.TransactionDao;
-import com.valework.yingul.logistic.AccessTokenDHL;
 import com.valework.yingul.model.Yng_Account;
 import com.valework.yingul.model.Yng_Commission;
 import com.valework.yingul.model.Yng_Confirm;
-
 import com.valework.yingul.model.Yng_Motorized;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Property;
-
-import com.valework.yingul.model.Yng_Standard;
-
 import com.valework.yingul.model.Yng_Transaction;
 import com.valework.yingul.service.MotorizedService;
 import com.valework.yingul.service.PersonService;
@@ -66,7 +49,7 @@ public class GreetingBatchBean {
 	
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	@Scheduled(cron = "0 0 6 * * *")//cada dia a las 6 de la mañana
-	public void cronJob() {
+	public void cronJob() throws ParseException {
 		Date date = new Date();
     	DateFormat hourdateFormat = new SimpleDateFormat("dd");
     	DateFormat hourdateFormat1 = new SimpleDateFormat("MM");
@@ -76,7 +59,21 @@ public class GreetingBatchBean {
     	DateFormat hourdateFormat6 = new SimpleDateFormat("ss");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("confirm");
 		for (Yng_Confirm s : listConfirm) {
-			if(s.getDayEndClaim()<Integer.parseInt(hourdateFormat.format(date))&&s.getMonthEndClaim()<Integer.parseInt(hourdateFormat1.format(date))&&s.getYearEndClaim()<Integer.parseInt(hourdateFormat2.format(date))) {
+			String str_date="";
+    		if(s.getDayEndClaim()>=10) {
+    			str_date=""+s.getDayEndClaim();
+    		}else{
+    			str_date="0"+s.getDayEndClaim();
+    		}
+    		if(s.getMonthEndClaim()>=10) {
+    			str_date+="-"+s.getMonthEndClaim();
+    		}else {
+    			str_date+="-0"+s.getMonthEndClaim();
+    		}
+    		str_date += "-"+s.getYearEndClaim();
+    		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");;
+    		Date endClaim= formatter.parse(str_date);
+			if(date.after(endClaim)) {
 				s.setStatus("closed");
 				Yng_Account accountTemp= accountDao.findByUser(s.getBuy().getYng_item().getUser());
 				Yng_Transaction transactionTemp = new Yng_Transaction();

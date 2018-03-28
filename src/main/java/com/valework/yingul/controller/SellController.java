@@ -409,6 +409,7 @@ public class SellController {
 		temp.setAProduct(true);
 		temp.setAProperty(false);
 		temp.setAService(false);
+		temp.setProductPagoEnvio(productTemp.getProductPagoEnvio());
 		itemService.save(temp);
 		int k=0;
 		for (Yng_ItemImage st : itemImage) {

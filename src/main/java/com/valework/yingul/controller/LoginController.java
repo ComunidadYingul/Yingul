@@ -1,8 +1,12 @@
 package com.valework.yingul.controller;
 
+import java.util.List;
+
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -11,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.ResetPasswordDao;
+import com.valework.yingul.dao.UserDao;
+import com.valework.yingul.model.Yng_Query;
 import com.valework.yingul.model.Yng_ResetPassword;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.UserService;
@@ -24,18 +30,23 @@ public class LoginController {
 	private UserService userService;
 	@Autowired
 	private ResetPasswordDao resetPasswordDao;
+	@Autowired
+	private UserDao userDao;
+	@Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 	
 	@RequestMapping(value = "/sendRecoveryEmail", method = RequestMethod.POST)
 	@ResponseBody
     public String updatePropertyPost(@Valid @RequestBody Yng_User user) throws MessagingException {
 		Yng_ResetPassword resetPassword= new Yng_ResetPassword();
-        if(userService.checkEmailExists(user.getEmail())) {
-        	Yng_User userTemp= userService.findByEmail(user.getEmail());
-        	if(resetPasswordDao.findByUser(userTemp)!=null) {
-        		resetPassword=resetPasswordDao.findByUser(userTemp);
-        	}else {
-        		resetPassword.setUser(userService.findByEmail(userTemp.getUsername()));
+        if(userService.checkEmailExists(user.getEmail().trim())) {
+        	Yng_User userTemp= userService.findByEmail(user.getEmail().trim());
+        	if(resetPasswordDao.findByUser(userTemp) == null) {
+        		resetPassword.setUser(userDao.findByUsername(userTemp.getUsername()));
         		resetPassword=resetPasswordDao.save(resetPassword);
+        		
+        	}else {
+        		resetPassword=resetPasswordDao.findByUser(userTemp);
         	}
         	smtpMailSender.send(userTemp.getEmail(), "Restaure la contraseña del usuario de Yingul", "Estimado "+userTemp.getUsername()+":<br>" + 
         			"Para restaurar la contraseña, haga clic en este vínculo.<br>" + 
@@ -47,8 +58,40 @@ public class LoginController {
         			"Copyright 2018 Yigul S.R.L.. All rights reserved.");
         	return "save";
         }else {
-        	return "not registered";
+        	return "algo salio mal vuelva a intentarlo";
         }     
+    }
+	@RequestMapping(value = "/updatePasswordUser", method = RequestMethod.POST)
+	@ResponseBody
+    public String updatePasswordUser(@Valid @RequestBody Yng_ResetPassword resetPassword) throws MessagingException {
+        if(resetPasswordDao.findByResetpasswordId(resetPassword.getResetpasswordId()) != null) {
+        	Yng_ResetPassword resetPasswordTemp=  resetPasswordDao.findByResetpasswordId(resetPassword.getResetpasswordId());
+        	Yng_User userTemp=resetPasswordTemp.getUser();
+        	String encryptedPassword = passwordEncoder.encode(resetPassword.getUser().getPassword());
+        	userTemp.setPassword(encryptedPassword);
+        	userDao.save(userTemp);
+        	resetPasswordDao.delete(resetPasswordTemp);
+        	smtpMailSender.send(userTemp.getEmail(), "La contraseña del Usuario de Yingul ha cambiado", "Estimado "+userTemp.getUsername()+":<br>" + 
+        			"<br>" + 
+        			"Su contraseña de Yingul ha cambiado recientemente.<br>" + 
+        			"Si usted no solicitó el cambio de contraseña, póngase en contacto con el equipo de asistencia al cliente.<br>" + 
+        			"http://yingul.com/about/contactUs<br>" + 
+        			"<br>" + 
+        			"El equipo de Yingul<br>" + 
+        			"<br>" + 
+        			"Copyright 2018 Yingul S.R.L. All rights reserved.");
+        	return "save";
+        }else {
+        	return "prohibited";
+        }     
+    }
+	@RequestMapping("/checkAuthorization/{resetPasswordId}")
+    public String checkAuthorization(@PathVariable("resetPasswordId") Long resetPasswordId) {
+    	if(resetPasswordDao.findByResetpasswordId(resetPasswordId) != null) {
+    		return "true";
+    	}else {
+    		return "false";
+    	}
     }
     
 }
