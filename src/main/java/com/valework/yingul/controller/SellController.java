@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
@@ -41,8 +42,10 @@ import com.valework.yingul.dao.SecurityDao;
 import com.valework.yingul.dao.ServiceDao;
 import com.valework.yingul.dao.ServiceProvinceDao;
 import com.valework.yingul.dao.SoundDao;
+import com.valework.yingul.dao.StandarCostAndreaniDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
+import com.valework.yingul.model.Yng_Ambient;
 import com.valework.yingul.model.Yng_Commission;
 import com.valework.yingul.model.Yng_Country;
 import com.valework.yingul.model.Yng_Item;
@@ -60,6 +63,7 @@ import com.valework.yingul.model.Yng_PropertyAmbient;
 import com.valework.yingul.model.Yng_PropertyAmenities;
 import com.valework.yingul.model.Yng_Service;
 import com.valework.yingul.model.Yng_ServiceProvince;
+import com.valework.yingul.model.Yng_StandarCostAndreani;
 import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.ItemService;
@@ -181,7 +185,9 @@ public class SellController {
 	
 	@Autowired
 	S3Services s3Services;
-
+	
+	@Autowired
+	StandarCostAndreaniDao standarCostAndreaniDao;
 	@RequestMapping(value = "/service", method = RequestMethod.POST)
 	@ResponseBody
     public String sellServicePost(@Valid @RequestBody Yng_Service service) throws MessagingException {	
@@ -836,4 +842,15 @@ public class SellController {
     		return null;
     	}
 	}
+	
+	@RequestMapping("/standardCost/{weightAforado}")
+    public Yng_Ubication findStandardCostById(@PathVariable("weightaforado") String weightAforado) {
+		
+    	return null;
+	}
+	@RequestMapping("/standardCostAndreani")
+    public List<Yng_StandarCostAndreani> findStandardCostAndreani(){
+    	List<Yng_StandarCostAndreani> findStandardCostAndreani=standarCostAndreaniDao.findAll();
+    	return findStandardCostAndreani;
+    }
 }
