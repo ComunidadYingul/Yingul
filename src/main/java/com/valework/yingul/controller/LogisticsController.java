@@ -1491,6 +1491,7 @@ public class LogisticsController {
     	  List<Yng_Quote> quotesList=new ArrayList<Yng_Quote>();
     	  Yng_Quote quote=new Yng_Quote();
     	  quote=quo;
+    	  String postalCode=quote.getYng_User().getYng_Ubication().getPostalCode();
     	  quote.getYng_Item().setUser(userDao.findByUsername(quote.getYng_Item().getUser().getUsername()));
     	  quote.setYng_User(userDao.findByUsername(quote.getYng_User().getUsername()));  
    		
@@ -1511,7 +1512,7 @@ public class LogisticsController {
 			    	  List<Yng_Branch> branchShipping = new ArrayList<Yng_Branch>();
 			    	  List<ResultadoConsultarSucursales> sucursal = new ArrayList<ResultadoConsultarSucursales>();
 			    	  Yng_AndreaniSucursal cot=new Yng_AndreaniSucursal();
-			    	  cot.setCodigoPostal(""+quote.getYng_User().getYng_Ubication().getPostalCode());
+			    	  cot.setCodigoPostal(""+postalCode);
 			    	  cot.setLocalidad("");
 			    	  cot.setProvincia("");
 			    	  //cot=suc;
