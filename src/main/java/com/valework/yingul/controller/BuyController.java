@@ -193,7 +193,7 @@ public class BuyController {
     	Yng_User userTemp= userDao.findByUsername(buy.getUser().getUsername());
     	Yng_Country countrySw=countryDao.findByCountryId(userTemp.getYng_Ubication().getYng_Country().getCountryId());
 		if(!countrySw.isToBuy()) {
-			return "Tu país todavia no esta habilitado para comprar en Yingul estamos trabjando en ello";
+			return "Tu país todavia no esta habilitado para comprar en Yingul estamos trabajando en ello";
 		}
     	buy.setUser(userTemp);
     	Yng_User sellerTemp = userDao.findByUsername(itemTemp.getUser().getUsername());

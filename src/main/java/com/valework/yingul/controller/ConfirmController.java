@@ -21,8 +21,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.ConfirmDao;
+import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.model.Yng_Confirm;
+import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.ConfirmService;
 
@@ -37,6 +39,8 @@ public class ConfirmController {
 	ConfirmService confirmService;
 	@Autowired
 	UserDao userDao;
+	@Autowired 
+	StandardDao standardDao;
 	
     @RequestMapping("/getConfirmForId/{confirmId}")
     public Yng_Confirm findConfirmForId(@PathVariable("confirmId") Long confirmId) {
@@ -94,7 +98,8 @@ public class ConfirmController {
         	DateFormat hourdateFormat1 = new SimpleDateFormat("MM");
         	DateFormat hourdateFormat2 = new SimpleDateFormat("yyyy");
         	DateTime now = new DateTime( date );
-        	DateTime endClaim = now.plusDays( 7 );
+        	Yng_Standard daysForClaims = standardDao.findByKey("daysForClaims");
+        	DateTime endClaim = now.plusDays( Integer.parseInt(daysForClaims.getValue()) );
         	
         	confirmTemp.setDayBuyerConfirm(Integer.parseInt(hourdateFormat.format(date)));
         	confirmTemp.setDaySellerConfirm(Integer.parseInt(hourdateFormat.format(date)));
@@ -112,9 +117,9 @@ public class ConfirmController {
         	confirmDao.save(confirmTemp);
         	System.out.println("Eddy:"+confirmTemp.getBuy().getYng_item().getUser().getEmail());
         	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(), "CONFIRMACIÓN DE ENTREGA EXITOSA","Se realizo la confirmacion de la entrega del producto :  "+confirmTemp.getBuy().getYng_item().getName() +"  Descripción : "+confirmTemp.getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +confirmTemp.getBuy().getYng_item().getPrice()
-        			+ "<br/> --Si tu comprador no tiene ninguna observacion del producto en 7 días podras recoger tu dinero ingresando a : http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/frontYingulPay");
+        			+ "<br/> --Si tu comprador no tiene ninguna observacion del producto en "+daysForClaims.getValue()+" días podras recoger tu dinero ingresando a : http://yingul.com/frontYingulPay");
 			smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "CONFIRMACIÓN DE RECEPCIÓN EXITOSA", "Se realizo la confirmacion de la entrega del producto : "+confirmTemp.getBuy().getQuantity()+" "+confirmTemp.getBuy().getYng_item().getName()+" a:"+confirmTemp.getBuy().getCost()
-					+ "<br/> --Tiene 7 días de garantia con Yingul para realizar alguna observación ingrese a: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/userFront/purchases despues de ese lapso no se aceptaran reclamos");
+					+ "<br/> --Tiene "+daysForClaims.getValue()+" días de garantia con Yingul para realizar alguna observación ingrese a: http://yingul.com/userFront/claims despues de ese lapso no se aceptaran reclamos");
     		return "save";
     	}else {
     		return "el codigo es incorrecto!!!";

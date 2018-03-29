@@ -177,7 +177,7 @@ public class HomeController {
 	@RequestMapping(value = "/auth/login", method = RequestMethod.POST)
 	@ResponseBody
     public Yng_User login(@Valid @RequestBody Yng_User user,@RequestHeader("X-API-KEY") String XAPIKEY) throws MessagingException {
-		Yng_Standard api = standardDao.findByKey("ANDROID_API_KEY");
+		Yng_Standard api = standardDao.findByKey("BACKEND_API_KEY");
 		if(XAPIKEY.equals(api.getValue())) {
 			Yng_User logged = new Yng_User();
 			if(userService.checkEmailExists(user.getUsername())) {
