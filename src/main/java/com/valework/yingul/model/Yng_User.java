@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -28,9 +29,9 @@ public class Yng_User implements UserDetails{
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "userId", nullable = false, updatable = false)
     private Long userId;
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
     private String password;
-
     @Column(name = "email", nullable = false, unique = true)
     private String email;
     private String phone;
@@ -38,6 +39,14 @@ public class Yng_User implements UserDetails{
     private String webSite;
 	private String documentType="";
 	private String 	documentNumber="";
+	
+	@Value("${some.key:sampleBanner.jpg}")
+	private java.lang.String profileBanner;
+	@Value("${some.key:profile.jpg}")
+	private java.lang.String profilePhoto;
+	@Value("${some.key:https://www.youtube.com/embed/1AV37mvCHQo}")
+	private java.lang.String profileVideo;
+	
     private boolean enabled=true;
 
     @OneToOne
@@ -177,11 +186,29 @@ public class Yng_User implements UserDetails{
 		// TODO Auto-generated constructor stub
 	}
 
-	@Override
-	public String toString() {
-		return "Yng_User [userId=" + userId + ", username=" + username + ", password=" + password + ", email=" + email
-				+ ", phone=" + phone + ", phone2=" + phone2 + ", webSite=" + webSite + ", documentType=" + documentType
-				+ ", documentNumber=" + documentNumber + ", enabled=" + enabled + ", yng_Ubication=" + yng_Ubication
-				+ ", userRoles=" + userRoles + "]";
+	public java.lang.String getProfileBanner() {
+		return profileBanner;
 	}
+
+	public void setProfileBanner(java.lang.String profileBanner) {
+		this.profileBanner = profileBanner;
+	}
+
+	public java.lang.String getProfilePhoto() {
+		return profilePhoto;
+	}
+
+	public void setProfilePhoto(java.lang.String profilePhoto) {
+		this.profilePhoto = profilePhoto;
+	}
+
+	public java.lang.String getProfileVideo() {
+		return profileVideo;
+	}
+
+	public void setProfileVideo(java.lang.String profileVideo) {
+		this.profileVideo = profileVideo;
+	}
+
+
 }

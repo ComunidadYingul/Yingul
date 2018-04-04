@@ -67,7 +67,7 @@ public class LoginController {
         if(resetPasswordDao.findByResetpasswordId(resetPassword.getResetpasswordId()) != null) {
         	Yng_ResetPassword resetPasswordTemp=  resetPasswordDao.findByResetpasswordId(resetPassword.getResetpasswordId());
         	Yng_User userTemp=resetPasswordTemp.getUser();
-        	String encryptedPassword = passwordEncoder.encode(resetPassword.getUser().getPassword());
+        	String encryptedPassword = passwordEncoder.encode(resetPassword.getUser().getPassword().trim());
         	userTemp.setPassword(encryptedPassword);
         	userDao.save(userTemp);
         	resetPasswordDao.delete(resetPasswordTemp);

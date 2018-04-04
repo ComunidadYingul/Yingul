@@ -13,6 +13,7 @@ import com.valework.yingul.dao.CommissionDao;
 import com.valework.yingul.dao.ConfirmDao;
 import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.TransactionDao;
+import com.valework.yingul.dao.TransactionDetailDao;
 import com.valework.yingul.model.Yng_Account;
 import com.valework.yingul.model.Yng_Commission;
 import com.valework.yingul.model.Yng_Confirm;
@@ -20,6 +21,7 @@ import com.valework.yingul.model.Yng_Motorized;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Property;
 import com.valework.yingul.model.Yng_Transaction;
+import com.valework.yingul.model.Yng_TransactionDetail;
 import com.valework.yingul.service.MotorizedService;
 import com.valework.yingul.service.PersonService;
 import com.valework.yingul.service.PropertyService;
@@ -45,6 +47,8 @@ public class GreetingBatchBean {
 
 	@Autowired
 	StandardDao standardDao;
+	@Autowired
+	TransactionDetailDao transactionDetailDao;
 
 	
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
@@ -76,8 +80,8 @@ public class GreetingBatchBean {
 			if(date.after(endClaim)) {
 				s.setStatus("closed");
 				Yng_Account accountTemp= accountDao.findByUser(s.getBuy().getYng_item().getUser());
+				//crear la transaccion con todo el costo del producto para luego descontar comisiones o costo de envio
 				Yng_Transaction transactionTemp = new Yng_Transaction();
-				transactionTemp.setAccount(accountTemp);
 				transactionTemp.setAmount(s.getBuy().getYng_item().getPrice());
 				transactionTemp.setCity("Moreno");
 				transactionTemp.setCountry("Argentina");
@@ -100,55 +104,195 @@ public class GreetingBatchBean {
 				transactionTemp.setAWireTransfer(false);
 				transactionTemp.setAYingulTransaction(true);
 				double saldo=accountTemp.getAvailableMoney();
+				accountTemp.setAvailableMoney(saldo+transactionTemp.getAmount());
+				accountTemp=accountDao.save(accountTemp);
+				transactionTemp.setAccount(accountTemp);
+				transactionDao.save(transactionTemp);
 				
-				//acreditacion y cobro de comisiones
+				//transaccion del cobro de comisiones
+				Yng_Transaction commissionTemp = new Yng_Transaction();
+				commissionTemp.setCity("Moreno");
+				commissionTemp.setCountry("Argentina");
+				commissionTemp.setCountryCode("AR");
+				commissionTemp.setCurrency("ARS");
+				commissionTemp.setDay(Integer.parseInt(hourdateFormat.format(date)));
+				commissionTemp.setDescription("Cobro de transaccion por venta a travez de Yingul Pay");
+				commissionTemp.setIp("181.115.199.143");
+				commissionTemp.setLat("-16.5");
+				commissionTemp.setLon("-68.15");
+				commissionTemp.setMonth(Integer.parseInt(hourdateFormat1.format(date)));
+				commissionTemp.setOrg("Entel S.A. - EntelNet");
+				commissionTemp.setRegionName("Buenos Aires");
+				commissionTemp.setType("Débito");
+				commissionTemp.setYear(Integer.parseInt(hourdateFormat2.format(date)));
+				commissionTemp.setZip("1744");
+				commissionTemp.setHour(Integer.parseInt(hourdateFormat4.format(date)));
+				commissionTemp.setMinute(Integer.parseInt(hourdateFormat5.format(date)));
+				commissionTemp.setSecond(Integer.parseInt(hourdateFormat6.format(date)));
+				commissionTemp.setAWireTransfer(false);
+				commissionTemp.setAYingulTransaction(true);
+				double costCommission=0;
+				Yng_TransactionDetail transactionDetail=new Yng_TransactionDetail();
+				
 				List<Yng_Person> personList= personService.findByUser(s.getBuy().getYng_item().getUser());
 				Yng_Person person = personList.get(0);
-				List<Yng_Commission> listCommission = commissionDao.findByOrderByCommissionIdDesc();
-				for (Yng_Commission t : listCommission) {
-					switch (t.getWhy()) {
-			         case "Product":
-			        	 if(s.getBuy().getYng_item().isAProduct()) {
-			        		 if(t.getToWho()=="Person" && person.isBusiness()==false) {
-			        			 accountTemp.setAvailableMoney(saldo+s.getBuy().getItemCost()-((s.getBuy().getItemCost())*(t.getPercentage()/100)));
-			        		 }
-			        		 if(t.getToWho()=="Business" && person.isBusiness()==true) {
-			        			 accountTemp.setAvailableMoney(saldo+s.getBuy().getItemCost()-((s.getBuy().getItemCost())*(t.getPercentage()/100)));
-			        		 }
-			        	 }
-			             break;
-			         case "Property":
-			        	 if(s.getBuy().getYng_item().isAProperty()) {
-			        		List<Yng_Property> propertyList= propertyService.findByItem(s.getBuy().getYng_item());
-			        		Yng_Property property = propertyList.get(0);
-			        		if(t.getCondition()=="Rental" && property.getCondition()=="Rental") {
-			        			accountTemp.setAvailableMoney(saldo+s.getBuy().getItemCost()-((s.getBuy().getItemCost())*(t.getPercentage()/100)));
-			        		}else {
-			        			accountTemp.setAvailableMoney(saldo+s.getBuy().getItemCost()-((s.getBuy().getItemCost())*(t.getPercentage()/100))); 
-			        		}
-			        	 }
-			        	 break;
-			         case "Motorized":
-			        	 if(s.getBuy().getYng_item().isAMotorized()) {
-			        		List<Yng_Motorized> motorizedList= motorizedService.findByItem(s.getBuy().getYng_item());
-			        		Yng_Motorized motorized = motorizedList.get(0);
-			        		if(t.getCondition()=="New" && motorized.getCondition()=="New") {
-			        			accountTemp.setAvailableMoney(saldo+s.getBuy().getItemCost()-((s.getBuy().getItemCost())*(t.getPercentage()/100)));
-			        		}else {
-			        			accountTemp.setAvailableMoney(saldo+s.getBuy().getItemCost()); 
-			        		}
-			        	 }
-			        	 break;
-			         case "Service":
-			        	 if(s.getBuy().getYng_item().isAService()) {
-			        		 accountTemp.setAvailableMoney(saldo+s.getBuy().getItemCost()); 
-			        	 }
-			             break;
-			     }
+				Yng_Commission commission= new Yng_Commission();
+				Yng_Commission commissionPAYU= new Yng_Commission();
+				
+				//condicional para el cobro de comisiones				
+				if(s.getBuy().getShippingCost()==0) {
+					//cobro de comisiones
+					
+					switch(s.getBuy().getYng_item().getType()) {
+					case "Product":
+						if(person.isBusiness()) {
+							commission =commissionDao.findByToWhoAndWhy("Business", "Product");
+							commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+						}else {
+							commission =commissionDao.findByToWhoAndWhy("Person", "Product");
+							commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+						}
+						break;
+					case "Property":
+						if(s.getBuy().getYng_item().getCondition().equals("Rental")) {
+							commission =commissionDao.findByConditionAndWhy("Rental", "Property");
+							commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+						}else {
+							commission =commissionDao.findByToWhoAndWhy("All", "Property");
+							commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+						}
+						break;
+					case "Motorized":
+						if(s.getBuy().getYng_item().getCondition().equals("New")) {
+							commission =commissionDao.findByConditionAndWhy("New", "Motorized");
+							commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+						}else {
+							commission =commissionDao.findByConditionAndWhy("All", "All");
+							commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+						}
+						break;
+					default:
+						commission =commissionDao.findByConditionAndWhy("All", "All");
+						commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+						break;
+					}
+					//
+				}else {
+					if(s.getBuy().getYng_item().getProductPagoEnvio().equals("gratis")) {
+						//cobro de comisiones
+						Yng_Transaction payShipping = new Yng_Transaction();
+						payShipping.setCity("Moreno");
+						payShipping.setCountry("Argentina");
+						payShipping.setCountryCode("AR");
+						payShipping.setCurrency("ARS");
+						payShipping.setDay(Integer.parseInt(hourdateFormat.format(date)));
+						payShipping.setDescription("Cobro de envio por venta a travez de Yingul Express");
+						payShipping.setIp("181.115.199.143");
+						payShipping.setLat("-16.5");
+						payShipping.setLon("-68.15");
+						payShipping.setMonth(Integer.parseInt(hourdateFormat1.format(date)));
+						payShipping.setOrg("Entel S.A. - EntelNet");
+						payShipping.setRegionName("Buenos Aires");
+						payShipping.setType("Débito");
+						payShipping.setYear(Integer.parseInt(hourdateFormat2.format(date)));
+						payShipping.setZip("1744");
+						payShipping.setHour(Integer.parseInt(hourdateFormat4.format(date)));
+						payShipping.setMinute(Integer.parseInt(hourdateFormat5.format(date)));
+						payShipping.setSecond(Integer.parseInt(hourdateFormat6.format(date)));
+						payShipping.setAWireTransfer(false);
+						payShipping.setAYingulTransaction(true);
+						payShipping.setAmount(s.getBuy().getShippingCost());
+						saldo=accountTemp.getAvailableMoney();
+						accountTemp.setAvailableMoney(saldo-payShipping.getAmount());
+						accountTemp=accountDao.save(accountTemp);
+						payShipping.setAccount(accountTemp);
+						transactionDao.save(payShipping);
+						
+						switch(s.getBuy().getYng_item().getType()) {
+						case "Product":
+							if(person.isBusiness()) {
+								commission =commissionDao.findByToWhoAndWhy("Business", "Product");
+								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+							}else {
+								commission =commissionDao.findByToWhoAndWhy("Person", "Product");
+								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+							}
+							break;
+						case "Property":
+								if(s.getBuy().getYng_item().getCondition().equals("Rental")) {
+									commission =commissionDao.findByConditionAndWhy("Rental", "Property");
+									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+								}else {
+									commission =commissionDao.findByToWhoAndWhy("All", "Property");
+									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+								}
+							break;
+						case "Motorized":
+							if(s.getBuy().getYng_item().getCondition().equals("New")) {
+								commission =commissionDao.findByConditionAndWhy("New", "Motorized");
+								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+							}else {
+								commission =commissionDao.findByConditionAndWhy("All", "All");
+								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+							}
+							break;
+						default:
+							commission =commissionDao.findByConditionAndWhy("All", "All");
+							commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+							break;
+						}
+						//
+					}else {
+						//cobro de comisiones
+						switch(s.getBuy().getYng_item().getType()) {
+						case "Product":						
+							if(person.isBusiness()) {
+								commission =commissionDao.findByToWhoAndWhy("Business", "Product");
+								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+							}else {
+								commission =commissionDao.findByToWhoAndWhy("Person", "Product");
+								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+							}
+							break;
+						case "Property":
+								if(s.getBuy().getYng_item().getCondition().equals("Rental")) {
+									commission =commissionDao.findByConditionAndWhy("Rental", "Property");
+									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+								}else {
+									commission =commissionDao.findByToWhoAndWhy("All", "Property");
+									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+								}
+							break;
+						case "Motorized":
+							if(s.getBuy().getYng_item().getCondition().equals("New")) {
+								commission =commissionDao.findByConditionAndWhy("New", "Motorized");
+								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+							}else {
+								commission =commissionDao.findByConditionAndWhy("All", "All");
+								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+							}
+							break;
+						default:
+							commission =commissionDao.findByConditionAndWhy("All", "All");
+							commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+							break;
+						}
+						//
+					}
 				}
-				//
-				accountDao.save(accountTemp);
-				transactionDao.save(transactionTemp);
+				transactionDetail.setCostCommission(((s.getBuy().getYng_item().getPrice()*commission.getPercentage())/100)+commission.getFixedPrice());
+				transactionDetail.setCostPAYU(((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice());
+				costCommission=(transactionDetail.getCostCommission()+transactionDetail.getCostPAYU());
+				transactionDetail.setCostTotal(costCommission);
+				
+				commissionTemp.setAmount(costCommission);
+				saldo=accountTemp.getAvailableMoney();
+				accountTemp.setAvailableMoney(saldo-commissionTemp.getAmount());
+				accountTemp=accountDao.save(accountTemp);
+				commissionTemp.setAccount(accountTemp);
+				transactionDetail.setTransaction(transactionDao.save(commissionTemp));
+				transactionDetailDao.save(transactionDetail);
+
 				confirmDao.save(s);
 			}
     	}
