@@ -3,11 +3,15 @@ package com.valework.yingul.controller;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.valework.yingul.dao.CategoryDao;
+import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.model.Yng_Category;
+import com.valework.yingul.model.Yng_Item;
+import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.service.CategoryService;
 
 @RestController
@@ -18,6 +22,8 @@ public class CategoryController {
     private CategoryService categoryService;
 	@Autowired 
 	private CategoryDao categoryDao;
+	@Autowired
+	private StandardDao standardDao;
 	
 	@RequestMapping("/all")
     public List<Yng_Category> findCategoryList() {
@@ -25,9 +31,15 @@ public class CategoryController {
         return categoryList;
     }
     @RequestMapping("/{item_type}/{level}")
-    public List<Yng_Category> findCategoryListByLevel(@PathVariable("item_type") String item_type,@PathVariable("level") int level) {
-    	 List<Yng_Category> categoryList = categoryService.findByItemTypeAndLevel(item_type,level);
-         return categoryList;
+    public List<Yng_Category> findCategoryListByLevel(@PathVariable("item_type") String item_type,@PathVariable("level") int level,@RequestHeader("X-API-KEY") String XAPIKEY) {
+    	List<Yng_Category> categoryList = categoryService.findByItemTypeAndLevel(item_type,level);
+    	Yng_Standard api = standardDao.findByKey("BACKEND_API_KEY");
+    	if(XAPIKEY.equals(api.getValue())) {
+    		return categoryList;
+    	}else {
+    		return null;
+    	} 
+    	
     }
     @RequestMapping("/father/{father}")
     public List<Yng_Category> findCategoryListByFather(@PathVariable("father") Long father) {
