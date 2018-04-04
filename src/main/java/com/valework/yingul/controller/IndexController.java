@@ -31,5 +31,17 @@ public class IndexController {
     		return null;
     	}
     }
+    @RequestMapping("/item/20first")
+    public List<Yng_Item> itemList20first(@RequestHeader("X-API-KEY") String XAPIKEY) {
+    	System.out.println(XAPIKEY);
+    	Yng_Standard api = standardDao.findByKey("BACKEND_API_KEY");
+    	if(XAPIKEY.equals(api.getValue())) {
+    		List<Yng_Item> itemList = itemService.findByOrderByItemIdDesc();
+    		itemList=itemList.subList(0, 20);
+    		return itemList;
+    	}else {
+    		return null;
+    	}
+    }
     
 }
