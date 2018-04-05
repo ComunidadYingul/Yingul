@@ -20,7 +20,7 @@ public class RequestFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpServletRequest request = (HttpServletRequest) req;
         //amazon produccion
-        //response.setHeader("Access-Control-Allow-Origin", "http://www.yingul.com");
+        //response.setHeader("Access-Control-Allow-Origin", "http://www.yingul.com , http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com");
         
         response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
         
