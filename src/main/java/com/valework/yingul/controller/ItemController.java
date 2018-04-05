@@ -16,14 +16,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.CategoryDao;
+import com.valework.yingul.dao.CityDao;
+import com.valework.yingul.dao.DepartmentDao;
 import com.valework.yingul.dao.FindMotorizedDao;
 import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.MotorizedDao;
 import com.valework.yingul.dao.ProductDao;
 import com.valework.yingul.dao.PropertyDao;
+import com.valework.yingul.dao.ProvinceDao;
 import com.valework.yingul.dao.QueryDao;
 import com.valework.yingul.dao.ServiceDao;
 import com.valework.yingul.dao.StandardDao;
+import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.model.Yng_Category;
 import com.valework.yingul.model.Yng_FindMotorized;
@@ -37,6 +41,7 @@ import com.valework.yingul.model.Yng_Property;
 import com.valework.yingul.model.Yng_Query;
 import com.valework.yingul.model.Yng_Service;
 import com.valework.yingul.model.Yng_Standard;
+import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.ItemCategoryService;
 import com.valework.yingul.service.ItemImageService;
@@ -91,6 +96,17 @@ public class ItemController {
 	ProductDao productDao;
 	@Autowired
 	private StandardDao standardDao;
+    @Autowired 
+    CityDao cityDao;
+    
+    @Autowired 
+    ProvinceDao provinceDao;
+    
+    @Autowired
+    DepartmentDao departmentDao;
+    
+    @Autowired
+    UbicationDao ubicationDao;
 	@RequestMapping("/itemType/{itemId}")
     public String getItemTypeById(@PathVariable("itemId") Long itemId) {
 		Yng_Item yng_Item = itemDao.findByItemId(itemId);System.out.println("itemId 1 :"+itemId);
@@ -414,5 +430,32 @@ public class ItemController {
     	}
     	else return null;
     }*/
-    
+    @RequestMapping(value = "/ubication/update", method = RequestMethod.POST)
+   	@ResponseBody
+       public String updateUbicationPost(@Valid @RequestBody Yng_Item item) throws MessagingException {
+       	Yng_Item itemTem=new Yng_Item();
+       	itemTem=itemDao.findByItemId(item.getItemId());
+       	Yng_Ubication ubiEnt=new Yng_Ubication();
+       	ubiEnt=item.getYng_Ubication();
+       	Yng_Ubication ubiTemp=ubiEnt;    	
+       	ubiTemp.setAditional(ubiEnt.getAditional());
+       	String codAndreani="";
+   		LogisticsController log=new LogisticsController();
+   		try {
+   			codAndreani=log.andreaniSucursales(ubiTemp.getPostalCode(), "", "");
+   		} catch (Exception e1) {
+   			// TODO Auto-generated catch block
+   			e1.printStackTrace();
+   		}		
+       	ubiTemp.setCodAndreani(codAndreani);
+       	ubiTemp.setDepartment(ubiEnt.getDepartment());
+       	ubiTemp.setNumber(ubiEnt.getNumber());
+       	ubiTemp.setPostalCode(ubiEnt.getPostalCode());
+   		ubiTemp.setStreet(ubiEnt.getStreet());
+   		ubiTemp.setWithinStreets(ubiEnt.getWithinStreets());
+       	ubiTemp.setYng_City(cityDao.findByCityId(ubiEnt.getYng_City().getCityId()));ubiTemp.setYng_Province(provinceDao.findByProvinceId(ubiEnt.getYng_Province().getProvinceId()));
+   		itemTem.setYng_Ubication(ubicationDao.save(ubiTemp));
+       	itemDao.save(itemTem);
+       	return "save";
+       }
 }
