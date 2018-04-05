@@ -7,14 +7,18 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.CategoryDao;
+import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.StoreDao;
 import com.valework.yingul.dao.UserDao;
+import com.valework.yingul.model.Yng_Item;
+import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_Store;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.S3Services;
@@ -32,12 +36,15 @@ public class StoreController {
 	CategoryDao categoryDao;
 	@Autowired
 	S3Services s3Services;
+	@Autowired
+	private StandardDao standardDao;
 	
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	@ResponseBody
     public String createStorePost(@Valid @RequestBody Yng_Store store) throws MessagingException {	
 		Yng_Store storeTemp = store;
 		//para el video de youtube
+		if(store.getVideo()!="" && store.getVideo()!=null) {
 		if(store.getVideo().contains("embed")){}
 		else {
 			//https://youtu.be/zabDFISMtJI
@@ -46,7 +53,7 @@ public class StoreController {
 			}else {
 				storeTemp.setVideo("https://www.youtube.com/embed/"+store.getVideo().substring(store.getVideo().indexOf("=")+1));
 			}
-		}
+		}}
 		//fin de video de youtube
 		storeTemp.setName(storeTemp.getName().replace(" ", ""));
 		Yng_User userTemp =userDao.findByUsername(storeTemp.getUser().getUsername());
@@ -107,7 +114,7 @@ public class StoreController {
 		}
 		storeDao.save(storeTemp);
 		try {
-			smtpMailSender.send(storeTemp.getUser().getEmail(), "Tienda registrada exitosamente", "Su tienda ya esta registrada compartela y encuentrala en: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/"+storeTemp.getName());
+			smtpMailSender.send(storeTemp.getUser().getEmail(), "Tienda registrada exitosamente", "Su tienda ya esta registrada compartela y encuentrala en: http://www.yingul.com/tiendaOficial/"+storeTemp.getName());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -121,7 +128,12 @@ public class StoreController {
 		return store;	
     }
 	@RequestMapping("/all")
-    public List<Yng_Store> getAllStores() {
-		return storeDao.findAll();	
+    public List<Yng_Store> getAllStores(@RequestHeader("X-API-KEY") String XAPIKEY) {
+    	Yng_Standard api = standardDao.findByKey("BACKEND_API_KEY");
+    	if(XAPIKEY.equals(api.getValue())) {
+    		return storeDao.findAll();
+    	}else {
+    		return null;
+    	}
     }
 }

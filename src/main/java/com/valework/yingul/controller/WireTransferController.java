@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.AccountDao;
 import com.valework.yingul.dao.BankDao;
+import com.valework.yingul.dao.CommissionDao;
 import com.valework.yingul.dao.TransactionDao;
 import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.dao.WireTransferDao;
 import com.valework.yingul.model.Yng_Account;
+import com.valework.yingul.model.Yng_Commission;
 import com.valework.yingul.model.Yng_Transaction;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.model.Yng_WireTransfer;
@@ -44,17 +46,21 @@ public class WireTransferController {
 	private BankDao bankDao;
 	@Autowired
 	private WireTransferDao wireTransferDao;
+	@Autowired 
+	private CommissionDao commissionDao;
 	
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	@ResponseBody
-    public String sellServicePost(@Valid @RequestBody Yng_WireTransfer wireTransfer,@RequestHeader("Authorization") String authorization) throws MessagingException {	
+    public String createWireTransfer(@Valid @RequestBody Yng_WireTransfer wireTransfer,@RequestHeader("Authorization") String authorization) throws MessagingException {	
 		String token =new String(org.apache.commons.codec.binary.Base64.decodeBase64(authorization));
 		String[] parts = token.split(":");
 		Yng_Account account=accountDao.findByAccountId(wireTransfer.getTransaction().getAccount().getAccountId());
 		Yng_User yng_User= userDao.findByUsername(account.getUser().getUsername());
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
 		if(yng_User.getUsername().equals(parts[0]) && encoder.matches(parts[1], yng_User.getPassword())){
-			if(wireTransfer.getAmount()<=account.getAvailableMoney()) {
+			Yng_Commission commission=commissionDao.findByConditionAndWhy("All","WireTransfer");
+			Double commissionCost=(commission.getPercentage()*wireTransfer.getAmount()/100)+commission.getFixedPrice();
+			if((wireTransfer.getAmount()+commissionCost)<=account.getAvailableMoney()) {
 				Yng_Transaction transactionTemp = wireTransfer.getTransaction();
 				transactionTemp.setAccount(account);
 				Date date = new Date();
@@ -80,9 +86,38 @@ public class WireTransferController {
 				wireTransfer.setTransaction(transactionDao.save(transactionTemp));
 				wireTransfer.setStatus("toDo");
 				wireTransferDao.save(wireTransfer);
-				accountDao.save(account);
+				account=accountDao.save(account);
+				if(commissionCost>0) {
+					Yng_Transaction transactionTemp1 = new Yng_Transaction();
+					transactionTemp1.setAccount(account);
+					transactionTemp1.setAmount(commissionCost);
+					transactionTemp1.setCity("Moreno");
+					transactionTemp1.setCountry("Argentina");
+					transactionTemp1.setCountryCode("AR");
+					transactionTemp1.setCurrency("ARS");
+					transactionTemp1.setDay(Integer.parseInt(hourdateFormat.format(date)));
+					transactionTemp1.setDescription("Costo de transacciones bancarias a travez de YingulPay");
+					transactionTemp1.setIp("181.115.199.143");
+					transactionTemp1.setLat("-16.5");
+					transactionTemp1.setLon("-68.15");
+					transactionTemp1.setMonth(Integer.parseInt(hourdateFormat1.format(date)));
+					transactionTemp1.setOrg("Entel S.A. - EntelNet");
+					transactionTemp1.setRegionName("Buenos Aires");
+					transactionTemp1.setType("Débito");
+					transactionTemp1.setYear(Integer.parseInt(hourdateFormat2.format(date)));
+					transactionTemp1.setZip("1744");
+					transactionTemp1.setHour(Integer.parseInt(hourdateFormat4.format(date)));
+					transactionTemp1.setMinute(Integer.parseInt(hourdateFormat5.format(date)));
+					transactionTemp1.setSecond(Integer.parseInt(hourdateFormat6.format(date)));
+					transactionTemp1.setAWireTransfer(false);
+					transactionTemp1.setAYingulTransaction(true);
+					saldo=account.getAvailableMoney();
+					account.setAvailableMoney(saldo-transactionTemp1.getAmount());
+					account=accountDao.save(account);
+					transactionDao.save(transactionTemp1);
+				}
 				try {
-					smtpMailSender.send(yng_User.getEmail(), "Débito, de su cuenta en YingulPay", "El débito de "+transactionTemp.getAmount()+" $ a través de Tranferencia Bancaria a la cuenta "+wireTransfer.getCbu()+" de la persona "+wireTransfer.getTitularName()+" fue realizado exitosamente su saldo Disponible en Yingul Pay es de: "+account.getAvailableMoney()+" puede ver sus transacciones en: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/frontYingulPay");
+					smtpMailSender.send(yng_User.getEmail(), "Débito, de su cuenta en YingulPay", "El débito de "+transactionTemp.getAmount()+" $ a través de Tranferencia Bancaria a la cuenta "+wireTransfer.getCbu()+" de la persona "+wireTransfer.getTitularName()+" fue realizado exitosamente su saldo Disponible en Yingul Pay es de: "+account.getAvailableMoney()+" para ver el detalle de sus transacciones ingrese a: http://yingul.com/frontYingulPay");
 				} catch (MessagingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -91,6 +126,7 @@ public class WireTransferController {
 			}else {
 				return "Monto superior a tu saldo en YingulPay";
 			}
+			
 		}else {
 			return "Usuario o contraseña Incorrecta";
 		}   

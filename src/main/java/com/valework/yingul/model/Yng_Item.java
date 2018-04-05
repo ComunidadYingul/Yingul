@@ -33,10 +33,8 @@ public class Yng_Item {
 	private java.lang.String principalImage;
 	private String video;
 	
-	private boolean isAProduct;
-	private boolean isAService;
-	private boolean isAMotorized;
-	private boolean isAProperty;
+	private String type;
+	
 	@Value("${some.key:false}")
 	private boolean isOver;
 	private int dayPublication;
@@ -44,6 +42,7 @@ public class Yng_Item {
 	private int yearPublication;
 	private String productPagoEnvio;
 	private String logisticsName;
+	private String condition;
 	
 	@OneToOne
 	private Yng_Ubication yng_Ubication;
@@ -164,38 +163,6 @@ public class Yng_Item {
 		this.priceDiscount = priceDiscount;
 	}
 
-	public boolean isAProduct() {
-		return isAProduct;
-	}
-
-	public void setAProduct(boolean isAProduct) {
-		this.isAProduct = isAProduct;
-	}
-
-	public boolean isAService() {
-		return isAService;
-	}
-
-	public void setAService(boolean isAService) {
-		this.isAService = isAService;
-	}
-
-	public boolean isAMotorized() {
-		return isAMotorized;
-	}
-
-	public void setAMotorized(boolean isAMotorized) {
-		this.isAMotorized = isAMotorized;
-	}
-
-	public boolean isAProperty() {
-		return isAProperty;
-	}
-
-	public void setAProperty(boolean isAProperty) {
-		this.isAProperty = isAProperty;
-	}
-
 	public boolean isOver() {
 		return isOver;
 	}
@@ -243,6 +210,21 @@ public class Yng_Item {
 	public void setLogisticsName(String logisticsName) {
 		this.logisticsName = logisticsName;
 	}
-	
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getCondition() {
+		return condition;
+	}
+
+	public void setCondition(String condition) {
+		this.condition = condition;
+	}
 	
 }

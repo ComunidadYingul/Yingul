@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -22,6 +23,7 @@ import com.valework.yingul.dao.ProductDao;
 import com.valework.yingul.dao.PropertyDao;
 import com.valework.yingul.dao.QueryDao;
 import com.valework.yingul.dao.ServiceDao;
+import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.model.Yng_Category;
 import com.valework.yingul.model.Yng_FindMotorized;
@@ -34,6 +36,7 @@ import com.valework.yingul.model.Yng_Product;
 import com.valework.yingul.model.Yng_Property;
 import com.valework.yingul.model.Yng_Query;
 import com.valework.yingul.model.Yng_Service;
+import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.ItemCategoryService;
 import com.valework.yingul.service.ItemImageService;
@@ -86,6 +89,8 @@ public class ItemController {
 	PropertyDao propertyDao;
 	@Autowired
 	ProductDao productDao;
+	@Autowired
+	private StandardDao standardDao;
 	@RequestMapping("/itemType/{itemId}")
     public String getItemTypeById(@PathVariable("itemId") Long itemId) {
 		Yng_Item yng_Item = itemDao.findByItemId(itemId);System.out.println("itemId 1 :"+itemId);
@@ -378,9 +383,15 @@ public class ItemController {
     	return "save";
     }
     @RequestMapping("/over/{sw}")
-    public List<Yng_Item> findItemsOver(@PathVariable("sw") boolean sw) {
-        List<Yng_Item> itemList = itemDao.findByIsOverOrderByItemIdDesc(sw);
-        return itemList;
+    public List<Yng_Item> findItemsOver(@PathVariable("sw") boolean sw, @RequestHeader("X-API-KEY") String XAPIKEY) {
+    	Yng_Standard api = standardDao.findByKey("BACKEND_API_KEY");
+    	if(XAPIKEY.equals(api.getValue())) {
+    		List<Yng_Item> itemList = itemDao.findByIsOverOrderByItemIdDesc(sw);
+            return itemList;
+    	}else {
+    		return null;
+    	}
+        
     }
     @RequestMapping(value = "/service/update", method = RequestMethod.POST)
    	@ResponseBody

@@ -45,8 +45,6 @@ import com.valework.yingul.dao.SoundDao;
 import com.valework.yingul.dao.StandarCostAndreaniDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
-import com.valework.yingul.model.Yng_Ambient;
-import com.valework.yingul.model.Yng_Commission;
 import com.valework.yingul.model.Yng_Country;
 import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_ItemCategory;
@@ -269,10 +267,7 @@ public class SellController {
 			nombre=nombre+"."+extension;   
 			temp.setPrincipalImage(nombre);
 		}
-		temp.setAMotorized(false);
-		temp.setAProduct(false);
-		temp.setAProperty(false);
-		temp.setAService(true);
+		temp.setType("Service");
 		itemService.save(temp);
 		int k=0;
 		for (Yng_ItemImage st : itemImage) {
@@ -411,10 +406,12 @@ public class SellController {
 			temp.setPrincipalImage(nombre);
 		}
         
-		temp.setAMotorized(false);
-		temp.setAProduct(true);
-		temp.setAProperty(false);
-		temp.setAService(false);
+		temp.setType("Product");
+		if(productTemp.getProductCondition().equals("Nuevo")) {
+			temp.setCondition("New");
+		}else {
+			temp.setCondition("Used");
+		}
 		temp.setProductPagoEnvio(productTemp.getProductPagoEnvio());
 		itemService.save(temp);
 		int k=0;
@@ -547,10 +544,8 @@ public class SellController {
 			temp.setPrincipalImage(nombre);
 		} 
 		
-		temp.setAMotorized(false);
-		temp.setAProduct(false);
-		temp.setAProperty(true);
-		temp.setAService(false);
+		temp.setType("Property");
+		temp.setCondition(propertyTemp.getCondition());
 		itemService.save(temp);
 		int k=0;
 		for (Yng_ItemImage st : itemImage) {
@@ -713,10 +708,12 @@ public class SellController {
 			temp.setPrincipalImage(nombre);
 		}
 		
-		temp.setAMotorized(true);
-		temp.setAProduct(false);
-		temp.setAProperty(false);
-		temp.setAService(false);
+		temp.setType("Motorized");
+		if(motorizedTemp.getMotorizedKilometers()==0) {
+			temp.setCondition("New");
+		}else {
+			temp.setCondition("Used");
+		}
 		itemService.save(temp);
 		int k=0;
 		for (Yng_ItemImage st : itemImage) {
@@ -830,7 +827,6 @@ public class SellController {
 	
 	@RequestMapping("/ubication/{username}")
     public Yng_Ubication findQueriesByUser(@PathVariable("username") String username) {
-		String codUbi="";
 		Yng_Ubication yng_Ubication=null;		
     	Yng_User yng_User = userDao.findByUsername(username);
     	if(yng_User.getYng_Ubication()!=null){

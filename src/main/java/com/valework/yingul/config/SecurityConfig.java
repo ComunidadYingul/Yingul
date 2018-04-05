@@ -34,47 +34,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private static final String[] PUBLIC_MATCHERS = {
-            "/webjars/**",
-            "/css/**",
-            "/js/**",
-            "/images/**",
-            "/",
-            "/about/**",
-            "/contact/**",
-            "/error/**/*",
-            "/console/**",
-            "/signup",
-            "/auth/login",
-            //eddy recuerda borrar esto por seguridad
-            "/sell/**",
-            "/ubication/**",
-            "/category/**",
-            "/index/**",
-            "/user/**",
-            "/item/**",
-            "/query/**",
-            "/buy/**",
-            "/motorized/**",
-            "/business/**",
-            "/logistics/**",
-            "/store/**",
-            "/favorite/**",
-            "/confirm/**",
-            "/account/**",
-            "/bank/**",
-            "/wireTransfer/**",
-            "/admin/**",
-            "/claim/**",
-            "/about/**",
-            "/login/**"
+            "/**"
     };
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests().
-//                antMatchers("/**").
-                antMatchers(PUBLIC_MATCHERS).
+                antMatchers("/**").
+//                antMatchers(PUBLIC_MATCHERS).
                 permitAll().anyRequest().authenticated();
 
         http

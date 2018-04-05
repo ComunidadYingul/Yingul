@@ -15,6 +15,7 @@ public class Yng_Commission {
 	private String toWho;
 	private String why;
 	private double percentage;
+	private double fixedPrice;
 	private String condition;
 	public long getCommissionId() {
 		return commissionId;
@@ -46,4 +47,11 @@ public class Yng_Commission {
 	public void setCondition(String condition) {
 		this.condition = condition;
 	}
+	public double getFixedPrice() {
+		return fixedPrice;
+	}
+	public void setFixedPrice(double fixedPrice) {
+		this.fixedPrice = fixedPrice;
+	}
+	
 }
