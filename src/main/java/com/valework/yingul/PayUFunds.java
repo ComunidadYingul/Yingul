@@ -186,7 +186,7 @@ public class PayUFunds {
 	    		"      \"extraParameters\": {\r\n" + 
 	    		"         \"INSTALLMENTS_NUMBER\": "+INSTALLMENTS_NUMBER.getValue()+"\r\n" + 
 	    		"      },\r\n" + 
-	    		"      \"type\": \"AUTHORIZATION_AND_CAPTURE\",\r\n" + 
+	    		"      \"type\": \"AUTHORIZATION\",\r\n" + 
 	    		"      \"paymentMethod\": \""+buy.getYng_Payment().getYng_Card().getProvider()+"\",\r\n" + 
 	    		"      \"paymentCountry\": \"AR\",\r\n" + 
 	    		"      \"deviceSessionId\": \"vghs6tvkcle931686k1900o6e1\",\r\n" + 

@@ -272,6 +272,7 @@ tempEnvio.setPdfLink(pdfLink);
 
 com.valework.yingul.model.Yng_Envio tempE=envioDao.save(tempEnvio);*/
 ///*nuevo codigo
+	
 Yng_Shipping tempShipping =new Yng_Shipping();
 //tempShipping.setYng_envio(tempE);
 Yng_Shipping ship =new Yng_Shipping();
@@ -279,6 +280,7 @@ ship=buy.getShipping();
 String nameMail=ship.getYng_Quote().getYng_Branch().getNameMail();
 String typeMail;
 boolean andreani=false,dhl=false,fedex=false;
+
 switch (nameMail.toLowerCase()) {
     case "andreani":  andreani = true;typeMail="andreani";
              break;
@@ -289,6 +291,7 @@ switch (nameMail.toLowerCase()) {
     default: typeMail = "Invalid Mail";
              break;
              }
+if(nameMail.toLowerCase()=="andreani") {
 tempShipping.setAndreani(andreani);
 tempShipping.setDhl(dhl);
 tempShipping.setFedex(fedex);
@@ -382,6 +385,7 @@ System.out.println(":"+numberAndreani+":");
 	shipmentTemp=yng_Shipment;
 	System.out.println("shipmentTemp"+shipmentTemp.toString());
 	yng_Shipment=shipmentDao.save(shipmentTemp);
+}
 	//-----fin del nuevo codigo
 	tempShipping.setYng_Shipment(yng_Shipment);
 

@@ -55,12 +55,13 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-
+import org.json.JSONException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 import java.io.IOException;
+
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -107,6 +108,10 @@ import com.valework.yingul.logistic.*;
 @RestController
 @RequestMapping("/logistics")
 public class LogisticsController {
+	private  String FedEXAuthenticationKey ;
+	private  String FedExMeterNumber;
+	private  String FedExAccountNumber;
+	private  String FedexPassword;
 	private String urlCotizar="https://cotizadorpreprod.andreani.com/ws?wsdl";
 	private String urlComprar="https://integracionestest.andreani.com:4000/E-ImposicionRemota?wsdl";
 	private String urlSuc="https://sucursalespreprod.andreani.com/ws?wsdl";
@@ -226,78 +231,6 @@ public class LogisticsController {
     }
     
     
- 	private void sendPost() throws Exception {
- 		String url = "https://selfsolve.apple.com/wcResults.do";
- 		URL obj = new URL(url);
- 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
- 		//add reuqest header
- 		con.setRequestMethod("POST");
- 		con.setRequestProperty("User-Agent", USER_AGENT);
- 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-
- 		String urlParameters = "sn=C02G8416DRJM&cn=&locale=&caller=&num=12345";
-
- 		// Send post request
- 		con.setDoOutput(true);
- 		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
- 		wr.writeBytes(urlParameters);
- 		wr.flush();
- 		wr.close();
-
- 		int responseCode = con.getResponseCode();
- 		System.out.println("\nSending 'POST' request to URL : " + url);
- 		System.out.println("Post parameters : " + urlParameters);
- 		System.out.println("Response Code : " + responseCode);
-
- 		BufferedReader in = new BufferedReader(
- 		        new InputStreamReader(con.getInputStream()));
- 		String inputLine;
- 		StringBuffer response = new StringBuffer();
-
- 		while ((inputLine = in.readLine()) != null) {
- 			response.append(inputLine);
- 		}
- 		in.close();
-
- 		//print result
- 		System.out.println(response.toString());
-
- 	}
-    
- 	private void sendGet() throws Exception {
-
- 		//String url = "http://www.google.com/search?q=mkyong";
- 		//String urlCotizar="https://api.enviopack.com/cotizar/costo?access_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXUyJ9.eyJleHAiOjE1MTI4NDA3MzcsInVzZXJuYW1lIjoiNDZlOTAzZjJhM2UxY2IxOTMzZGI4MzZiOTlkZjA4OWY5MWU5ZmQ1NyIsImlhdCI6IjE1MTI4MjYzMzcifQ.NYUk7AKJI0oPt0okRKkmnAaMvv8jgt5jMby2al0HeeVzobwhFbm-uj9Acfvhgl-Yf7Px8NEY9RSbIdhGU36mvyOgq2jGl9anjt4uIBmMTaR6OaNQ4IYzpoVc7ZouUbg-qZqj5bRmLIAIq_ckFwnwagtotYYm_qyYUc1Yi4xboaG81FqAZSpALGpF3FM8Z8neN6dtvRE_sgzMVgnPVcLe4FsExUKZS4BmPLraO94rOpT_p61WOl8xvJ2vKHWiRDiqJ2Kryb66aij6I8crj6EECvOR5zv7gcMa7Szzrg4eFkCVuZBwRak3SUg3F-VKENczUZ9L9rWOLJdxYyclRQlFZMXLdYkNyCgZJUY5Q4Fh1JdFg7S0Cj8VuJ5Jmdtx8HyqxDfPEngAnkASa9xdXi8v2jW1PVD4Q9r-B1gA2fF4I8PwjSwsk4uvdQ-SDoI-eitXq_AXGXUAzBohavRjvtrgq0zI-Ez0anbTMQ_D18bDWTgwtAFljHN5sLiMjLEuDtZjhodPX9jjSqn_s_S45Pkd5oO1ikYryQgO-2VggpKc3w40b7dDLBcHGFqpDsfaRbgdq6I-4MHgmg3X2un4XAMq4ZAdMl4kpg99cO6-2M1X6p7AAdp59Cy7TTQMrI-wA0uDq4FXVWY8mp7q9cXeMg2bJTjCm6z9SnwDn-4w_mN_S_A&provincia=C&codigo_postal=1405&peso=1.5&paquetes=20x3x5&direccion_envio=829";
- 		String urlDomiciliio="https://api.enviopack.com/cotizar/precio/a-domicilio?access_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXUyJ9.eyJleHAiOjE1MTI4NDA3MzcsInVzZXJuYW1lIjoiNDZlOTAzZjJhM2UxY2IxOTMzZGI4MzZiOTlkZjA4OWY5MWU5ZmQ1NyIsImlhdCI6IjE1MTI4MjYzMzcifQ.NYUk7AKJI0oPt0okRKkmnAaMvv8jgt5jMby2al0HeeVzobwhFbm-uj9Acfvhgl-Yf7Px8NEY9RSbIdhGU36mvyOgq2jGl9anjt4uIBmMTaR6OaNQ4IYzpoVc7ZouUbg-qZqj5bRmLIAIq_ckFwnwagtotYYm_qyYUc1Yi4xboaG81FqAZSpALGpF3FM8Z8neN6dtvRE_sgzMVgnPVcLe4FsExUKZS4BmPLraO94rOpT_p61WOl8xvJ2vKHWiRDiqJ2Kryb66aij6I8crj6EECvOR5zv7gcMa7Szzrg4eFkCVuZBwRak3SUg3F-VKENczUZ9L9rWOLJdxYyclRQlFZMXLdYkNyCgZJUY5Q4Fh1JdFg7S0Cj8VuJ5Jmdtx8HyqxDfPEngAnkASa9xdXi8v2jW1PVD4Q9r-B1gA2fF4I8PwjSwsk4uvdQ-SDoI-eitXq_AXGXUAzBohavRjvtrgq0zI-Ez0anbTMQ_D18bDWTgwtAFljHN5sLiMjLEuDtZjhodPX9jjSqn_s_S45Pkd5oO1ikYryQgO-2VggpKc3w40b7dDLBcHGFqpDsfaRbgdq6I-4MHgmg3X2un4XAMq4ZAdMl4kpg99cO6-2M1X6p7AAdp59Cy7TTQMrI-wA0uDq4FXVWY8mp7q9cXeMg2bJTjCm6z9SnwDn-4w_mN_S_A&provincia=C&codigo_postal=1414&peso=1.5";
-
- 		
- 		URL obj = new URL(urlDomiciliio);
- 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
- 		// optional default is GET
- 		con.setRequestMethod("GET");
-
- 		//add request header
- 		con.setRequestProperty("User-Agent", USER_AGENT);
-
- 		int responseCode = con.getResponseCode();
- 		//System.out.println("\nSending 'GET' request to URL : " + url);
- 		System.out.println("Response Code : " + responseCode);
-
- 		BufferedReader in = new BufferedReader(
- 		        new InputStreamReader(con.getInputStream()));
- 		String inputLine;
- 		StringBuffer response = new StringBuffer();
-
- 		while ((inputLine = in.readLine()) != null) {
- 			response.append(inputLine);
- 		}
- 		in.close();
-
- 		//print result
- 		System.out.println(response.toString());
-
- 	}
  	
  	
  	
@@ -1490,6 +1423,7 @@ public class LogisticsController {
       public List<Yng_Quote> quote(@Valid @RequestBody  Yng_Quote quo){
     	  List<Yng_Quote> quotesList=new ArrayList<Yng_Quote>();
     	  Yng_Quote quote=new Yng_Quote();
+    	  Yng_Quote quoteFedex=new Yng_Quote();
     	  quote=quo;
     	  String postalCode=quote.getYng_User().getYng_Ubication().getPostalCode();
     	  quote.getYng_Item().setUser(userDao.findByUsername(quote.getYng_Item().getUser().getUsername()));
@@ -1584,6 +1518,73 @@ public class LogisticsController {
 						} catch (JsonProcessingException e) {
 							e.printStackTrace();
 						}
+			    	  //Fedex inicio
+			    	 /* FedexXML xmlFedex=new FedexXML();
+			    	  //iniciando variable de desarrolo
+					    	  standard= new Yng_Standard();
+					      	standard=standardService.findByKey("FedEXAuthenticationKey");
+					      	FedEXAuthenticationKey= standard.getValue();
+					      	
+					      	standard=standardService.findByKey("FedExMeterNumber");
+					      	FedExMeterNumber= standard.getValue();
+					      	
+					      	standard=standardService.findByKey("FedExAccountNumber");
+					      	FedExAccountNumber= standard.getValue();
+					      	
+					      	standard=standardService.findByKey("FedexPassword");
+					      	FedexPassword= standard.getValue();
+					      	//inirCr
+					      	xmlFedex.inirCre(FedEXAuthenticationKey, FedExMeterNumber, FedExAccountNumber, FedexPassword);
+			    	  //finalizando variable de desarrolo
+			    	 
+			    		PropertyObjectHttp propertyObjectHttp = new PropertyObjectHttp();
+			    		
+						String cotizacion=xmlFedex.FedexLocation(quote);
+						//obtener xml para el envio
+			    		propertyObjectHttp.setBody(cotizacion);
+			    		// setear el tipo de request GET, POST, PUT etc...
+			    		propertyObjectHttp.setRequestMethod(propertyObjectHttp.POST);
+			    		// setear el url ala que se enviara 
+			    		propertyObjectHttp.setUrl("https://wsbeta.fedex.com:443/web-services");
+			    			http  httoUrlcon=new http();
+			    			String outputString;
+			    			Yng_Branch braFedex = new Yng_Branch();
+			    			FedexResponce fedex=new FedexResponce();
+			    			
+			    			try {
+							 outputString=httoUrlcon.request(propertyObjectHttp);
+							 braFedex=fedex.fedexBranch(outputString);							 
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+			    			//branchShipping.add(braFedex);
+			    			quoteFedex.setYng_Branch(braFedex);
+			    		//inicio de rate	
+			    		String rateFedex=xmlFedex.FedexRate(quote, getProductByIdItem);
+		    			//obtener xml para el envio
+			    		propertyObjectHttp.setBody(rateFedex);
+			    		// setear el tipo de request GET, POST, PUT etc...
+			    		//propertyObjectHttp.setRequestMethod(propertyObjectHttp.POST);
+			    		// setear el url ala que se enviara 
+			    		//propertyObjectHttp.setUrl("https://wsbeta.fedex.com:443/web-services");
+			    		//Yng_Quote quoteFedex=new Yng_Quote();
+			    		try {
+							 outputString=httoUrlcon.request(propertyObjectHttp);
+							 try {
+								quoteFedex=fedex.fedexQuote(outputString);
+							} catch (JSONException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}							 
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+			    		double dobleF = quoteFedex.getRateOrigin()*porce;
+			    		quoteFedex.setRate(dobleF);*/
+			    	  //fedex fin
+			    	 // quotesList.add(quoteFedex);//se comento solo para pruebas
 			    	  quotesList.add(quote);			    	  
 		  }
     	 return quotesList; 

@@ -13,6 +13,8 @@ import javax.persistence.Id;
 //import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import org.springframework.beans.factory.annotation.Value;
+
 @Entity
 public class Yng_Product {
 	@Id
@@ -47,26 +49,26 @@ public class Yng_Product {
 	private String productPeso="";
 	private String producVolumen="";
 	//private String 
-	
+	//@Column(name="productLength", columnDefinition="default '0'")
+	@Value("${some.key:0}")
+	private int productLength=0;
+	//@Column(name="productWidth", columnDefinition="default '0'")
+	@Value("${some.key:0}")
+	private int productWidth=0;
+	//@Column(name="productHeight", columnDefinition="default '0'")
+	@Value("${some.key:0}")
+	private int productHeight=0;
+	//@Column(name="productWeight", columnDefinition="default '0'")
+	@Value("${some.key:0}")
+	private int productWeight=0;
 	@OneToOne 
 	private Yng_Item yng_Item;
 
-	
 
-	public String getProductPeso() {
-		return productPeso;
-	}
 
-	public void setProductPeso(String productPeso) {
-		this.productPeso = productPeso;
-	}
-
-	public String getProducVolumen() {
-		return producVolumen;
-	}
-
-	public void setProducVolumen(String producVolumen) {
-		this.producVolumen = producVolumen;
+	public Yng_Product() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 
 	public String getProductCondition() {
@@ -125,6 +127,54 @@ public class Yng_Product {
 		this.productPagoEnvio = productPagoEnvio;
 	}
 
+	public String getProductPeso() {
+		return productPeso;
+	}
+
+	public void setProductPeso(String productPeso) {
+		this.productPeso = productPeso;
+	}
+
+	public String getProducVolumen() {
+		return producVolumen;
+	}
+
+	public void setProducVolumen(String producVolumen) {
+		this.producVolumen = producVolumen;
+	}
+
+	public int getProductLength() {
+		return productLength;
+	}
+
+	public void setProductLength(int productLength) {
+		this.productLength = productLength;
+	}
+
+	public int getProductWidth() {
+		return productWidth;
+	}
+
+	public void setProductWidth(int productWidth) {
+		this.productWidth = productWidth;
+	}
+
+	public int getProductHeight() {
+		return productHeight;
+	}
+
+	public void setProductHeight(int productHeight) {
+		this.productHeight = productHeight;
+	}
+
+	public int getProductWeight() {
+		return productWeight;
+	}
+
+	public void setProductWeight(int productWeight) {
+		this.productWeight = productWeight;
+	}
+
 	public Yng_Item getYng_Item() {
 		return yng_Item;
 	}
@@ -139,20 +189,11 @@ public class Yng_Product {
 				+ ", productSaleConditions=" + productSaleConditions + ", productQuantity=" + productQuantity
 				+ ", productFormDelivery=" + productFormDelivery + ", productPaymentMethod=" + productPaymentMethod
 				+ ", productWarranty=" + productWarranty + ", productPagoEnvio=" + productPagoEnvio + ", productPeso="
-				+ productPeso + ", producVolumen=" + producVolumen + ", yng_Item=" + yng_Item + "]";
+				+ productPeso + ", producVolumen=" + producVolumen + ", productLength=" + productLength
+				+ ", productWidth=" + productWidth + ", productHeight=" + productHeight + ", productWeight="
+				+ productWeight + ", yng_Item=" + yng_Item + "]";
 	}
 
-	public Yng_Product() {
-		super();
-	}
-
-
 	
 	
-	
-	
-	
-	
-    
-
 }

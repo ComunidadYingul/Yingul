@@ -1,5 +1,11 @@
 package com.valework.yingul.controller;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -8,6 +14,8 @@ import java.util.List;
 import java.util.Set;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -848,5 +856,62 @@ public class SellController {
     public List<Yng_StandarCostAndreani> findStandardCostAndreani(){
     	List<Yng_StandarCostAndreani> findStandardCostAndreani=standarCostAndreaniDao.findAll();
     	return findStandardCostAndreani;
+    }
+	@RequestMapping(value = "/pdf", method = RequestMethod.POST)
+	@ResponseBody
+    public String signupPostPDF(@Valid @RequestBody String image) throws MessagingException {
+		uploadPDF(image,"fedex2"); 
+		return "save";
+	}
+	public String uploadPDF(String StringBAse64,String name) throws MessagingException {
+		
+		String extension="pdf";
+		logger.info(extension);
+		byte[] bI = org.apache.commons.codec.binary.Base64.decodeBase64(StringBAse64.getBytes());
+		s3Services.uploadFile(name,extension, bI);
+		return "save";
+	}
+	
+	public static void decodeString(String stringBase64, String targetFile) throws Exception {
+
+        byte[] decodedBytes = Base64.decodeBase64(stringBase64.getBytes());
+
+        writeByteArraysToFile(targetFile, decodedBytes);
+    }
+
+    /**
+     * This method loads a file from file system and returns the byte array of the content.
+     * 
+     * @param fileName
+     * @return
+     * @throws Exception
+     */
+    public static byte[] loadFileAsBytesArray(String fileName) throws Exception {
+
+        File file = new File(fileName);
+        int length = (int) file.length();
+        BufferedInputStream reader = new BufferedInputStream(new FileInputStream(file));
+        byte[] bytes = new byte[length];
+        reader.read(bytes, 0, length);
+        reader.close();
+        return bytes;
+
+    }
+
+    /**
+     * This method writes byte array content into a file.
+     * 
+     * @param fileName
+     * @param content
+     * @throws IOException
+     */
+    public static void writeByteArraysToFile(String fileName, byte[] content) throws IOException {
+
+        File file = new File(fileName);
+        BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(file));
+        writer.write(content);
+        writer.flush();
+        writer.close();
+
     }
 }

@@ -43,7 +43,7 @@ public class Yng_Item {
 	private String productPagoEnvio;
 	private String logisticsName;
 	private String condition;
-	
+	private String internationalDeliveries="";
 	@OneToOne
 	private Yng_Ubication yng_Ubication;
 	
@@ -225,6 +225,14 @@ public class Yng_Item {
 
 	public void setCondition(String condition) {
 		this.condition = condition;
+	}
+
+	public String getInternationalDeliveries() {
+		return internationalDeliveries;
+	}
+
+	public void setInternationalDeliveries(String internationalDeliveries) {
+		this.internationalDeliveries = internationalDeliveries;
 	}
 	
 }
