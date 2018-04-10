@@ -32,11 +32,16 @@ public class Yng_Item {
 
 	private java.lang.String principalImage;
 	private String video;
+	private int quantity;
 	
 	private String type;
 	
 	@Value("${some.key:false}")
 	private boolean isOver;
+	
+	@Value("${some.key:true}")
+	private boolean enabled;
+	
 	private int dayPublication;
 	private int monthPublication;
 	private int yearPublication;
@@ -233,6 +238,21 @@ public class Yng_Item {
 
 	public void setInternationalDeliveries(String internationalDeliveries) {
 		this.internationalDeliveries = internationalDeliveries;
+	}
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+	
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 	
 }

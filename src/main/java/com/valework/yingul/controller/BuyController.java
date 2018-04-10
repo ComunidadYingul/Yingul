@@ -201,6 +201,9 @@ public class BuyController {
     public String createBuy(@Valid @RequestBody Yng_Buy buy) throws Exception {	
     	//para setear el item
     	Yng_Item itemTemp=itemDao.findByItemId(buy.getYng_item().getItemId());
+    	if(itemTemp.getQuantity()<=0||!itemTemp.isEnabled()) {
+    		return "Sin stock";
+    	}
     	buy.setYng_item(itemTemp);
     	//fin setear el item
     	//para setear el usuario y el vendedor 
@@ -417,7 +420,17 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 
 
 ////////////////////////////////////////
-    	System.out.println("buy:"+buy.toString());
+		//verificar que el stock funcione
+		Yng_Item itemTemp1=itemDao.findByItemId(buy.getYng_item().getItemId());
+		if(!itemTemp1.getType().equals("Service")) {
+			itemTemp1.setQuantity(itemTemp1.getQuantity()-1);
+		}
+		if(itemTemp1.getQuantity()<=0) {
+			itemTemp1.setEnabled(false);
+		}
+		itemTemp1=itemDao.save(itemTemp1);
+		buy.setYng_item(itemTemp1);
+		//
     	buy=buyDao.save(buy);    	
     	Yng_Confirm confirm=new Yng_Confirm();
     	confirm.setBuy(buy);
@@ -442,7 +455,7 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 					+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
 					+ "<br/> - No recibas el producto ni des el código si no estas conforme con el producto no aceptaremos reclamos posteriores"
 					+ "<br/> - Por tu seguridad no recibas el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
-					+ "<br/> - Despues de recibir el producto tienes 7 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero");
+					+ "<br/> - Despues de recibir el producto tienes 10 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero");
 		}
 		else {
 			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","Se realizo la venta del producto :  "+buy.getYng_item().getName() +"  Descripción : "+buy.getYng_item().getDescription()+ "  " +"  Precio: " +buy.getYng_item().getPrice()+"   Costo del envio : " +buy.getShipping().getYng_Quote().getRate()+  
@@ -453,7 +466,7 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 					"           "+buy.getShipping().getYng_Shipment().getTicket()
 					+ "   Al Momento de entregar el producto en la sucursal Andreani ingresa a: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/confirmws/"+confirm.getConfirmId()+" donde firmaras la entrega del producto en buenas condiciones"
 					+ "Despues de entregar el producto Andreani tiene 2 dias para entregarlo a tu comprador "
-					+ "Y tu comprador tiene 7 dias para observar sus condiciones, posterior a eso te daremos mas instrucciones para recoger tu dinero");
+					+ "Y tu comprador tiene 10 dias para observar sus condiciones, posterior a eso te daremos mas instrucciones para recoger tu dinero");
 			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible.");
 		}
     	return "save";

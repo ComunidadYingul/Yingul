@@ -36,8 +36,6 @@ public class Yng_Product {
 	private String productCondition;
 	@Column(name="productSaleConditions")
 	private String productSaleConditions;
-	@Column(name="productQuantity")	
-	private String productQuantity;
 	@Column(name="productFormDelivery")	
 	private String productFormDelivery;
 	@Column(name="productPaymentMethod")	
@@ -85,14 +83,6 @@ public class Yng_Product {
 
 	public void setProductSaleConditions(String productSaleConditions) {
 		this.productSaleConditions = productSaleConditions;
-	}
-
-	public String getProductQuantity() {
-		return productQuantity;
-	}
-
-	public void setProductQuantity(String productQuantity) {
-		this.productQuantity = productQuantity;
 	}
 
 	public String getProductFormDelivery() {
@@ -183,17 +173,4 @@ public class Yng_Product {
 		this.yng_Item = yng_Item;
 	}
 
-	@Override
-	public String toString() {
-		return "Yng_Product [productId=" + productId + ", productCondition=" + productCondition
-				+ ", productSaleConditions=" + productSaleConditions + ", productQuantity=" + productQuantity
-				+ ", productFormDelivery=" + productFormDelivery + ", productPaymentMethod=" + productPaymentMethod
-				+ ", productWarranty=" + productWarranty + ", productPagoEnvio=" + productPagoEnvio + ", productPeso="
-				+ productPeso + ", producVolumen=" + producVolumen + ", productLength=" + productLength
-				+ ", productWidth=" + productWidth + ", productHeight=" + productHeight + ", productWeight="
-				+ productWeight + ", yng_Item=" + yng_Item + "]";
-	}
-
-	
-	
 }
