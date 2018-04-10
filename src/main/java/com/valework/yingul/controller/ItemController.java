@@ -409,6 +409,18 @@ public class ItemController {
     	}
         
     }
+    @RequestMapping("/ListItemsToEdit/{username}")
+    public List<Yng_Item> ListItemsToEdit(@PathVariable("username") String username) {
+    	Yng_User yng_User = userDao.findByUsername(username);
+        List<Yng_Item> itemList = itemService.findByUser(yng_User);
+        Set<Yng_Item> listItemTemp = new HashSet<>();
+    	for (Yng_Item st : itemList) {
+    		if(!((st.getType().equals("Motorized")||st.getType().equals("Property"))&&(st.getQuantity()<=0||!st.isEnabled()))) {
+    			listItemTemp.add(st);
+    		}
+		}
+        return itemList;
+    }
     @RequestMapping(value = "/service/update", method = RequestMethod.POST)
    	@ResponseBody
        public String updateServicePost(@Valid @RequestBody Yng_Service service) throws MessagingException {
