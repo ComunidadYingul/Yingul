@@ -1,5 +1,6 @@
 package com.valework.yingul.controller;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -11,7 +12,7 @@ import javax.validation.Valid;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.http.HttpStatus;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.valework.yingul.PayUFunds;
-import org.testng.Assert;
+
 import org.xml.sax.InputSource;
 
 import com.valework.yingul.SmtpMailSender;
@@ -50,8 +51,12 @@ import com.valework.yingul.dao.ShipmentDao;
 import com.valework.yingul.dao.ShippingDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
+import com.valework.yingul.logistic.FedexResponce;
+import com.valework.yingul.logistic.FedexXML;
 import com.valework.yingul.logistic.GetStateSend;
 import com.valework.yingul.logistic.Logistic;
+import com.valework.yingul.logistic.PropertyObjectHttp;
+import com.valework.yingul.logistic.http;
 import com.valework.yingul.model.Yng_Branch;
 import com.valework.yingul.model.Yng_Buy;
 import com.valework.yingul.model.Yng_Card;
@@ -72,12 +77,14 @@ import com.valework.yingul.model.Yng_ResponseBody;
 import com.valework.yingul.model.Yng_ResponseHeader;
 import com.valework.yingul.model.Yng_Shipment;
 import com.valework.yingul.model.Yng_Shipping;
+import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_StateShipping;
 import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.CardService;
 import com.valework.yingul.service.CreditCardProviderService;
 import com.valework.yingul.service.ProductService;
+import com.valework.yingul.service.StandardService;
 import com.valework.yingul.VisaFunds;
 import com.valework.yingul.util.VisaAPIClient;
 //import andreaniapis.*;
@@ -86,6 +93,10 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 @RestController
 @RequestMapping("/buy")
 public class BuyController {
+	private  String FedEXAuthenticationKey ;
+	private  String FedExMeterNumber;
+	private  String FedExAccountNumber;
+	private  String FedexPassword;
 	@Autowired
 	private SmtpMailSender smtpMailSender;
 	@Autowired
@@ -151,6 +162,9 @@ public class BuyController {
 	CityDao cityDao;
 	@Autowired 
 	CountryDao countryDao;
+	Yng_Standard standard;
+	@Autowired
+	StandardService standardService;
 	@RequestMapping("/listCreditCard/all")
     public List<Yng_ListCreditCard> findProvinceList() {
         List<Yng_ListCreditCard> creditCardList = listCreditCardDao.findAll();
@@ -291,6 +305,7 @@ switch (nameMail.toLowerCase()) {
     default: typeMail = "Invalid Mail";
              break;
              }
+Yng_Shipment yng_Shipment=new Yng_Shipment();
 if(nameMail.toLowerCase()=="andreani") {
 tempShipping.setAndreani(andreani);
 tempShipping.setDhl(dhl);
@@ -308,7 +323,7 @@ quote=quoteDao.save(buy.getShipping().getYng_Quote());
 
 tempShipping.setYng_Quote(quote);
 
-	Yng_Shipment yng_Shipment=new Yng_Shipment();
+	
 	Logistic logistic=new Logistic();
 	String link="";
 	String pdf="";
@@ -553,5 +568,308 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 		}
     	    	
         return stateShipping;
+    }
+    
+    
+    
+    
+    
+    
+    
+    @RequestMapping(value = "/createBuy2", method = RequestMethod.POST)
+    @ResponseBody
+    public String createBuy2(@Valid @RequestBody Yng_Buy buy) throws Exception {	
+    	//para setear el item
+    	Yng_Item itemTemp=itemDao.findByItemId(buy.getYng_item().getItemId());
+    	buy.setYng_item(itemTemp);
+    	//fin setear el item
+    	//para setear el usuario y el vendedor 
+    	Yng_User userTemp= userDao.findByUsername(buy.getUser().getUsername());
+    	Yng_Country countrySw=countryDao.findByCountryId(userTemp.getYng_Ubication().getYng_Country().getCountryId());
+    	buy.setUser(userTemp);
+    	Yng_User sellerTemp = userDao.findByUsername(itemTemp.getUser().getUsername());
+    	buy.setSeller(sellerTemp);
+    	//hasta aqui para el usuario
+    	
+    	//Autorización de la tarjeta
+
+    	
+		
+    	//fin del metodo de pago
+    	Date time = new Date();
+    	DateFormat hourdateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    	buy.setTime(hourdateFormat.format(time));
+////////////////////////////////////////////////////////////
+System.out.println("shippingdaniel :"+ buy.getShipping().toString());
+String typeEnvio=buy.getShipping().getTypeShipping();
+if(buy.getShipping().getTypeShipping().equals("home")) {
+
+	Yng_Shipping shipping=null;
+	buy.setShipping(shipping);
+
+}
+else {
+
+///*nuevo codigo
+	
+Yng_Shipping tempShipping =new Yng_Shipping();
+
+Yng_Shipping ship =new Yng_Shipping();
+ship=buy.getShipping();
+String nameMail=ship.getYng_Quote().getYng_Branch().getNameMail();
+
+
+String typeMail;
+boolean andreani=false,dhl=false,fedex=false;
+
+switch (nameMail.toLowerCase()) {
+    case "andreani":  andreani = true;typeMail="andreani";
+             break;
+    case "dhl":  dhl = true;typeMail="dhl";
+             break;
+    case "fedex":  fedex = true;typeMail="fedex";
+             break;
+    default: typeMail = "Invalid Mail";
+             break;
+             }
+tempShipping.setAndreani(andreani);
+tempShipping.setDhl(dhl);
+tempShipping.setFedex(fedex);
+Yng_Shipment yng_Shipment=new Yng_Shipment();
+
+			if(nameMail.toLowerCase()=="fedex") {
+				
+				tempShipping.setShippingStatus("imprecionTicket");
+				Yng_Branch branchTemp=branchDao.save(buy.getShipping().getYng_Quote().getYng_Branch());
+				Yng_Quote quote=new Yng_Quote();
+				quote=buy.getShipping().getYng_Quote();
+				quote.setYng_Item(buy.getYng_item());
+				quote.setYng_User(buy.getUser());
+				quote.setYng_Branch(branchTemp);
+				quote=quoteDao.save(buy.getShipping().getYng_Quote());				
+				tempShipping.setYng_Quote(quote);
+				 FedexXML xmlFedex=new FedexXML();
+		    	  //iniciando variable de desarrolo
+				    	  standard= new Yng_Standard();
+				      	standard=standardService.findByKey("FedEXAuthenticationKey");
+				      	FedEXAuthenticationKey= standard.getValue();
+				      	
+				      	standard=standardService.findByKey("FedExMeterNumber");
+				      	FedExMeterNumber= standard.getValue();
+				      	
+				      	standard=standardService.findByKey("FedExAccountNumber");
+				      	FedExAccountNumber= standard.getValue();
+				      	
+				      	standard=standardService.findByKey("FedexPassword");
+				      	FedexPassword= standard.getValue();
+				      	//inirCr
+				      	xmlFedex.inirCre(FedEXAuthenticationKey, FedExMeterNumber, FedExAccountNumber, FedexPassword);
+		    	  //finalizando variable de desarrolo
+				      	Yng_Person per=new Yng_Person(); //personDao..findByYng_User(buy.getUser().getUserId());
+				        List<Yng_Person> personList=personService.findByUser(buy.getUser());
+				        for (Yng_Person yng_Person : personList) {
+							System.out.println(""+yng_Person.toString());
+							per=yng_Person;
+						}
+				        Yng_Person perItem=new Yng_Person(); //personDao..findByYng_User(buy.getUser().getUserId());
+				        List<Yng_Person> personListItem=personService.findByUser(buy.getUser());
+				        for (Yng_Person yng_Person : personListItem) {
+							System.out.println("perItem"+yng_Person.toString());
+							perItem=yng_Person;
+						}
+				        Yng_Product getProductByIdItem=new Yng_Product();
+					   	  getProductByIdItem=getProductByIdItem(quote.getYng_Item().getItemId());
+		    	 
+		    		PropertyObjectHttp propertyObjectHttp = new PropertyObjectHttp();
+		    		
+					String cotizacion=xmlFedex.FedexShipping(per, tempShipping, perItem, getProductByIdItem);
+					//obtener xml para el envio
+		    		propertyObjectHttp.setBody(cotizacion);
+		    		// setear el tipo de request GET, POST, PUT etc...
+		    		propertyObjectHttp.setRequestMethod(propertyObjectHttp.POST);
+		    		// setear el url ala que se enviara 
+		    		propertyObjectHttp.setUrl("https://wsbeta.fedex.com:443/web-services");
+		    			http  httoUrlcon=new http();
+		    			String outputString;
+		    			Yng_Shipment shippFedex = new Yng_Shipment();
+		    			FedexResponce fedexR=new FedexResponce();
+		    			
+		    			try {
+						 outputString=httoUrlcon.request(propertyObjectHttp);
+						 shippFedex=fedexR.fedexShipment(outputString);							 
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+		    			//branchShipping.add(braFedex);
+		    			//quoteFedex.setYng_Branch(braFedex);
+				
+				yng_Shipment.setShipmentCod(shippFedex.getShipmentCod());
+				SellController img=new SellController();
+				img.uploadPDF(""+shippFedex.getShipmentCod(), "");
+				
+				String pdf="https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/image/fedexPdf/"+shippFedex.getShipmentCod()+".pdf";
+				yng_Shipment.setTicket(pdf);
+				yng_Shipment.setTypeMail(typeMail);
+				yng_Shipment.setYng_Item(buy.getYng_item());
+				yng_Shipment.setYng_User(buy.getUser());
+				Yng_Shipment shipmentTemp=new Yng_Shipment();
+				shipmentTemp=yng_Shipment;
+				System.out.println("shipmentTemp"+shipmentTemp.toString());
+				yng_Shipment=shipmentDao.save(shipmentTemp);
+				
+			}
+
+
+
+
+			if(nameMail.toLowerCase()=="andreanidd2") {	
+			
+			tempShipping.setShippingStatus("imprecionTicket");
+			Yng_Branch branchTemp=branchDao.save(buy.getShipping().getYng_Quote().getYng_Branch());
+			Yng_Quote quote=new Yng_Quote();
+			quote=buy.getShipping().getYng_Quote();
+			quote.setYng_Item(buy.getYng_item());
+			quote.setYng_User(buy.getUser());
+			quote.setYng_Branch(branchTemp);
+			
+			quote=quoteDao.save(buy.getShipping().getYng_Quote());
+			
+			tempShipping.setYng_Quote(quote);
+			
+				
+				Logistic logistic=new Logistic();
+				String link="";
+				String pdf="";
+				String numberAndreani="";
+				try {
+					 Yng_Product getProductByIdItem=new Yng_Product();
+			   	  getProductByIdItem=getProductByIdItem(quote.getYng_Item().getItemId());
+					
+					SAXParserFactory saxParseFactory=SAXParserFactory.newInstance();
+			        SAXParser sAXParser=saxParseFactory.newSAXParser();
+			        Yng_Person per=new Yng_Person(); //personDao..findByYng_User(buy.getUser().getUserId());
+			        List<Yng_Person> personList=personService.findByUser(buy.getUser());
+			        for (Yng_Person yng_Person : personList) {
+						System.out.println(""+yng_Person.toString());
+						per=yng_Person;
+					}
+			        Yng_Person perItem=new Yng_Person(); //personDao..findByYng_User(buy.getUser().getUserId());
+			        List<Yng_Person> personListItem=personService.findByUser(buy.getUser());
+			        for (Yng_Person yng_Person : personListItem) {
+						System.out.println("perItem"+yng_Person.toString());
+						perItem=yng_Person;
+					}
+					String xml=logistic.andreaniRemitenteWSDL(logistic.andreaniStringRe(per,tempShipping,perItem,getProductByIdItem));
+			        com.valework.yingul.logistic.EnvioHandler handlerS=new com.valework.yingul.logistic.EnvioHandler();
+			        
+			        sAXParser.parse(new InputSource(new StringReader(xml)), handlerS);
+			        ArrayList<com.valework.yingul.logistic.EnvioResponce> envios=handlerS.getEnvioResponse();
+			        System.out.println("aniem");
+			        for (com.valework.yingul.logistic.EnvioResponce versione : envios) {
+			        	numberAndreani=versione.getNumeroAndreani();
+			            System.out.println("versione.getNumero1:"+numberAndreani);
+			        	}
+			        System.out.println("logistic.andreaniPdfLink:"+numberAndreani);
+					System.out.println("res:"+xml);
+			        yng_Shipment.setRespuesta(xml);
+			        int i = 0;
+			System.out.println("numberAndreani  daniel :"+numberAndreani);
+			System.out.println(":"+numberAndreani+":");	        
+			        
+					//link=logistic.andreaniPdfLink("310000003497162");
+					link=logistic.andreaniPdfLink(numberAndreani +"");
+			        while (link.equals(logistic.errorPDF())) {          //Condición trivial: siempre cierta
+			            i++;
+			            link=logistic.andreaniPdfLink(numberAndreani +"");
+			            System.out.println ("Valor de i: " + i);
+			            if (i==11) { break;}
+			        } 
+					System.out.println("linkda: "+link);
+					if (link != null) {
+			            //strResponse = link;
+			            com.valework.yingul.logistic.ImprimirConstanciaHandler handlerI=new com.valework.yingul.logistic.ImprimirConstanciaHandler();
+			            sAXParser.parse(new InputSource(new StringReader(link)), handlerI);
+			            ArrayList<com.valework.yingul.logistic.ImprimirConstanciaResponse> impr=handlerI.getImprimirResponce();
+			            for (com.valework.yingul.logistic.ImprimirConstanciaResponse versione : impr) {
+			            	pdf=versione.getPdfLinkFile();
+			                System.out.println("versione.getNumero2:"+versione.getPdfLinkFile());            
+			            }
+			        }
+			
+			        System.out.println("link pdf : "+pdf);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				
+				yng_Shipment.setShipmentCod(numberAndreani);
+				yng_Shipment.setTicket(pdf);
+				yng_Shipment.setTypeMail(typeMail);
+				yng_Shipment.setYng_Item(buy.getYng_item());
+				yng_Shipment.setYng_User(buy.getUser());
+				Yng_Shipment shipmentTemp=new Yng_Shipment();
+				shipmentTemp=yng_Shipment;
+				System.out.println("shipmentTemp"+shipmentTemp.toString());
+				yng_Shipment=shipmentDao.save(shipmentTemp);
+			}
+			
+	//-----fin del nuevo codigo
+	tempShipping.setYng_Shipment(yng_Shipment);
+
+tempShipping.setTypeShipping(typeEnvio);
+tempShipping=shippingDao.save(tempShipping);
+
+
+//shi
+buy.setShipping(tempShipping);
+
+
+buy.setShipping(shippingDao.save(buy.getShipping()));
+}
+
+
+////////////////////////////////////////
+    	System.out.println("buy:"+buy.toString());
+    	buy=buyDao.save(buy);    	
+    	Yng_Confirm confirm=new Yng_Confirm();
+    	confirm.setBuy(buy);
+    	confirm.setBuyerConfirm(false);
+    	confirm.setSellerConfirm(false);
+    	confirm.setCodeConfirm(1000 + (int)(Math.random() * ((9999 - 1000) + 1)));
+    	confirm.setStatus("pending");
+    	confirm.setBuyer(buy.getUser());
+    	confirm.setSeller(buy.getSeller());
+    	confirm=confirmDao.save(confirm);
+    	//modificar los correos para pagos no con tarjeta
+		
+		if(typeEnvio.equals("home")) {
+			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA"," Se realizo la venta del producto :  "+buy.getYng_item().getName()+ "  "+"  Precio:" +buy.getYng_item().getPrice()+ "  " +"    los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección:"+buy.getYng_item().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber()
+					+ "<br/> - Al Momento de entregar el producto al comprador ingresa a: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones "
+					+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
+					+ "<br/> - No entregues el producto sin que tu y el vendedor firmen la entrega no aceptaremos reclamos si la confirmacion no esta firmada por ambas partes"
+					+ "<br/> - Por tu seguridad no entregues el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
+					+ "<br/> - Despues de entregar el producto tu comprador tiene 7 dias para observar sus condiciones posterior a eso te daremos mas instrucciones para recoger tu dinero");
+			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" Cumpla las siguientes instrucciones:."
+					+ "<br/> - Al Momento de recibir el producto dile este codigo a tu vendedor: "+confirm.getCodeConfirm()+" si el producto esta en buenas condiciones "
+					+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
+					+ "<br/> - No recibas el producto ni des el código si no estas conforme con el producto no aceptaremos reclamos posteriores"
+					+ "<br/> - Por tu seguridad no recibas el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
+					+ "<br/> - Despues de recibir el producto tienes 7 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero");
+		}
+		else {
+			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","Se realizo la venta del producto :  "+buy.getYng_item().getName() +"  Descripción : "+buy.getYng_item().getDescription()+ "  " +"  Precio: " +buy.getYng_item().getPrice()+"   Costo del envio : " +buy.getShipping().getYng_Quote().getRate()+  
+					"      --Imprimir la etiqueta de Andreani "
+					+ "--Preparar y embalar el paquete junto a la etiqueta " + 
+					"      --Preparar y embalar el paquete junto a la etiqueta   " + 
+					"      --Déjalo en la sucursal Andreani más cercana ." + 
+					"           "+buy.getShipping().getYng_Shipment().getTicket()
+					+ "   Al Momento de entregar el producto en la sucursal Andreani ingresa a: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/confirmws/"+confirm.getConfirmId()+" donde firmaras la entrega del producto en buenas condiciones"
+					+ "Despues de entregar el producto Andreani tiene 2 dias para entregarlo a tu comprador "
+					+ "Y tu comprador tiene 7 dias para observar sus condiciones, posterior a eso te daremos mas instrucciones para recoger tu dinero");
+			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible.");
+		}
+    	return "save";
     }
 }

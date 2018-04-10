@@ -22,7 +22,7 @@ public class Yng_Shipment {
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
 	private Yng_User yng_User;
-	private String ticket="";
+	private java.lang.String ticket="";
 	//numero para realizar el seguimiento si lo tiene
 	private String shipmentCod="";
 	public Yng_Shipment() {

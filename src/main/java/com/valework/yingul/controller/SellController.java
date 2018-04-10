@@ -868,7 +868,7 @@ public class SellController {
 		String extension="pdf";
 		logger.info(extension);
 		byte[] bI = org.apache.commons.codec.binary.Base64.decodeBase64(StringBAse64.getBytes());
-		s3Services.uploadFile(name,extension, bI);
+		s3Services.uploadFile("fedexPdf/"+name,extension, bI);
 		return "save";
 	}
 	

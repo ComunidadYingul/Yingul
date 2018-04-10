@@ -92,8 +92,6 @@ public class FedexResponce {
 			shipm.setRespuesta(xml);			
 			shipm.setShipmentCod(MasterTrackingId);
 			shipm.setTicket(ticket);			
-			//shipm.setTypeMail(typeMail);
-			//shipm.set
 			JSONObject xmlJSONObj = XML.toJSONObject(outputString);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
