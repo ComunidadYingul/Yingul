@@ -20,6 +20,7 @@ public class Yng_Branch {
 	private String location="";
 	private String schedules="";
 	private String dateDelivery="";
+	@Column(columnDefinition = "text")
 	private java.lang.String respuesta="";
 	public Yng_Branch() {
 		super();

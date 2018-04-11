@@ -39,7 +39,7 @@ import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.ListCreditCardDao;
 import com.valework.yingul.dao.PaymentDao;
 
-import com.valework.yingul.dao.PersonDao;
+//import com.valework.yingul.dao.PersonDao;
 import com.valework.yingul.dao.ProvinceDao;
 import com.valework.yingul.dao.QuoteDao;
 import com.valework.yingul.dao.RequestBodyDao;
@@ -70,11 +70,11 @@ import com.valework.yingul.model.Yng_Payment;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Product;
 import com.valework.yingul.model.Yng_Quote;
-import com.valework.yingul.model.Yng_Request;
-import com.valework.yingul.model.Yng_RequestBody;
-import com.valework.yingul.model.Yng_Response;
-import com.valework.yingul.model.Yng_ResponseBody;
-import com.valework.yingul.model.Yng_ResponseHeader;
+//import com.valework.yingul.model.Yng_Request;
+//import com.valework.yingul.model.Yng_RequestBody;
+//import com.valework.yingul.model.Yng_Response;
+//import com.valework.yingul.model.Yng_ResponseBody;
+//import com.valework.yingul.model.Yng_ResponseHeader;
 import com.valework.yingul.model.Yng_Shipment;
 import com.valework.yingul.model.Yng_Shipping;
 import com.valework.yingul.model.Yng_Standard;
@@ -85,7 +85,7 @@ import com.valework.yingul.service.CardService;
 import com.valework.yingul.service.CreditCardProviderService;
 import com.valework.yingul.service.ProductService;
 import com.valework.yingul.service.StandardService;
-import com.valework.yingul.VisaFunds;
+//import com.valework.yingul.VisaFunds;
 import com.valework.yingul.util.VisaAPIClient;
 //import andreaniapis.*;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -309,7 +309,8 @@ switch (nameMail.toLowerCase()) {
              break;
              }
 Yng_Shipment yng_Shipment=new Yng_Shipment();
-if(nameMail.toLowerCase()=="andreani") {
+System.out.println(nameMail.toLowerCase());
+if(typeMail.equals("andreani")) {
 tempShipping.setAndreani(andreani);
 tempShipping.setDhl(dhl);
 tempShipping.setFedex(fedex);
@@ -408,8 +409,8 @@ System.out.println(":"+numberAndreani+":");
 	tempShipping.setYng_Shipment(yng_Shipment);
 
 tempShipping.setTypeShipping(typeEnvio);
+System.out.println("tempShipping:"+tempShipping.toString());
 tempShipping=shippingDao.save(tempShipping);
-
 
 //shi
 buy.setShipping(tempShipping);
@@ -445,7 +446,7 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 		
 		if(typeEnvio.equals("home")) {
 			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA"," Se realizo la venta del producto :  "+buy.getYng_item().getName()+ "  "+"  Precio:" +buy.getYng_item().getPrice()+ "  " +"    los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección:"+buy.getYng_item().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber()
-					+ "<br/> - Al Momento de entregar el producto al comprador ingresa a: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones "
+					+ "<br/> - Al Momento de entregar el producto al comprador ingresa a: http://www.yingul.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones "
 					+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
 					+ "<br/> - No entregues el producto sin que tu y el vendedor firmen la entrega no aceptaremos reclamos si la confirmacion no esta firmada por ambas partes"
 					+ "<br/> - Por tu seguridad no entregues el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
@@ -464,7 +465,7 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 					"      --Preparar y embalar el paquete junto a la etiqueta   " + 
 					"      --Déjalo en la sucursal Andreani más cercana ." + 
 					"           "+buy.getShipping().getYng_Shipment().getTicket()
-					+ "   Al Momento de entregar el producto en la sucursal Andreani ingresa a: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/confirmws/"+confirm.getConfirmId()+" donde firmaras la entrega del producto en buenas condiciones"
+					+ "   Al Momento de entregar el producto en la sucursal Andreani ingresa a:  http://www.yingul.com/confirmws/"+confirm.getConfirmId()+" donde firmaras la entrega del producto en buenas condiciones"
 					+ "Despues de entregar el producto Andreani tiene 2 dias para entregarlo a tu comprador "
 					+ "Y tu comprador tiene 10 dias para observar sus condiciones, posterior a eso te daremos mas instrucciones para recoger tu dinero");
 			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible.");
@@ -859,7 +860,7 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 		
 		if(typeEnvio.equals("home")) {
 			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA"," Se realizo la venta del producto :  "+buy.getYng_item().getName()+ "  "+"  Precio:" +buy.getYng_item().getPrice()+ "  " +"    los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección:"+buy.getYng_item().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber()
-					+ "<br/> - Al Momento de entregar el producto al comprador ingresa a: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones "
+					+ "<br/> - Al Momento de entregar el producto al comprador ingresa a:  http://www.yingul.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones "
 					+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
 					+ "<br/> - No entregues el producto sin que tu y el vendedor firmen la entrega no aceptaremos reclamos si la confirmacion no esta firmada por ambas partes"
 					+ "<br/> - Por tu seguridad no entregues el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
@@ -878,7 +879,7 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 					"      --Preparar y embalar el paquete junto a la etiqueta   " + 
 					"      --Déjalo en la sucursal Andreani más cercana ." + 
 					"           "+buy.getShipping().getYng_Shipment().getTicket()
-					+ "   Al Momento de entregar el producto en la sucursal Andreani ingresa a: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/confirmws/"+confirm.getConfirmId()+" donde firmaras la entrega del producto en buenas condiciones"
+					+ "   Al Momento de entregar el producto en la sucursal Andreani ingresa a:  http://www.yingul.com/confirmws/"+confirm.getConfirmId()+" donde firmaras la entrega del producto en buenas condiciones"
 					+ "Despues de entregar el producto Andreani tiene 2 dias para entregarlo a tu comprador "
 					+ "Y tu comprador tiene 7 dias para observar sus condiciones, posterior a eso te daremos mas instrucciones para recoger tu dinero");
 			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible.");

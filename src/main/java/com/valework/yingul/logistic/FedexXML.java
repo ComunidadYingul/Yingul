@@ -147,18 +147,7 @@ public class FedexXML {
 	}
 
 	public String FedexLocation(Yng_Quote quo) {
-		/*standard= new Yng_Standard();
-    	standard=standardService.findByKey("FedEXAuthenticationKey");
-    	FedEXAuthenticationKey= standard.getValue();
-    	
-    	standard=standardService.findByKey("FedExMeterNumber");
-    	FedExMeterNumber= standard.getValue();
-    	
-    	standard=standardService.findByKey("FedExAccountNumber");
-    	FedExAccountNumber= standard.getValue();*/
-    	
-    	//standard=standardService.findByKey("FedexPassword");
-    	//FedexPassword= standard.getValue();
+
     	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd") {
 	        public StringBuffer format(Date date, StringBuffer toAppendTo, java.text.FieldPosition pos) {
 	            StringBuffer toFix = super.format(date, toAppendTo, pos);
@@ -235,17 +224,7 @@ public class FedexXML {
 	}
 
 	public String FedexShipping(Yng_Person per,Yng_Shipping shi,Yng_Person perItem,Yng_Product pro) {
-		/*standard= new Yng_Standard();
-    	standard=standardService.findByKey("FedEXAuthenticationKey");
-    	FedEXAuthenticationKey= standard.getValue();
-    	
-    	standard=standardService.findByKey("FedExMeterNumber");
-    	FedExMeterNumber= standard.getValue();
-    	
-    	standard=standardService.findByKey("FedExAccountNumber");
-    	FedExAccountNumber= standard.getValue();
-    	
-    	standard=standardService.findByKey("FedexPassword");*/
+
     	FedexPassword= standard.getValue();
     	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ") {
 	        public StringBuffer format(Date date, StringBuffer toAppendTo, java.text.FieldPosition pos) {
@@ -253,7 +232,6 @@ public class FedexXML {
 	            return toFix.insert(toFix.length()-2, ':');
 	        };
 	    };
-	    // Usage:
 	    String fechaA=dateFormat.format(new Date());
 		return " <?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n" + 
 				" <soapenv:Body>\r\n" + 
