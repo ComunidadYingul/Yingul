@@ -122,7 +122,7 @@ public class PayUFunds {
 	    		"         \"description\": \"payment test\",\r\n" + 
 	    		"         \"language\": \"es\",\r\n" + 
 	    		"         \"signature\": \""+signature+"\",\r\n" + 
-	    		"         \"notifyUrl\": \"http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com\",\r\n" + 
+	    		"         \"notifyUrl\": \"http://www.yingul.com\",\r\n" + 
 	    		"         \"additionalValues\": {\r\n" + 
 	    		"            \"TX_VALUE\": {\r\n" + 
 	    		"               \"value\": "+buy.getCost()+",\r\n" + 

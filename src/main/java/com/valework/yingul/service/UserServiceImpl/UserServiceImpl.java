@@ -61,6 +61,9 @@ public class UserServiceImpl implements UserService{
             }
 
             user.getUserRoles().addAll(userRoles);
+            user.setProfileBanner("sampleBanner.jpg");
+            user.setProfilePhoto("profile.jpg");
+            user.setProfileVideo("https://www.youtube.com/embed/1AV37mvCHQo");
             
             localUser = userDao.save(user);
         }
