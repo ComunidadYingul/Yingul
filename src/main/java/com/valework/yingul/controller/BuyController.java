@@ -39,7 +39,7 @@ import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.ListCreditCardDao;
 import com.valework.yingul.dao.PaymentDao;
 
-import com.valework.yingul.dao.PersonDao;
+//import com.valework.yingul.dao.PersonDao;
 import com.valework.yingul.dao.ProvinceDao;
 import com.valework.yingul.dao.QuoteDao;
 import com.valework.yingul.dao.RequestBodyDao;
@@ -70,11 +70,11 @@ import com.valework.yingul.model.Yng_Payment;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Product;
 import com.valework.yingul.model.Yng_Quote;
-import com.valework.yingul.model.Yng_Request;
-import com.valework.yingul.model.Yng_RequestBody;
-import com.valework.yingul.model.Yng_Response;
-import com.valework.yingul.model.Yng_ResponseBody;
-import com.valework.yingul.model.Yng_ResponseHeader;
+//import com.valework.yingul.model.Yng_Request;
+//import com.valework.yingul.model.Yng_RequestBody;
+//import com.valework.yingul.model.Yng_Response;
+//import com.valework.yingul.model.Yng_ResponseBody;
+//import com.valework.yingul.model.Yng_ResponseHeader;
 import com.valework.yingul.model.Yng_Shipment;
 import com.valework.yingul.model.Yng_Shipping;
 import com.valework.yingul.model.Yng_Standard;
@@ -85,7 +85,7 @@ import com.valework.yingul.service.CardService;
 import com.valework.yingul.service.CreditCardProviderService;
 import com.valework.yingul.service.ProductService;
 import com.valework.yingul.service.StandardService;
-import com.valework.yingul.VisaFunds;
+//import com.valework.yingul.VisaFunds;
 import com.valework.yingul.util.VisaAPIClient;
 //import andreaniapis.*;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -309,7 +309,8 @@ switch (nameMail.toLowerCase()) {
              break;
              }
 Yng_Shipment yng_Shipment=new Yng_Shipment();
-if(nameMail.toLowerCase()=="andreani") {
+System.out.println(nameMail.toLowerCase());
+if(typeMail.equals("andreani")) {
 tempShipping.setAndreani(andreani);
 tempShipping.setDhl(dhl);
 tempShipping.setFedex(fedex);
@@ -408,8 +409,8 @@ System.out.println(":"+numberAndreani+":");
 	tempShipping.setYng_Shipment(yng_Shipment);
 
 tempShipping.setTypeShipping(typeEnvio);
+System.out.println("tempShipping:"+tempShipping.toString());
 tempShipping=shippingDao.save(tempShipping);
-
 
 //shi
 buy.setShipping(tempShipping);

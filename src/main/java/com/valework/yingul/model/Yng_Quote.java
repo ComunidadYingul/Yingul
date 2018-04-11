@@ -1,5 +1,6 @@
 package com.valework.yingul.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -14,6 +15,8 @@ public class Yng_Quote {
     private long quoteId;
 	private double rate;
 	private double rateOrigin;
+	private int quantity;
+	@Column(columnDefinition = "text")
 	private java.lang.String respuesta="";
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "item_id")
@@ -70,9 +73,17 @@ public class Yng_Quote {
 	public void setYng_Branch(Yng_Branch yng_Branch) {
 		this.yng_Branch = yng_Branch;
 	}
+	public int getQuantity() {
+		return quantity;
+	}
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
 	@Override
 	public String toString() {
-		return "Yng_Quote [quoteId=" + quoteId + ", rate=" + rate + ", rateOrigin=" + rateOrigin + ", respuesta="
-				+ respuesta + ", yng_Item=" + yng_Item + ", yng_User=" + yng_User + ", yng_Branch=" + yng_Branch + "]";
-	}	
+		return "Yng_Quote [quoteId=" + quoteId + ", rate=" + rate + ", rateOrigin=" + rateOrigin + ", quantity="
+				+ quantity + ", respuesta=" + respuesta + ", yng_Item=" + yng_Item + ", yng_User=" + yng_User
+				+ ", yng_Branch=" + yng_Branch + "]";
+	}
+		
 }

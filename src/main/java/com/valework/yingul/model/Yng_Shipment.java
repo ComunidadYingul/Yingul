@@ -14,6 +14,7 @@ public class Yng_Shipment {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "shipmentId", nullable = false, updatable = false)
     private Long shipmentId;
+	@Column(columnDefinition = "text")
 	private java.lang.String respuesta="";
 	private String typeMail="";
 	@ManyToOne(fetch = FetchType.EAGER)

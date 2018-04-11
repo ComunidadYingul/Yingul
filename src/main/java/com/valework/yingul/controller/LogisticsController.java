@@ -1486,16 +1486,24 @@ public class LogisticsController {
 			    	  
 			    	  cotizarAndreani.setCodigoDeCliente(ClienteAndreni);
 			    	  cotizarAndreani.setCodigoDeSucursal(""+quote.getYng_Item().getYng_Ubication().getCodAndreani());
-			    	  System.out.println("postal:"+quote.getYng_User().getYng_Ubication().getPostalCode());
-			    	  cotizarAndreani.setCodigoPostal(quote.getYng_User().getYng_Ubication().getPostalCode());
+			    	  System.out.println("postal:"+postalCode);
+			    	  cotizarAndreani.setCodigoPostal(postalCode);//quote.getYng_User().getYng_Ubication().getPostalCode()
 			    	  cotizarAndreani.setNumeroDeContrato(ContratoAndreni);
 			    	  cotizarAndreani.setPassword(PasswordAndreni);
 			    	  cotizarAndreani.setUsername(UserNameAndrani);
 			    	  Yng_Product getProductByIdItem=new Yng_Product();
 			    	  getProductByIdItem=getProductByIdItem(quote.getYng_Item().getItemId());
-			    	  cotizarAndreani.setPeso(""+getProductByIdItem.getProductPeso());
+			    	  
+			    	  int peso=0;
+			    	  peso=getProductByIdItem.getProductWeight();
+			    	  peso=Integer.parseInt(getProductByIdItem.getProductPeso());
+			    	  cotizarAndreani.setPeso(""+(peso*quo.getQuantity()));
 			    	  cotizarAndreani.setValorDeclarado(""+quote.getYng_Item().getPrice());
-			    	  cotizarAndreani.setVolumen(""+getProductByIdItem.getProducVolumen());
+			    	  
+			    	  int volumen=0;
+			    	  volumen=getProductByIdItem.getProductHeight()*getProductByIdItem.getProductLength()*getProductByIdItem.getProductWidth();
+			    	  volumen=Integer.parseInt(getProductByIdItem.getProducVolumen());
+			    	  cotizarAndreani.setVolumen(""+(volumen*quo.getQuantity()));
 			    	  CotizarEnvioResponse andreaniQuote=new CotizarEnvioResponse();
 				    	  try {
 				    		  andreaniQuote=andreaniQuote(cotizarAndreani);
