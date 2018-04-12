@@ -865,7 +865,7 @@ public class LogisticsController {
 				"        <ns3:Security env:mustUnderstand=\"true\">\r\n" + 
 				"            <ns3:UsernameToken>\r\n" + 
 				"                <ns3:Username>"
-				+ cot.getPassword()
+				+ cot.getUsername()
 				+ "</ns3:Username>\r\n" + 
 				"                <ns3:Password>"
 				+ cot.getPassword()
@@ -1064,13 +1064,13 @@ public class LogisticsController {
 			"                        <item>\r\n" + 
 			"                            <key xsi:type=\"xsd:string\">Cliente</key>\r\n" + 
 			"                            <value xsi:type=\"xsd:string\">"
-			+ "CL0003750"
+			+ cotizarTemp.getCodigoDeCliente()
 			+ "</value>\r\n" + 
 			"                        </item>\r\n" + 
 			"                        <item>\r\n" + 
 			"                            <key xsi:type=\"xsd:string\">Contrato</key>\r\n" + 
 			"                            <value xsi:type=\"xsd:string\">"
-			+ "400006711"
+			+ cotizarTemp.getNumeroDeContrato()
 			+ "</value>\r\n" + 
 			"                        </item>\r\n" + 
 			"                        <item>\r\n" + 
