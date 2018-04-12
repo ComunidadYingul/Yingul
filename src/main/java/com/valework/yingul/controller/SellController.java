@@ -277,6 +277,8 @@ public class SellController {
 		}
 		temp.setType("Service");
 		temp.setQuantity(1);
+		temp.setOver(false);
+		temp.setEnabled(true);
 		itemService.save(temp);
 		int k=0;
 		for (Yng_ItemImage st : itemImage) {
@@ -416,6 +418,8 @@ public class SellController {
 		}
         
 		temp.setType("Product");
+		temp.setOver(false);
+		temp.setEnabled(true);
 		if(productTemp.getProductCondition().equals("Nuevo")) {
 			temp.setCondition("New");
 		}else {
@@ -555,6 +559,8 @@ public class SellController {
 		
 		temp.setType("Property");
 		temp.setQuantity(1);
+		temp.setOver(false);
+		temp.setEnabled(true);
 		temp.setCondition(propertyTemp.getCondition());
 		itemService.save(temp);
 		int k=0;
@@ -719,7 +725,8 @@ public class SellController {
 		}
 		
 		temp.setType("Motorized");
-		temp.setQuantity(1);
+		temp.setOver(false);
+		temp.setEnabled(true);
 		if(motorizedTemp.getMotorizedKilometers()==0) {
 			temp.setCondition("New");
 		}else {

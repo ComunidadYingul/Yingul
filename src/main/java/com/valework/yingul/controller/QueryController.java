@@ -64,7 +64,7 @@ public class QueryController {
     	else {
 			queryDao.save(query);
 		    try {
-				smtpMailSender.send(query.getYng_Item().getUser().getEmail(), "Consulta urgente sobre su Item", query.getUser().getUsername()+" pregunto "+query.getQuery()+" sobre el Item "+query.getYng_Item().getName()+". Puedes responder las consultas en: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/userFront/sales/query");
+				smtpMailSender.send(query.getYng_Item().getUser().getEmail(), "Consulta urgente sobre su Item", query.getUser().getUsername()+" pregunto "+query.getQuery()+" sobre el Item "+query.getYng_Item().getName()+". Puedes responder las consultas en: http://www.yingul.com/userFront/sales/query");
 			} catch (MessagingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -126,7 +126,7 @@ public class QueryController {
     	queryTemp.setDate(hourdateFormat.format(date));
     	queryTemp.setStatus("responded");
     	try {
-			smtpMailSender.send(queryTemp.getUser().getEmail(), "Respuesta sobre "+queryTemp.getYng_Item().getName(), queryTemp.getYng_Item().getUser().getUsername()+" respondio!!! sobre" +queryTemp.getYng_Item().getName()+". Puedes ver la repuesta en: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/itemDetail/"+queryTemp.getYng_Item().getItemId()+" o ver todas las respuestas en http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/userFront/purchases/query");
+			smtpMailSender.send(queryTemp.getUser().getEmail(), "Respuesta sobre "+queryTemp.getYng_Item().getName(), queryTemp.getYng_Item().getUser().getUsername()+" respondio!!! sobre" +queryTemp.getYng_Item().getName()+". Puedes ver la repuesta en: http://www.yingul.com/itemDetail/"+queryTemp.getYng_Item().getItemId()+" o ver todas las respuestas en http://www.yingul.com/userFront/purchases/query");
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

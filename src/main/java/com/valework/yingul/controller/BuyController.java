@@ -201,7 +201,7 @@ public class BuyController {
     public String createBuy(@Valid @RequestBody Yng_Buy buy) throws Exception {	
     	//para setear el item
     	Yng_Item itemTemp=itemDao.findByItemId(buy.getYng_item().getItemId());
-    	if(itemTemp.getQuantity()<=0||!itemTemp.isEnabled()) {
+    	if(itemTemp.getQuantity()<=0||!itemTemp.isEnabled()||itemTemp.getQuantity()<buy.getQuantity()) {
     		return "Sin stock";
     	}
     	buy.setYng_item(itemTemp);
@@ -424,7 +424,7 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 		//verificar que el stock funcione
 		Yng_Item itemTemp1=itemDao.findByItemId(buy.getYng_item().getItemId());
 		if(!itemTemp1.getType().equals("Service")) {
-			itemTemp1.setQuantity(itemTemp1.getQuantity()-1);
+			itemTemp1.setQuantity(itemTemp1.getQuantity()-buy.getQuantity());
 		}
 		if(itemTemp1.getQuantity()<=0) {
 			itemTemp1.setEnabled(false);
@@ -465,7 +465,7 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 					"      --Preparar y embalar el paquete junto a la etiqueta   " + 
 					"      --Déjalo en la sucursal Andreani más cercana ." + 
 					"           "+buy.getShipping().getYng_Shipment().getTicket()
-					+ "   Al Momento de entregar el producto en la sucursal Andreani ingresa a:  http://www.yingul.com/confirmws/"+confirm.getConfirmId()+" donde firmaras la entrega del producto en buenas condiciones"
+					+ "   Al Momento de entregar el producto en la sucursal Andreani ingresa a: http://www.yingul.com/confirmws/"+confirm.getConfirmId()+" donde firmaras la entrega del producto en buenas condiciones"
 					+ "Despues de entregar el producto Andreani tiene 2 dias para entregarlo a tu comprador "
 					+ "Y tu comprador tiene 10 dias para observar sus condiciones, posterior a eso te daremos mas instrucciones para recoger tu dinero");
 			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible.");
@@ -860,7 +860,7 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 		
 		if(typeEnvio.equals("home")) {
 			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA"," Se realizo la venta del producto :  "+buy.getYng_item().getName()+ "  "+"  Precio:" +buy.getYng_item().getPrice()+ "  " +"    los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección:"+buy.getYng_item().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber()
-					+ "<br/> - Al Momento de entregar el producto al comprador ingresa a:  http://www.yingul.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones "
+					+ "<br/> - Al Momento de entregar el producto al comprador ingresa a: http://www.yingul.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones "
 					+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
 					+ "<br/> - No entregues el producto sin que tu y el vendedor firmen la entrega no aceptaremos reclamos si la confirmacion no esta firmada por ambas partes"
 					+ "<br/> - Por tu seguridad no entregues el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
@@ -879,7 +879,7 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 					"      --Preparar y embalar el paquete junto a la etiqueta   " + 
 					"      --Déjalo en la sucursal Andreani más cercana ." + 
 					"           "+buy.getShipping().getYng_Shipment().getTicket()
-					+ "   Al Momento de entregar el producto en la sucursal Andreani ingresa a:  http://www.yingul.com/confirmws/"+confirm.getConfirmId()+" donde firmaras la entrega del producto en buenas condiciones"
+					+ "   Al Momento de entregar el producto en la sucursal Andreani ingresa a: http://www.yingul.com/confirmws/"+confirm.getConfirmId()+" donde firmaras la entrega del producto en buenas condiciones"
 					+ "Despues de entregar el producto Andreani tiene 2 dias para entregarlo a tu comprador "
 					+ "Y tu comprador tiene 7 dias para observar sus condiciones, posterior a eso te daremos mas instrucciones para recoger tu dinero");
 			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible.");

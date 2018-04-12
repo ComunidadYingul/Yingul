@@ -51,10 +51,10 @@ public class ClaimController {
     	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(), "RECLAMO URGENTE","Tu comprador hizo un reclamo respecto a :  "+confirmTemp.getBuy().getYng_item().getName() +"  Descripción : "+confirmTemp.getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +confirmTemp.getBuy().getYng_item().getPrice()
     			+ "<br/> La acreditacion de Yingul a tu cuenta se encuentra temporalmente congelada "
     			+ "<br/> Tu comprador argumento: "+ claim.getClaimText()
-    			+ "<br/> Encuentrate con tu comprador e ingresa a: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/agreement/"+claim.getClaimId()+" donde ambos podran firmar un acuerdo y podamos acreditar tu dinero a tu cuenta.");
+    			+ "<br/> Encuentrate con tu comprador e ingresa a: http://www.yingul.com/agreement/"+claim.getClaimId()+" donde ambos podran firmar un acuerdo y podamos acreditar tu dinero a tu cuenta.");
 		smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "RECLAMO REALIZADO EXITOSAMENTE", "Se hizo el reclamo respecto a :  "+confirmTemp.getBuy().getYng_item().getName() +"  Descripción : "+confirmTemp.getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +confirmTemp.getBuy().getYng_item().getPrice() 
     			+ "<br/> Tu argumento es : "+ claim.getClaimText()
-    			+ "<br/> Encuentrate con tu vendedor e ingresa a: http://yingulportal-env.nirtpkkpjp.us-west-2.elasticbeanstalk.com/agreement/"+claim.getClaimId()+" donde ambos podran firmar un acuerdo que los beneficie."
+    			+ "<br/> Encuentrate con tu vendedor e ingresa a: http://www.yingul.com/agreement/"+claim.getClaimId()+" donde ambos podran firmar un acuerdo que los beneficie."
     			+ "<br/> No devuelvas el poducto al vendedor hasta que ambos hasta que te llegue un email indicando que lo puedes hacer si no no podremos devolverte tu dinero");
     	return "save";
     }
