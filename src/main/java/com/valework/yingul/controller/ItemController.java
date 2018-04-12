@@ -287,7 +287,7 @@ public class ItemController {
     @RequestMapping("/searchMotorized/{categoryId}/{minPrice}/{maxPrice}/{minYear}/{maxYear}")
     public Set<Yng_Item> searchMotorizedList(@PathVariable("categoryId") Long categoryId,@PathVariable("minPrice") Long minPrice,@PathVariable("maxPrice") Long maxPrice,@PathVariable("minYear") Long minYear,@PathVariable("maxYear") Long maxYear) { 
     	System.out.println(" "+categoryId+"/"+minPrice+"/"+maxPrice+"/"+minYear+"/"+maxYear);
-    	if(categoryId == 0) {
+    	if(categoryId == 0 && minPrice == 0 && maxPrice == 0 && minYear == 0 && maxYear == 0) {
     		List<Yng_Motorized> motorizedList = motorizedDao.findAll();
             Set<Yng_Item> itemList = itemService.findMotorized(motorizedList);
             return itemList;
