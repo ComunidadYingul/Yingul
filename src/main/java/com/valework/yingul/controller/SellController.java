@@ -260,14 +260,9 @@ public class SellController {
         logger.info(String.valueOf(image.charAt(0)));
 		if(image.charAt(0)=='s') {
 			temp.setPrincipalImage("sin.jpg");
-			logger.info("si funciono");
 		}
 		else {
-			logger.info("no funciono");
-			extension=image.substring(11,14);
-			if(image.charAt(13)=='e') {
-				extension="jpeg";
-			}
+			extension="webp";
 			nombre="principal"+temp.getItemId();
 			logger.info(extension);
 			bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
@@ -285,10 +280,7 @@ public class SellController {
         	k++;
         	image=st.getImage();
     		st.setImage("");
-    		extension=image.substring(11,14);
-    		if(image.charAt(13)=='e') {
-    			extension="jpeg";
-    		}
+    		extension="webp";
     		nombre="img"+k+temp.getItemId();
     		logger.info(extension);
     		bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
@@ -405,10 +397,7 @@ public class SellController {
 		}
 		else {
 			logger.info("no funciono");
-			extension=image.substring(11,14);
-			if(image.charAt(13)=='e') {
-				extension="jpeg";
-			}
+			extension="webp";
 			nombre="principal"+temp.getItemId();
 			logger.info(extension);
 			bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
@@ -426,16 +415,16 @@ public class SellController {
 			temp.setCondition("Used");
 		}
 		temp.setProductPagoEnvio(productTemp.getProductPagoEnvio());
+		if(temp.getProductPagoEnvio()=="gratis" || temp.getPriceDiscount()>0) {
+			temp.setOver(true);
+		}
 		itemService.save(temp);
 		int k=0;
 		for (Yng_ItemImage st : itemImage) {
         	k++;
         	image=st.getImage();
     		st.setImage("");
-    		extension=image.substring(11,14);
-    		if(image.charAt(13)=='e') {
-    			extension="jpeg";
-    		}
+    		extension="webp";
     		nombre="img"+k+temp.getItemId();
     		logger.info(extension);
     		bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
@@ -545,10 +534,7 @@ public class SellController {
 		}
 		else {
 			logger.info("no funciono");
-			extension=image.substring(11,14);
-			if(image.charAt(13)=='e') {
-				extension="jpeg";
-			}
+			extension="webp";
 			nombre="principal"+temp.getItemId();
 			logger.info(extension);
 			bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
@@ -568,10 +554,7 @@ public class SellController {
         	k++;
         	image=st.getImage();
     		st.setImage("");
-    		extension=image.substring(11,14);
-    		if(image.charAt(13)=='e') {
-    			extension="jpeg";
-    		}
+    		extension="webp";
     		nombre="img"+k+temp.getItemId();
     		logger.info(extension);
     		bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
@@ -628,7 +611,7 @@ public class SellController {
         
         
         try {
-			smtpMailSender.send(userTemp.getEmail(), "INMUEBLE registrado exitosamente", "Su servicio ya esta registrado puede encontrarlo en: "+ruta);
+			smtpMailSender.send(userTemp.getEmail(), "INMUEBLE registrado exitosamente", "Su inmueble ya esta registrado puede encontrarlo en: "+ruta);
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -712,10 +695,7 @@ public class SellController {
 		}
 		else {
 			logger.info("no funciono");
-			extension=image.substring(11,14);
-			if(image.charAt(13)=='e') {
-				extension="jpeg";
-			}
+			extension="webp";
 			nombre="principal"+temp.getItemId();
 			logger.info(extension);
 			bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
@@ -738,10 +718,7 @@ public class SellController {
         	k++;
         	image=st.getImage();
     		st.setImage("");
-    		extension=image.substring(11,14);
-    		if(image.charAt(13)=='e') {
-    			extension="jpeg";
-    		}
+    		extension="webp";
     		nombre="img"+k+temp.getItemId();
     		logger.info(extension);
     		bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
