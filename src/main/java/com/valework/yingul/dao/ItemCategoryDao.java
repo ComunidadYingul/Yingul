@@ -7,4 +7,5 @@ import com.valework.yingul.model.Yng_ItemCategory;
 
 public interface ItemCategoryDao extends CrudRepository<Yng_ItemCategory, Long>{
 	List<Yng_ItemCategory> findAll();
+	List<Yng_ItemCategory> findByOrderByItemCategoryIdDesc();
 }
