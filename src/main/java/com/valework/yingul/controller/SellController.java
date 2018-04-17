@@ -304,7 +304,8 @@ public class SellController {
         	serviceProvinceDao.save(si);	    
 		}
         try {
-			smtpMailSender.send(userTemp.getEmail(), "Servicio registrado exitosamente", "Su servicio ya esta registrado puede encontrarlo en: "+ruta);
+			smtpMailSender.send(userTemp.getEmail(), "Servicio registrado exitosamente", "Su servicio ya esta registrado en las categorias de: "+ruta+
+					"<br> puede encontrarlo y compartirlo en: www.yingul.com/itemDetail/"+serz.getYng_Item().getItemId());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -442,14 +443,15 @@ public class SellController {
   		//borramos la lista de cagorias para que no se inserte dos veces
   		//serviceTemp.setCobertureZone(null);
        // Yng_Product serz =
-        		productDao.save(productTemp);
+        productTemp=productDao.save(productTemp);
        /* for (Yng_ServiceProvince si : serviceProvince) {
         	si.setProvince(provinceDao.findByProvinceId(si.getProvince().getProvinceId()));
         	si.setService(serz);
         	serviceProvinceDao.save(si);	    
 		}*/
         try {
-			smtpMailSender.send(userTemp.getEmail(), "Producto registrado exitosamente", "Su Producto ya esta registrado puede encontrarlo en: "+ruta);
+			smtpMailSender.send(userTemp.getEmail(), "Producto registrado exitosamente", "Su producto ya esta registrado en las categorias de: "+ruta+
+					"<br> puede encontrarlo y compartirlo en: www.yingul.com/itemDetail/"+productTemp.getYng_Item().getItemId());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -611,7 +613,8 @@ public class SellController {
         
         
         try {
-			smtpMailSender.send(userTemp.getEmail(), "INMUEBLE registrado exitosamente", "Su inmueble ya esta registrado puede encontrarlo en: "+ruta);
+			smtpMailSender.send(userTemp.getEmail(), "INMUEBLE registrado exitosamente", "Su inmueble ya esta registrado en las categorias de: "+ruta+
+					"<br> puede encontrarlo y compartirlo en: www.yingul.com/itemDetail/"+prop.getYng_Item().getItemId());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -793,7 +796,8 @@ public class SellController {
         }  
         
         try {
-			smtpMailSender.send(userTemp.getEmail(), "Vehículo registrado exitosamente", "Su Vehículo ya esta registrado puede encontrarlo en: "+ruta);
+			smtpMailSender.send(userTemp.getEmail(), "Vehículo registrado exitosamente", "Su vehículo ya esta registrado en las categorias de: "+ruta+
+					"<br> puede encontrarlo y compartirlo en: www.yingul.com/itemDetail/"+mots.getYng_Item().getItemId());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
