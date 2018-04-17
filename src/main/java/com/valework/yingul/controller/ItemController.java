@@ -409,6 +409,20 @@ public class ItemController {
     	}
         
     }
+    @RequestMapping("/over20first/{sw}")
+    public List<Yng_Item> getOver20first(@PathVariable("sw") boolean sw, @RequestHeader("X-API-KEY") String XAPIKEY) {
+    	Yng_Standard api = standardDao.findByKey("BACKEND_API_KEY");
+    	if(XAPIKEY.equals(api.getValue())) {
+    		List<Yng_Item> itemList = itemDao.findByIsOverOrderByItemIdDesc(sw);
+    		if(itemList.size()>20) {
+    			itemList=itemList.subList(0, 20);
+    		}
+            return itemList;
+    	}else {
+    		return null;
+    	}
+        
+    }
     @RequestMapping("/ListItemsToEdit/{username}")
     public List<Yng_Item> ListItemsToEdit(@PathVariable("username") String username) {
     	Yng_User yng_User = userDao.findByUsername(username);
