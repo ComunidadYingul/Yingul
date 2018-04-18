@@ -20,7 +20,7 @@ public class ItemCategoryServiceImpl implements ItemCategoryService{
 
 	public List<Yng_ItemCategory> findByItem(Yng_Item yng_Item) {
 		Long itemId = yng_Item.getItemId();
-		List<Yng_ItemCategory> itemCategoryList = itemCategoryDao.findByOrderByItemCategoryIdDesc().stream() 			//convert list to stream
+		List<Yng_ItemCategory> itemCategoryList = itemCategoryDao.findByOrderByCategoryDesc().stream() 			//convert list to stream
                 .filter(itemCategory -> itemId==itemCategory.getItem().getItemId())	//filters the line, equals to username
                 .collect(Collectors.toList());
         return itemCategoryList;
