@@ -26,6 +26,7 @@ import com.valework.yingul.dao.PropertyDao;
 import com.valework.yingul.dao.ProvinceDao;
 import com.valework.yingul.dao.QueryDao;
 import com.valework.yingul.dao.ServiceDao;
+import com.valework.yingul.dao.ServiceProvinceDao;
 import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
@@ -40,6 +41,7 @@ import com.valework.yingul.model.Yng_Product;
 import com.valework.yingul.model.Yng_Property;
 import com.valework.yingul.model.Yng_Query;
 import com.valework.yingul.model.Yng_Service;
+import com.valework.yingul.model.Yng_ServiceProvince;
 import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
@@ -51,7 +53,9 @@ import com.valework.yingul.service.PersonService;
 import com.valework.yingul.service.ProductService;
 import com.valework.yingul.service.PropertyService;
 import com.valework.yingul.service.QueryService;
+import com.valework.yingul.service.ServiceProvinceService;
 import com.valework.yingul.service.ServiceService;
+import com.valework.yingul.service.UserServiceImpl.ServiceProvinceServiceImp;
 
 @RestController
 @RequestMapping("/item")
@@ -107,6 +111,10 @@ public class ItemController {
     
     @Autowired
     UbicationDao ubicationDao;
+    @Autowired
+	ServiceProvinceDao serviceProvinceDao;
+    //@Autowired
+    //ServiceProvinceService provinceService; 
 	@RequestMapping("/itemType/{itemId}")
     public String getItemTypeById(@PathVariable("itemId") Long itemId) {
 		Yng_Item yng_Item = itemDao.findByItemId(itemId);System.out.println("itemId 1 :"+itemId);
@@ -441,6 +449,42 @@ public class ItemController {
     	Yng_Service serv=new Yng_Service();
     	serv=service;
        	Yng_Item yng_Item=serv.getYng_Item();
+       	//inicio borramos las categorias previamente
+       	Yng_Service servOrigin=new Yng_Service();
+       //	serviceProvinceDao.delete((long) 1848);
+       	if(serv.getYng_Item().getType().equals("Service")) {
+       		servOrigin=getServiceByIdItem(serv.getYng_Item().getItemId());       		
+       		Set<Yng_ServiceProvince> serviceProvinceOrigin = new HashSet<>();
+           	serviceProvinceOrigin=servOrigin.getCobertureZone();
+           	System.out.println("serviceProvinceOrigin:"+serviceProvinceOrigin.toString());
+      		for (Yng_ServiceProvince sp : serviceProvinceOrigin) {
+      			System.out.println("delete sp:"+sp.getProvince().getName());
+      			//provinceService.deleteServiceProvinces(sp.getServiceProvinceId());
+      			long d=sp.getServiceProvinceId();
+      			serviceProvinceDao.delete(d);
+      			System.out.println("d sp:"+d);
+    		}
+       	}
+       	
+
+       	
+  		Yng_ServiceProvince entity=new Yng_ServiceProvince();
+       	//serviceProvince =serviceProvinceDao.delete(entity);
+  		//serviceProvinceDao
+       	//fin borramos las categorias previamente
+       /*	
+        //obtenemos la lista de provincia de la zona de cobertura
+  		Set<Yng_ServiceProvince> serviceProvince = new HashSet<>();
+  		serviceProvince=serv.getCobertureZone();
+  		//borramos la lista de cagorias para que no se inserte dos veces
+  		serv.setCobertureZone(null);
+        Yng_Service serz = serviceDao.save(serv);
+        for (Yng_ServiceProvince si : serviceProvince) {
+        	si.setProvince(provinceDao.findByProvinceId(si.getProvince().getProvinceId()));
+        	si.setService(serz);
+        	serviceProvinceDao.save(si);	    
+		}
+        */
        	itemDao.save(yng_Item);    	
        	serviceDao.save(serv);
        	return "save";

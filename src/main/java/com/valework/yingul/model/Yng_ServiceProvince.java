@@ -48,6 +48,7 @@ public class Yng_ServiceProvince {
 	public void setProvince(Yng_Province province) {
 		this.province = province;
 	}
+
 	/*@Override
 	public String toString() {
 		return "Yng_ServiceProvince [serviceProvinceId=" + serviceProvinceId + ", service=" + service + ", province="
