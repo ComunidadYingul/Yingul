@@ -15,8 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-import org.springframework.beans.factory.annotation.Value;
-
 
 @Entity
 public class Yng_Motorized {
@@ -27,15 +25,11 @@ public class Yng_Motorized {
 	
 	@Column(name="motorizedBrand")
 	private String motorizedBrand;
-	@Column(name="motorizedYear")
-	private String motorizedYear;
 	@Column(name="motorizedModel")	
 	private String motorizedModel;
 	@Column(name="motorizedUnicoDue")	
 	private String motorizedUnicoDue;
 	private String condition;
-	@Value("${some.key:0}")
-	private int motorizedKilometers;
 	
 	
 	@OneToOne(fetch = FetchType.EAGER)
@@ -73,14 +67,6 @@ public class Yng_Motorized {
 
 	public void setMotorizedBrand(String motorizedBrand) {
 		this.motorizedBrand = motorizedBrand;
-	}
-
-	public String getMotorizedYear() {
-		return motorizedYear;
-	}
-
-	public void setMotorizedYear(String motorizedYear) {
-		this.motorizedYear = motorizedYear;
 	}
 
 	public String getMotorizedModel() {
@@ -157,28 +143,9 @@ public class Yng_Motorized {
 		this.condition = condition;
 	}
 
-	public int getMotorizedKilometers() {
-		return motorizedKilometers;
-	}
-
-	public void setMotorizedKilometers(int motorizedKilometers) {
-		this.motorizedKilometers = motorizedKilometers;
-	}
-
 	public Yng_Motorized() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-
-	@Override
-	public String toString() {
-		return "Yng_Motorized [motorizedId=" + motorizedId + ", motorizedBrand=" + motorizedBrand + ", motorizedYear="
-				+ motorizedYear + ", motorizedModel=" + motorizedModel + ", motorizedUnicoDue=" + motorizedUnicoDue
-				+ ", condition=" + condition + ", motorizedKilometers=" + motorizedKilometers + ", yng_Item=" + yng_Item
-				+ ", motorizedSecurity=" + motorizedSecurity + ", motorizedConfort=" + motorizedConfort
-				+ ", motorizedEquipment=" + motorizedEquipment + ", motorizedExterior=" + motorizedExterior
-				+ ", motorizedSound=" + motorizedSound + "]";
-	}
-
 	
 }
