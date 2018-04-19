@@ -106,22 +106,22 @@ public class ItemServiceImpl implements ItemService{
 			if(categoryId==0) {
 				if(maxYear==0) {
 					if(maxPrice==0) {
-						if(item.getPrice()>=minPrice && Long.parseLong(s.getMotorizedYear())>=minYear ) {
+						if(item.getPrice()>=minPrice && s.getYng_Item().getItemYear()>=minYear ) {
 							listItem.add(item);
 						}
 					}else{
-						if(item.getPrice()>=minPrice && item.getPrice()<=maxPrice && Long.parseLong(s.getMotorizedYear())>=minYear ) {
+						if(item.getPrice()>=minPrice && item.getPrice()<=maxPrice && s.getYng_Item().getItemYear()>=minYear ) {
 							listItem.add(item);
 						}
 					}	
 				}else {
 					if(maxPrice==0) {
-						if(item.getPrice()>=minPrice && Long.parseLong(s.getMotorizedYear())>=minYear && Long.parseLong(s.getMotorizedYear())<=maxYear ) {
+						if(item.getPrice()>=minPrice && s.getYng_Item().getItemYear()>=minYear && s.getYng_Item().getItemYear()<=maxYear ) {
 							listItem.add(item);
 							System.out.println("Entro aqui");
 						}
 					}else{
-						if(item.getPrice()>=minPrice && item.getPrice()<=maxPrice && Long.parseLong(s.getMotorizedYear())>=minYear && Long.parseLong(s.getMotorizedYear())<=maxYear) {
+						if(item.getPrice()>=minPrice && item.getPrice()<=maxPrice && s.getYng_Item().getItemYear()>=minYear && s.getYng_Item().getItemYear()<=maxYear) {
 							listItem.add(item);
 						}
 					}
@@ -130,22 +130,22 @@ public class ItemServiceImpl implements ItemService{
 			}else {
 				if(maxYear==0) {
 					if(maxPrice==0) {
-						if(item.getPrice()>=minPrice && Long.parseLong(s.getMotorizedYear())>=minYear && this.verifyItemByCategory(s.getYng_Item().getItemId(),categoryId)) {
+						if(item.getPrice()>=minPrice && s.getYng_Item().getItemYear()>=minYear && this.verifyItemByCategory(s.getYng_Item().getItemId(),categoryId)) {
 							listItem.add(item);
 						}
 					}else{
-						if(item.getPrice()>=minPrice && item.getPrice()<=maxPrice && Long.parseLong(s.getMotorizedYear())>=minYear && this.verifyItemByCategory(s.getYng_Item().getItemId(),categoryId)) {
+						if(item.getPrice()>=minPrice && item.getPrice()<=maxPrice && s.getYng_Item().getItemYear()>=minYear && this.verifyItemByCategory(s.getYng_Item().getItemId(),categoryId)) {
 							listItem.add(item);
 						}
 					}	
 				}else {
 					if(maxPrice==0) {
-						if(item.getPrice()>=minPrice && Long.parseLong(s.getMotorizedYear())>=minYear && Long.parseLong(s.getMotorizedYear())<=maxYear && this.verifyItemByCategory(s.getYng_Item().getItemId(),categoryId)) {
+						if(item.getPrice()>=minPrice && s.getYng_Item().getItemYear()>=minYear && s.getYng_Item().getItemYear()<=maxYear && this.verifyItemByCategory(s.getYng_Item().getItemId(),categoryId)) {
 							listItem.add(item);
 							System.out.println("Entro aqui");
 						}
 					}else{
-						if(item.getPrice()>=minPrice && item.getPrice()<=maxPrice && Long.parseLong(s.getMotorizedYear())>=minYear && Long.parseLong(s.getMotorizedYear())<=maxYear && this.verifyItemByCategory(s.getYng_Item().getItemId(),categoryId)) {
+						if(item.getPrice()>=minPrice && item.getPrice()<=maxPrice && s.getYng_Item().getItemYear()>=minYear && s.getYng_Item().getItemYear()<=maxYear && this.verifyItemByCategory(s.getYng_Item().getItemId(),categoryId)) {
 							listItem.add(item);
 						}
 					}	
