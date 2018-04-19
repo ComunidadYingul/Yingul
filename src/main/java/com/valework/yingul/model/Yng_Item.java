@@ -49,6 +49,10 @@ public class Yng_Item {
 	private String logisticsName;
 	private String condition;
 	private String internationalDeliveries="";
+	private int kilometer;
+	private int itemYear;
+	private int duildedArea;
+	private int ambientes;
 	@OneToOne
 	private Yng_Ubication yng_Ubication;
 	
@@ -254,5 +258,39 @@ public class Yng_Item {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
+
+	public int getKilometer() {
+		return kilometer;
+	}
+
+	public void setKilometer(int kilometer) {
+		this.kilometer = kilometer;
+	}
+
+	public int getItemYear() {
+		return itemYear;
+	}
+
+	public void setItemYear(int itemYear) {
+		this.itemYear = itemYear;
+	}
+
+	public int getDuildedArea() {
+		return duildedArea;
+	}
+
+	public void setDuildedArea(int duildedArea) {
+		this.duildedArea = duildedArea;
+	}
+
+	public int getAmbientes() {
+		return ambientes;
+	}
+
+	public void setAmbientes(int ambientes) {
+		this.ambientes = ambientes;
+	}
+
+
 	
 }

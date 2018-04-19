@@ -1482,6 +1482,7 @@ public class LogisticsController {
 						quote.setYng_Branch(branchShipping.get(0));
 					}    	   	  
 			    	  //
+					if(!branchShipping.isEmpty()) {
 			    	  Yng_AndreaniCotizacion cotizarAndreani=new Yng_AndreaniCotizacion();
 			    	  
 			    	  cotizarAndreani.setCodigoDeCliente(ClienteAndreni);
@@ -1507,7 +1508,7 @@ public class LogisticsController {
 			    	  CotizarEnvioResponse andreaniQuote=new CotizarEnvioResponse();
 				    	  try {
 				    		  andreaniQuote=andreaniQuote(cotizarAndreani);
-				    		  System.out.println("pro:"+andreaniQuote.toString());
+				    		  //System.out.println("pro:"+andreaniQuote.toString());
 				    		  
 						} catch (MessagingException e) {
 
@@ -1593,7 +1594,8 @@ public class LogisticsController {
 			    		quoteFedex.setRate(dobleF);*/
 			    	  //fedex fin
 			    	 // quotesList.add(quoteFedex);//se comento solo para pruebas
-			    	  quotesList.add(quote);			    	  
+			    	  quotesList.add(quote);
+					}
 		  }
     	 return quotesList; 
       }

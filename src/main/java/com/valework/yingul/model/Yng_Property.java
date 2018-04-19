@@ -32,8 +32,6 @@ public class Yng_Property {
 	
 	@Column(name="propertyTotalArea")
 	private String propertyTotalArea;
-	@Column(name="propertyDuildedArea")
-	private String propertyDuildedArea;
 	@Column(name="propertyYear")	
 	private String propertyYear;
 	private String condition;
@@ -60,12 +58,6 @@ public class Yng_Property {
 	}
 	public void setPropertyTotalArea(String propertyTotalArea) {
 		this.propertyTotalArea = propertyTotalArea;
-	}
-	public String getPropertyDuildedArea() {
-		return propertyDuildedArea;
-	}
-	public void setPropertyDuildedArea(String propertyDuildedArea) {
-		this.propertyDuildedArea = propertyDuildedArea;
 	}
 	public String getPropertyYear() {
 		return propertyYear;

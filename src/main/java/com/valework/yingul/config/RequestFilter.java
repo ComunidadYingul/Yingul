@@ -20,12 +20,15 @@ public class RequestFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpServletRequest request = (HttpServletRequest) req;
         //amazon produccion
+
         //response.setHeader("Access-Control-Allow-Origin", "http://www.yingul.com");
+
         //response.setHeader("Access-Control-Allow-Origin", "http://192.168.100.42:4200");
 
 		//response.setHeader("Access-Control-Allow-Origin", "http://192.168.100.51:4200");
 
         response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+
         response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
         response.setHeader("Access-Control-Allow-Headers", "authorization,Access-Control-Allow-Origin, Access-Control-Allow-Headers, Access-Control-Allow-Methods, Access-Control-Allow-Credentials, content-type," +
                 "access-control-request-headers,access-control-request-method,accept,origin,Authorization,x-requested-with,X-API-KEY");

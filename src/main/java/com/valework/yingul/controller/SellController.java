@@ -710,7 +710,7 @@ public class SellController {
 		temp.setType("Motorized");
 		temp.setOver(false);
 		temp.setEnabled(true);
-		if(motorizedTemp.getMotorizedKilometers()==0) {
+		if(temp.getKilometer()==0) {
 			temp.setCondition("New");
 		}else {
 			temp.setCondition("Used");
