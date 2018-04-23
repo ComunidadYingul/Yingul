@@ -675,8 +675,7 @@ public class SellController {
         {
         	si.setAmbient(ambientDao.findByAmbientId(si.getAmbient().getAmbientId()));
         	si.setProperty(prop);
-        	propertyAmbietDao.save(si);
-        	
+        	propertyAmbietDao.save(si); 	
        
         }
         
@@ -684,10 +683,7 @@ public class SellController {
         {
         	si.setAmenities(amenitiesDao.findByAmenitiesId(si.getAmenities().getAmenitiesId()));
         	si.setProperty(prop);
-        	propertyAmenitiesDao.save(si);
-        	
-   
-        	
+        	propertyAmenitiesDao.save(si);       	
         }
 
         

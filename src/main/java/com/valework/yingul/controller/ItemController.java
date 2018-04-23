@@ -188,8 +188,12 @@ public class ItemController {
     }
 	@RequestMapping("/Item/{username}")
     public List<Yng_Item> findItemsBySeller(@PathVariable("username") String username) {
+    	System.out.println("username:"+username);
     	Yng_User yng_User = userDao.findByUsername(username);
-        List<Yng_Item> itemList = itemService.findByUser(yng_User);
+    	
+    	Long userId = yng_User.getUserId();
+    	System.out.println("userId:"+userId);
+    	List<Yng_Item> itemList = itemService.findByUser(yng_User);
         return itemList;
     }
     @RequestMapping("/Image/{itemId}")
@@ -407,7 +411,7 @@ public class ItemController {
     	itemDao.save(yng_Item);
     	
        	//inicio borramos las categorias previamente Mejorar no funciona la 100%
-
+    	
        	
        	//fin borramos las categorias previamente
     	
@@ -499,17 +503,7 @@ public class ItemController {
        	itemDao.save(yng_Item);
        	return "save";
        }
-   /* @RequestMapping("/motorized/{itemId}")
-    public Yng_Product findMotorized(@PathVariable("itemId") Long itemId) {
-    	List<Yng_Motorized> motTem=motorizedDao.findByYng_Item(itemId);
-    	System.out.println(motTem.size()+" string: "+motTem.toString());
-    	if(this.getProductByIdItemExist(itemId)) {
-    	Yng_Product yng_Product=this.getProductByIdItem(itemId);
-    	yng_Product.getYng_Item().getUser().setPassword("");
-        return yng_Product;
-    	}
-    	else return null;
-    }*/
+
     @RequestMapping(value = "/ubication/update", method = RequestMethod.POST)
    	@ResponseBody
        public String updateUbicationPost(@Valid @RequestBody Yng_Item item) throws MessagingException {
