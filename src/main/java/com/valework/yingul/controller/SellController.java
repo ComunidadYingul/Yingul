@@ -2,8 +2,11 @@ package com.valework.yingul.controller;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -16,6 +19,7 @@ import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 import org.apache.commons.codec.binary.Base64;
+import org.imgscalr.Scalr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +85,22 @@ import com.valework.yingul.service.StorageService;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Iterator;
+
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 
 
 @RestController
@@ -196,7 +216,7 @@ public class SellController {
 	StandarCostAndreaniDao standarCostAndreaniDao;
 	@RequestMapping(value = "/service", method = RequestMethod.POST)
 	@ResponseBody
-    public String sellServicePost(@Valid @RequestBody Yng_Service service) throws MessagingException {	
+    public String sellServicePost(@Valid @RequestBody Yng_Service service) throws MessagingException, IOException {	
 		String ruta="Servicios";
 		Yng_Service serviceTemp = service;
 		Yng_Item itemTemp=serviceTemp.getYng_Item();
@@ -262,10 +282,11 @@ public class SellController {
 			temp.setPrincipalImage("sin.jpg");
 		}
 		else {
-			extension="webp";
+			extension="jpeg";
 			nombre="principal"+temp.getItemId();
 			logger.info(extension);
 			bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
+			bI=convertImage(bI);
 			s3Services.uploadFile(nombre,extension, bI);
 			nombre=nombre+"."+extension;   
 			temp.setPrincipalImage(nombre);
@@ -280,10 +301,11 @@ public class SellController {
         	k++;
         	image=st.getImage();
     		st.setImage("");
-    		extension="webp";
+    		extension="jpeg";
     		nombre="img"+k+temp.getItemId();
     		logger.info(extension);
     		bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
+    		bI=convertImage(bI);
     		s3Services.uploadFile(nombre,extension, bI);
     		nombre=nombre+"."+extension;   
     		st.setImage(nombre);
@@ -317,7 +339,7 @@ public class SellController {
 	
 	@RequestMapping(value = "/product", method = RequestMethod.POST)
 	@ResponseBody
-    public String sellProducPost(@Valid @RequestBody Yng_Product product) throws MessagingException {	
+    public String sellProducPost(@Valid @RequestBody Yng_Product product) throws MessagingException, IOException {	
 		String ruta="Productos";
 
 		Yng_Product productTemp=product;
@@ -398,10 +420,11 @@ public class SellController {
 		}
 		else {
 			logger.info("no funciono");
-			extension="webp";
+			extension="jpeg";
 			nombre="principal"+temp.getItemId();
 			logger.info(extension);
 			bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
+			bI=convertImage(bI);
 			s3Services.uploadFile(nombre,extension, bI);
 			nombre=nombre+"."+extension;   
 			temp.setPrincipalImage(nombre);
@@ -425,10 +448,11 @@ public class SellController {
         	k++;
         	image=st.getImage();
     		st.setImage("");
-    		extension="webp";
+    		extension="jpeg";
     		nombre="img"+k+temp.getItemId();
     		logger.info(extension);
     		bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
+    		bI=convertImage(bI);
     		s3Services.uploadFile(nombre,extension, bI);
     		nombre=nombre+"."+extension;   
     		st.setImage(nombre);
@@ -462,7 +486,7 @@ public class SellController {
 		
 	@RequestMapping(value = "/property", method = RequestMethod.POST)
 	@ResponseBody
-    public String sellPropertyPost(@Valid @RequestBody Yng_Property property) throws MessagingException {	
+    public String sellPropertyPost(@Valid @RequestBody Yng_Property property) throws MessagingException, IOException {	
 		String ruta="Property";
 
 		Yng_Property propertyTemp=property;
@@ -536,10 +560,11 @@ public class SellController {
 		}
 		else {
 			logger.info("no funciono");
-			extension="webp";
+			extension="jpeg";
 			nombre="principal"+temp.getItemId();
 			logger.info(extension);
 			bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
+			bI=convertImage(bI);
 			s3Services.uploadFile(nombre,extension, bI);
 			nombre=nombre+"."+extension;   
 			temp.setPrincipalImage(nombre);
@@ -556,10 +581,11 @@ public class SellController {
         	k++;
         	image=st.getImage();
     		st.setImage("");
-    		extension="webp";
+    		extension="jpeg";
     		nombre="img"+k+temp.getItemId();
     		logger.info(extension);
     		bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
+    		bI=convertImage(bI);
     		s3Services.uploadFile(nombre,extension, bI);
     		nombre=nombre+"."+extension;   
     		st.setImage(nombre);
@@ -625,14 +651,9 @@ public class SellController {
 	
 	@RequestMapping(value = "/motorized", method = RequestMethod.POST)
 	@ResponseBody
-    public String sellMororizedPost(@Valid @RequestBody Yng_Motorized motorized) throws MessagingException {	
+    public String sellMororizedPost(@Valid @RequestBody Yng_Motorized motorized) throws MessagingException, IOException {	
 		String ruta="Motorized";
-
-		
 		Yng_Motorized motorizedTemp=motorized;
-		
-		
-		
 		Yng_Item itemTemp=motorizedTemp.getYng_Item();
 		Date date = new Date();
     	DateFormat hourdateFormat = new SimpleDateFormat("dd");
@@ -698,10 +719,11 @@ public class SellController {
 		}
 		else {
 			logger.info("no funciono");
-			extension="webp";
+			extension="jpeg";
 			nombre="principal"+temp.getItemId();
 			logger.info(extension);
 			bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
+			bI=convertImage(bI);
 			s3Services.uploadFile(nombre,extension, bI);
 			nombre=nombre+"."+extension;   
 			temp.setPrincipalImage(nombre);
@@ -721,10 +743,11 @@ public class SellController {
         	k++;
         	image=st.getImage();
     		st.setImage("");
-    		extension="webp";
+    		extension="jpeg";
     		nombre="img"+k+temp.getItemId();
     		logger.info(extension);
     		bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
+    		bI=convertImage(bI);
     		s3Services.uploadFile(nombre,extension, bI);
     		nombre=nombre+"."+extension;   
     		st.setImage(nombre);
@@ -904,5 +927,65 @@ public class SellController {
         writer.flush();
         writer.close();
 
+    }
+    public byte[] convertImage(byte[] inputImage) throws IOException {
+    	int weight =inputImage.length/1024;
+    	if(weight>=0 && weight<20) {
+			return inputImage;
+		}
+    	
+    	InputStream is = new ByteArrayInputStream(inputImage);
+		// create a BufferedImage as the result of decoding the supplied InputStream
+		BufferedImage image = ImageIO.read(is);
+		image = Scalr.resize(image,  Scalr.Method.SPEED, Scalr.Mode.FIT_TO_WIDTH,500, 500, Scalr.OP_ANTIALIAS);
+		
+		System.out.println(image.getHeight()+": "+image.getWidth());
+		
+		ByteArrayOutputStream compressed = new ByteArrayOutputStream();
+		ImageOutputStream outputStream = ImageIO.createImageOutputStream(compressed);
+
+		// NOTE: The rest of the code is just a cleaned up version of your code
+
+		// Obtain writer for JPEG format
+		ImageWriter jpgWriter = ImageIO.getImageWritersByFormatName("jpeg").next();
+
+		// Configure JPEG compression: 70% quality
+		ImageWriteParam jpgWriteParam = jpgWriter.getDefaultWriteParam();
+		jpgWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+		System.out.println("peso inicial"+inputImage.length/1024);
+
+		if(weight>=20 && weight<30) {
+			jpgWriteParam.setCompressionQuality(0.5f);
+		}
+		if(weight>=30 && weight<40) {
+			jpgWriteParam.setCompressionQuality(0.6f);
+		}
+		if(weight>=40 && weight<60) {
+			jpgWriteParam.setCompressionQuality(0.7f);
+		}
+		if(weight>=60 && weight<120) {
+			jpgWriteParam.setCompressionQuality(0.7f);
+		}
+		if(weight>=120 && weight<180) {
+			jpgWriteParam.setCompressionQuality(0.6f);
+		}
+		if(weight>=180 && weight<540) {
+			jpgWriteParam.setCompressionQuality(0.4f);
+		}
+		if(weight>=540) {
+			jpgWriteParam.setCompressionQuality(0.3f);
+		}
+		// Set your in-memory stream as the output
+		jpgWriter.setOutput(outputStream);
+		// Write image as JPEG w/configured settings to the in-memory stream
+		// (the IIOImage is just an aggregator object, allowing you to associate
+		// thumbnails and metadata to the image, it "does" nothing)
+		jpgWriter.write(null, new IIOImage(image, null, null), jpgWriteParam);
+		// Dispose the writer to free resources
+		jpgWriter.dispose();
+		// Get data for further processing...
+		byte[] jpegData = compressed.toByteArray();
+		System.out.println("peso final"+jpegData.length/1024);
+		return jpegData;
     }
 }
