@@ -261,9 +261,12 @@ public class PayUFunds {
 	                    		//para ver si la tarjeta existe 
 	                    		if (null == cardDao.findByNumberAndUser(cardTemp.getNumber(),buy.getUser())) {
 	                    			paymentTemp.setYng_Card(cardDao.save(cardTemp)); 
+	                    			System.out.println("entro a donde no debia");
 	                            }
 	                    		else {
-	                    			paymentTemp.setYng_Card(cardTemp);
+	                    			
+	                    			paymentTemp.setYng_Card(cardDao.findByNumberAndUser(cardTemp.getNumber(),buy.getUser()));
+	                    			System.out.println("entro a donde si debia");
 	                    		}
 	                    		paymentTemp.setYng_Request(requestTemp);
 	                    		
