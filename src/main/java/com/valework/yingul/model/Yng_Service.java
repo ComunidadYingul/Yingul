@@ -55,10 +55,10 @@ public class Yng_Service {
 	public void setYng_Item(Yng_Item yng_Item) {
 		this.yng_Item = yng_Item;
 	}
-	@Override
+	/*@Override
 	public String toString() {
 		return "Yng_Service [serviceId=" + serviceId + ", emailService=" + emailService + ", yng_Item=" + yng_Item
 				+ ", cobertureZone=" + cobertureZone + "]";
-	}
+	}*/
 
 }

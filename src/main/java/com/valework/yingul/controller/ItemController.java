@@ -1,5 +1,6 @@
 package com.valework.yingul.controller;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -7,6 +8,7 @@ import java.util.Set;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -402,8 +404,17 @@ public class ItemController {
     	Yng_Property prop=new Yng_Property();
     	prop=property;
     	Yng_Item yng_Item=prop.getYng_Item();
-    	itemDao.save(yng_Item);    	
+    	itemDao.save(yng_Item);
+    	
+       	//inicio borramos las categorias previamente Mejorar no funciona la 100%
+
+       	
+       	//fin borramos las categorias previamente
+    	
+    	
+    	
     	propertyDao.save(prop);
+    	
     	return "save";
     }
     @RequestMapping("/over/{sw}")
@@ -449,44 +460,43 @@ public class ItemController {
     	Yng_Service serv=new Yng_Service();
     	serv=service;
        	Yng_Item yng_Item=serv.getYng_Item();
-       	//inicio borramos las categorias previamente
+       	//inicio borramos las categorias previamente Mejorar no funciona la 100%
        	Yng_Service servOrigin=new Yng_Service();
-       //	serviceProvinceDao.delete((long) 1848);
+     
        	if(serv.getYng_Item().getType().equals("Service")) {
        		servOrigin=getServiceByIdItem(serv.getYng_Item().getItemId());       		
        		Set<Yng_ServiceProvince> serviceProvinceOrigin = new HashSet<>();
            	serviceProvinceOrigin=servOrigin.getCobertureZone();
            	System.out.println("serviceProvinceOrigin:"+serviceProvinceOrigin.toString());
+           	Yng_Service serviceTemp=serviceDao.findByServiceId((long) 0);
       		for (Yng_ServiceProvince sp : serviceProvinceOrigin) {
       			System.out.println("delete sp:"+sp.getProvince().getName());
       			//provinceService.deleteServiceProvinces(sp.getServiceProvinceId());
+      			//serviceDao.delete(serv.getServiceId());
       			long d=sp.getServiceProvinceId();
-      			serviceProvinceDao.delete(d);
+      			sp.setService(serviceTemp);      			
+      			serviceProvinceDao.save(sp);
+      			//deleteStudent(d);
       			System.out.println("d sp:"+d);
     		}
+      		
        	}
-       	
-
-       	
-  		Yng_ServiceProvince entity=new Yng_ServiceProvince();
-       	//serviceProvince =serviceProvinceDao.delete(entity);
-  		//serviceProvinceDao
        	//fin borramos las categorias previamente
-       /*	
+       
         //obtenemos la lista de provincia de la zona de cobertura
   		Set<Yng_ServiceProvince> serviceProvince = new HashSet<>();
   		serviceProvince=serv.getCobertureZone();
   		//borramos la lista de cagorias para que no se inserte dos veces
   		serv.setCobertureZone(null);
         Yng_Service serz = serviceDao.save(serv);
+        //insertamos las nuevas Zonas de cobertura
         for (Yng_ServiceProvince si : serviceProvince) {
         	si.setProvince(provinceDao.findByProvinceId(si.getProvince().getProvinceId()));
         	si.setService(serz);
         	serviceProvinceDao.save(si);	    
 		}
-        */
-       	itemDao.save(yng_Item);    	
-       	serviceDao.save(serv);
+        
+       	itemDao.save(yng_Item);
        	return "save";
        }
    /* @RequestMapping("/motorized/{itemId}")
@@ -528,4 +538,8 @@ public class ItemController {
        	itemDao.save(itemTem);
        	return "save";
        }
+    @DeleteMapping("/students/{id}")
+	public void deleteStudent(@PathVariable long id) {
+    	serviceProvinceDao.delete(id);
+	}
 }
