@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.AmbientDao;
@@ -59,6 +59,7 @@ import com.valework.yingul.dao.SoundDao;
 import com.valework.yingul.dao.StandarCostAndreaniDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
+import com.valework.yingul.dao.YingulRequestDao;
 import com.valework.yingul.model.Yng_Country;
 import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_ItemCategory;
@@ -78,6 +79,7 @@ import com.valework.yingul.model.Yng_ServiceProvince;
 import com.valework.yingul.model.Yng_StandarCostAndreani;
 import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
+import com.valework.yingul.model.Yng_YingulRequest;
 import com.valework.yingul.service.ItemService;
 import com.valework.yingul.service.S3Services;
 import com.valework.yingul.service.ServiceService;
@@ -216,9 +218,28 @@ public class SellController {
 	
 	@Autowired
 	StandarCostAndreaniDao standarCostAndreaniDao;
+	@Autowired
+	YingulRequestDao yingulRequestDao; 
 	@RequestMapping(value = "/service", method = RequestMethod.POST)
 	@ResponseBody
-    public String sellServicePost(@Valid @RequestBody Yng_Service service) throws MessagingException, IOException {	
+	public String sellServicePost(@Valid @RequestBody Yng_Service service) throws MessagingException, IOException {	
+//capturar objeto inicio
+		ObjectMapper mapper = new ObjectMapper();
+		java.util.Date fecha = new Date();
+		System.out.println (fecha);
+		try {
+			String jsonInString = mapper.writeValueAsString(service);
+			System.out.println("jsonInString"+jsonInString);
+			Yng_YingulRequest serviceJson=new Yng_YingulRequest();
+			serviceJson.setJson(jsonInString);
+			serviceJson.setDate(fecha);
+			yingulRequestDao.save(serviceJson);
+		} catch (JsonProcessingException e1) {
+			
+			e1.printStackTrace();
+		}
+//capturar objeto fin	
+		
 		String ruta="Servicios";
 		Yng_Service serviceTemp = service;
 		Yng_Item itemTemp=serviceTemp.getYng_Item();
@@ -319,7 +340,7 @@ public class SellController {
         //obtenemos la lista de provincia de la zona de cobertura
   		Set<Yng_ServiceProvince> serviceProvince = new HashSet<>();
   		serviceProvince=serviceTemp.getCobertureZone();
-  		//borramos la lista de cagorias para que no se inserte dos veces
+  		//borramos la lista de cobertura para que no se inserte dos veces
   		serviceTemp.setCobertureZone(null);
         Yng_Service serz = serviceDao.save(serviceTemp);
         for (Yng_ServiceProvince si : serviceProvince) {
@@ -341,7 +362,24 @@ public class SellController {
 	
 	@RequestMapping(value = "/product", method = RequestMethod.POST)
 	@ResponseBody
-    public String sellProducPost(@Valid @RequestBody Yng_Product product) throws MessagingException, IOException {	
+    public String sellProducPost(@Valid @RequestBody Yng_Product product) throws MessagingException, IOException  {
+		//capturar objeto inicio
+				ObjectMapper mapper = new ObjectMapper();
+				java.util.Date fecha = new Date();
+				System.out.println (fecha);
+				try {
+					String jsonInString = mapper.writeValueAsString(product);
+					System.out.println("jsonInString"+jsonInString);
+					Yng_YingulRequest serviceJson=new Yng_YingulRequest();
+					serviceJson.setJson(jsonInString);
+					serviceJson.setDate(fecha);
+					yingulRequestDao.save(serviceJson);
+				} catch (JsonProcessingException e1) {
+					
+					e1.printStackTrace();
+				}
+		//capturar objeto fin	
+				
 		String ruta="Productos";
 
 		Yng_Product productTemp=product;
@@ -488,7 +526,23 @@ public class SellController {
 		
 	@RequestMapping(value = "/property", method = RequestMethod.POST)
 	@ResponseBody
-    public String sellPropertyPost(@Valid @RequestBody Yng_Property property) throws MessagingException, IOException {	
+    public String sellPropertyPost(@Valid @RequestBody Yng_Property property) throws MessagingException , IOException {	
+		//capturar objeto inicio
+		ObjectMapper mapper = new ObjectMapper();
+		java.util.Date fecha = new Date();
+		System.out.println (fecha);
+		try {
+			String jsonInString = mapper.writeValueAsString(property);
+			System.out.println("jsonInString"+jsonInString);
+			Yng_YingulRequest serviceJson=new Yng_YingulRequest();
+			serviceJson.setJson(jsonInString);
+			serviceJson.setDate(fecha);
+			yingulRequestDao.save(serviceJson);
+		} catch (JsonProcessingException e1) {
+			
+			e1.printStackTrace();
+		}
+//capturar objeto fin
 		String ruta="Property";
 
 		Yng_Property propertyTemp=property;
@@ -653,7 +707,23 @@ public class SellController {
 	
 	@RequestMapping(value = "/motorized", method = RequestMethod.POST)
 	@ResponseBody
-    public String sellMororizedPost(@Valid @RequestBody Yng_Motorized motorized) throws MessagingException, IOException {	
+    public String sellMororizedPost(@Valid @RequestBody Yng_Motorized motorized) throws MessagingException , IOException {	
+		//capturar objeto inicio
+		ObjectMapper mapper = new ObjectMapper();
+		java.util.Date fecha = new Date();
+		System.out.println (fecha);
+		try {
+			String jsonInString = mapper.writeValueAsString(motorized);
+			System.out.println("jsonInString"+jsonInString);
+			Yng_YingulRequest serviceJson=new Yng_YingulRequest();
+			serviceJson.setJson(jsonInString);
+			serviceJson.setDate(fecha);
+			yingulRequestDao.save(serviceJson);
+		} catch (JsonProcessingException e1) {
+			
+			e1.printStackTrace();
+		}
+//capturar objeto fin
 		String ruta="Motorized";
 		Yng_Motorized motorizedTemp=motorized;
 		Yng_Item itemTemp=motorizedTemp.getYng_Item();

@@ -14,7 +14,7 @@ public class ServiceProvinceServiceImp implements ServiceProvinceService{
 	
 	public String deleteServiceProvinces(Yng_ServiceProvince serviceProvinceIng){
 		serviceProvinceDao.delete(serviceProvinceIng.getServiceProvinceId());
-		return null;
+		return "delete";
 	}
 	public String deleteAllServiceProvinces(List<Yng_ServiceProvince> serviceProvinceList) {
 		
