@@ -53,6 +53,18 @@ public class Yng_Item {
 	private int itemYear;
 	private int duildedArea;
 	private int ambientes;
+	//nuevos datos para mas seguridad
+	private String ip;
+    private String org;
+    private String lat;
+    private String lon;
+    private String city;
+    private String country;
+    private String countryCode;
+    private String regionName;
+    private String zip;
+    private String userAgent;
+  //nuevos datos para mas seguridad
 	@OneToOne
 	private Yng_Ubication yng_Ubication;
 	
@@ -291,6 +303,83 @@ public class Yng_Item {
 		this.ambientes = ambientes;
 	}
 
+	public String getIp() {
+		return ip;
+	}
 
-	
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	public String getOrg() {
+		return org;
+	}
+
+	public void setOrg(String org) {
+		this.org = org;
+	}
+
+	public String getLat() {
+		return lat;
+	}
+
+	public void setLat(String lat) {
+		this.lat = lat;
+	}
+
+	public String getLon() {
+		return lon;
+	}
+
+	public void setLon(String lon) {
+		this.lon = lon;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
+	}
+
+	public String getRegionName() {
+		return regionName;
+	}
+
+	public void setRegionName(String regionName) {
+		this.regionName = regionName;
+	}
+
+	public String getZip() {
+		return zip;
+	}
+
+	public void setZip(String zip) {
+		this.zip = zip;
+	}
+
+	public String getUserAgent() {
+		return userAgent;
+	}
+
+	public void setUserAgent(String userAgent) {
+		this.userAgent = userAgent;
+	}	
 }

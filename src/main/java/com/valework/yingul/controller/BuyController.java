@@ -6,7 +6,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 import javax.xml.parsers.SAXParser;
@@ -70,6 +74,7 @@ import com.valework.yingul.model.Yng_Payment;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Product;
 import com.valework.yingul.model.Yng_Quote;
+import com.valework.yingul.model.Yng_ServiceProvince;
 //import com.valework.yingul.model.Yng_Request;
 //import com.valework.yingul.model.Yng_RequestBody;
 //import com.valework.yingul.model.Yng_Response;
@@ -166,9 +171,16 @@ public class BuyController {
 	@Autowired
 	StandardService standardService;
 	@RequestMapping("/listCreditCard/all")
-    public List<Yng_ListCreditCard> findProvinceList() {
+    public Set<Yng_ListCreditCard> findProvinceList() {
         List<Yng_ListCreditCard> creditCardList = listCreditCardDao.findAll();
-        return creditCardList;
+        Set<Yng_ListCreditCard> creditCardList1 = new HashSet<>();
+        for (Yng_ListCreditCard si : creditCardList) {
+        	if(si.getListCreditCardId()==0||si.getListCreditCardId()==1||si.getListCreditCardId()==2) {
+        		creditCardList1.add(si);
+        	}
+		}
+        
+        return creditCardList1;
     }
 
     @RequestMapping("/getCreditCardProvider/{listCreditCardId}")
