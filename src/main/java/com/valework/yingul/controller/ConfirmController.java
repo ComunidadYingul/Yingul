@@ -155,6 +155,12 @@ public class ConfirmController {
     	
     	return "save";
     }
+    @RequestMapping("/getNumberPendingDeliveriesForUser/{username}")
+    public int getNumberPendingDeliveriesForUser(@PathVariable("username") String username) throws ParseException {
+    	Yng_User yng_User = userDao.findByUsername(username);
+    	List<Yng_Confirm> listConfirm = confirmDao.findBySellerAndStatusOrderByConfirmIdDesc(yng_User,"pending");
+    	return listConfirm.size();
+    }
     @RequestMapping(value = "/updateConfirmApi", method = RequestMethod.POST)
    	@ResponseBody
        public String queryItemPostApi(@Valid @RequestBody Yng_Confirm confirm) throws MessagingException {
