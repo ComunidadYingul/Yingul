@@ -10,4 +10,5 @@ public interface ConfirmDao extends CrudRepository<Yng_Confirm, Long>{
 	List<Yng_Confirm> findByOrderByConfirmIdDesc();
 	List<Yng_Confirm> findByStatus(String status);
 	List<Yng_Confirm> findByBuyerAndStatusOrderByConfirmIdDesc(Yng_User buyer, String status);
+	List<Yng_Confirm> findBySellerAndStatusOrderByConfirmIdDesc(Yng_User seller, String status);
 }
