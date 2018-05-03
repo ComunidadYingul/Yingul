@@ -22,6 +22,7 @@ public class SmtpMailSender {
 		helper.setTo(to);
 		helper.setText(body,true);
 		helper.setFrom("yingul@valework.com");
+		//helper.setFrom("daniel@internetvale.com");
 		javaMailSender.send(message);
 		
 	}
