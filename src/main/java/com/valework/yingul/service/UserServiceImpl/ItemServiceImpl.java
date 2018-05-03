@@ -71,8 +71,9 @@ public class ItemServiceImpl implements ItemService{
 
 	public List<Yng_Item> findByUser(Yng_User yng_user) {
 		Long userId = yng_user.getUserId();
+		System.out.println("userId:"+userId);
 		List<Yng_Item> itemList = itemDao.findByOrderByItemIdDesc().stream() 			//convert list to stream
-                .filter(city -> userId==city.getUser().getUserId())	//filters the line, equals to username
+                .filter(item -> userId==item.getUser().getUserId())	//filters the line, equals to username
                 .collect(Collectors.toList());
         return itemList;
 	}

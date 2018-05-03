@@ -17,30 +17,53 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.valework.yingul.SmtpMailSender;
+import com.valework.yingul.dao.AmbientDao;
+import com.valework.yingul.dao.AmenitiesDao;
 import com.valework.yingul.dao.CategoryDao;
 import com.valework.yingul.dao.CityDao;
+import com.valework.yingul.dao.ConfortDao;
 import com.valework.yingul.dao.DepartmentDao;
+import com.valework.yingul.dao.EquipmentDao;
+import com.valework.yingul.dao.ExteriorDao;
 import com.valework.yingul.dao.FindMotorizedDao;
 import com.valework.yingul.dao.ItemDao;
+import com.valework.yingul.dao.MotorizedConfortDao;
 import com.valework.yingul.dao.MotorizedDao;
+import com.valework.yingul.dao.MotorizedEquipmentDao;
+import com.valework.yingul.dao.MotorizedExteriorDao;
+import com.valework.yingul.dao.MotorizedSecurityDao;
+import com.valework.yingul.dao.MotorizedSoundDao;
 import com.valework.yingul.dao.ProductDao;
+import com.valework.yingul.dao.PropertyAmbientDao;
+import com.valework.yingul.dao.PropertyAmenitiesDao;
 import com.valework.yingul.dao.PropertyDao;
 import com.valework.yingul.dao.ProvinceDao;
 import com.valework.yingul.dao.QueryDao;
+import com.valework.yingul.dao.SecurityDao;
 import com.valework.yingul.dao.ServiceDao;
 import com.valework.yingul.dao.ServiceProvinceDao;
+import com.valework.yingul.dao.SoundDao;
 import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
+import com.valework.yingul.model.Yng_Ambient;
 import com.valework.yingul.model.Yng_Category;
+import com.valework.yingul.model.Yng_Favorite;
 import com.valework.yingul.model.Yng_FindMotorized;
 import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_ItemCategory;
 import com.valework.yingul.model.Yng_ItemImage;
 import com.valework.yingul.model.Yng_Motorized;
+import com.valework.yingul.model.Yng_MotorizedConfort;
+import com.valework.yingul.model.Yng_MotorizedEquipment;
+import com.valework.yingul.model.Yng_MotorizedExterior;
+import com.valework.yingul.model.Yng_MotorizedSecurity;
+import com.valework.yingul.model.Yng_MotorizedSound;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Product;
 import com.valework.yingul.model.Yng_Property;
+import com.valework.yingul.model.Yng_PropertyAmbient;
+import com.valework.yingul.model.Yng_PropertyAmenities;
 import com.valework.yingul.model.Yng_Query;
 import com.valework.yingul.model.Yng_Service;
 import com.valework.yingul.model.Yng_ServiceProvince;
@@ -116,7 +139,42 @@ public class ItemController {
     @Autowired
 	ServiceProvinceDao serviceProvinceDao;
     //@Autowired
-    //ServiceProvinceService provinceService; 
+    //ServiceProvinceService provinceService;
+    @Autowired
+	PropertyAmbientDao propertyAmbietDao;
+    @Autowired
+	AmbientDao ambientDao;
+	@Autowired
+	AmenitiesDao amenitiesDao;
+	@Autowired
+	PropertyAmenitiesDao propertyAmenitiesDao;
+	@Autowired
+	SecurityDao securityDao;
+	
+	@Autowired
+	ConfortDao confortDao;
+	
+	@Autowired
+	EquipmentDao equipmentDao;
+	
+	@Autowired
+	ExteriorDao exteriorDao;
+	
+	@Autowired
+	SoundDao soundDao;
+	@Autowired
+	MotorizedSecurityDao motorizedSecurityDao;
+	
+	@Autowired
+	MotorizedConfortDao motorizedConfortDao;
+	
+	@Autowired
+	MotorizedEquipmentDao motorizedEquipmentDao;
+	@Autowired
+	MotorizedExteriorDao motorizedExteriorDao;
+	
+	@Autowired
+	MotorizedSoundDao motorizedSoundDao;
 	@RequestMapping("/itemType/{itemId}")
     public String getItemTypeById(@PathVariable("itemId") Long itemId) {
 		Yng_Item yng_Item = itemDao.findByItemId(itemId);System.out.println("itemId 1 :"+itemId);
@@ -188,8 +246,12 @@ public class ItemController {
     }
 	@RequestMapping("/Item/{username}")
     public List<Yng_Item> findItemsBySeller(@PathVariable("username") String username) {
+    	System.out.println("username:"+username);
     	Yng_User yng_User = userDao.findByUsername(username);
-        List<Yng_Item> itemList = itemService.findByUser(yng_User);
+    	
+    	Long userId = yng_User.getUserId();
+    	System.out.println("userId:"+userId);
+    	List<Yng_Item> itemList = itemService.findByUser(yng_User);
         return itemList;
     }
     @RequestMapping("/Image/{itemId}")
@@ -394,8 +456,109 @@ public class ItemController {
     	Yng_Motorized moto=new Yng_Motorized();
     	moto=motorized;
     	Yng_Item yng_Item=moto.getYng_Item();
-    	itemDao.save(yng_Item);    	
-    	motorizedDao.save(moto);
+    	itemDao.save(yng_Item);  
+    	//************inicioBorramosLasCategoriasPreviamente___MejorarNoFuncionaAl100%*****
+    	Yng_Motorized motorizedOrigin =new Yng_Motorized();
+    	Yng_Motorized objetNull=motorizedDao.findByMotorizedId((long) 0);
+    	
+    	motorizedOrigin=getMotorizedByIdItem(moto.getYng_Item().getItemId());
+    	Set<Yng_MotorizedSecurity> motorizedSecurityOrigin = new HashSet<>();		
+		Set<Yng_MotorizedConfort> motorizedConfortOrigin = new HashSet<>();
+		Set<Yng_MotorizedEquipment> motorizedEquipmentOrigin = new HashSet<>();
+		Set<Yng_MotorizedExterior> motorizedExteriorOrigin = new HashSet<>();
+		Set<Yng_MotorizedSound> motorizedSoundOrigin = new HashSet<>();
+    	
+		
+		
+		motorizedSecurityOrigin=motorizedOrigin.getMotorizedSecurity();
+  		for (Yng_MotorizedSecurity pas : motorizedSecurityOrigin) {
+			motorizedSecurityDao.delete(pas);
+			pas.setMotorized(objetNull);
+		}
+  		
+  		motorizedConfortOrigin=motorizedOrigin.getMotorizedConfort();
+  		for (Yng_MotorizedConfort motorizedConfort : motorizedConfortOrigin) {
+			motorizedConfortDao.delete(motorizedConfort);
+			motorizedConfort.setMotorized(objetNull);
+		}
+  		motorizedEquipmentOrigin = motorizedOrigin.getMotorizedEquipment();
+  		for (Yng_MotorizedEquipment motorizedEquipment : motorizedEquipmentOrigin) {
+  			motorizedEquipment.setMotorized(objetNull);
+  			motorizedEquipmentDao.delete(motorizedEquipment);			
+		}
+  		motorizedSoundOrigin= motorizedOrigin.getMotorizedSound();
+  		for (Yng_MotorizedSound motorizedSound : motorizedSoundOrigin) {
+  			motorizedSound.setMotorized(objetNull);
+  			motorizedSoundDao.delete(motorizedSound);
+		}
+  		motorizedExteriorOrigin =motorizedOrigin.getMotorizedExterior();
+  		for (Yng_MotorizedExterior motorizedExterior : motorizedExteriorOrigin) {
+  			motorizedExterior.setMotorized(objetNull);
+  			motorizedExteriorDao.delete(motorizedExterior);
+		}
+    	//************finBorramosLasCategoriasPreviamente*******//
+    	//*************inicioInsertar**************
+		Set<Yng_MotorizedSecurity> motorizedSecurity = new HashSet<>();		
+		Set<Yng_MotorizedConfort> motorizedConfort = new HashSet<>();
+		Set<Yng_MotorizedEquipment> motorizedEquipment = new HashSet<>();
+		Set<Yng_MotorizedExterior> motorizedExterior = new HashSet<>();
+		Set<Yng_MotorizedSound> motorizedSound = new HashSet<>();
+		
+		
+		motorizedSecurity=moto.getMotorizedSecurity();
+		motorizedConfort=moto.getMotorizedConfort();
+		motorizedEquipment=moto.getMotorizedEquipment();
+		motorizedExterior = moto.getMotorizedExterior();
+		motorizedSound=moto.getMotorizedSound();
+		
+		moto.setMotorizedSecurity(null);
+		moto.setMotorizedConfort(null);
+		moto.setMotorizedEquipment(null);
+		moto.setMotorizedExterior(null);
+		moto.setMotorizedSound(null);
+		
+		
+        Yng_Motorized mots = motorizedDao.save(moto);        
+ 
+
+        for (Yng_MotorizedSecurity si : motorizedSecurity) {
+
+        	si.setSecurity(securityDao.findBySecurityId(si.getSecurity().getSecurityId()));
+        	si.setMotorized(mots);
+        	motorizedSecurityDao.save(si);	    
+		} 
+        
+        for(Yng_MotorizedConfort si:motorizedConfort)
+        {
+        	si.setConfort(confortDao.findByConfortId(si.getConfort().getConfortId()));
+        	si.setMotorized(mots);
+        	motorizedConfortDao.save(si);
+        
+        }
+        
+        for(Yng_MotorizedEquipment si:motorizedEquipment)
+        {
+        	si.setEquipment(equipmentDao.findByEquipmentId(si.getEquipment().getEquipmentId()));
+        	si.setMotorized(mots);
+        	motorizedEquipmentDao.save(si);
+        
+        }
+        
+        
+        for(Yng_MotorizedExterior si:motorizedExterior)
+        {
+        	si.setExterior(exteriorDao.findByExteriorId(si.getExterior().getExteriorId()));
+        	si.setMotorized(mots);
+        	motorizedExteriorDao.save(si);
+        }
+        
+        for(Yng_MotorizedSound si:motorizedSound) {
+        	si.setSound(soundDao.findBySoundId(si.getSound().getSoundId()));
+        	si.setMotorized(mots);
+        	motorizedSoundDao.save(si);
+        } 
+    	//*************finInsertar*****************
+    	//motorizedDao.save(moto);
     	return "save";
     }
     @RequestMapping(value = "/property/update", method = RequestMethod.POST)
@@ -406,15 +569,62 @@ public class ItemController {
     	Yng_Item yng_Item=prop.getYng_Item();
     	itemDao.save(yng_Item);
     	
-       	//inicio borramos las categorias previamente Mejorar no funciona la 100%
-
+       	//************inicioBorramosLasCategoriasPreviamente___MejorarNoFuncionaAl100%*****
+    	
+    	
+    	
+    	Yng_Property propOrigin=new Yng_Property();      	
+    	propOrigin=getPropertyByIdItem(prop.getYng_Item().getItemId());       		
+       		Set<Yng_PropertyAmbient> propertyAmbientOrigin = new HashSet<>();
+       		propertyAmbientOrigin=propOrigin.getPropertyAmbient();
+           	//System.out.println("serviceProvinceOrigin:"+serviceProvinceOrigin.toString());
+           	Yng_Property serviceTemp=propertyDao.findByPropertyId((long) 0);
+      		for (Yng_PropertyAmbient sp : propertyAmbientOrigin) {
+      			System.out.println("delete sp:"+sp.getAmbient().getName());      			
+      			Long id = sp.getPropertyAmbientId();
+      			System.out.println("id sp:"+id);
+				propertyAmbietDao.delete(id);
+      			sp.setProperty(serviceTemp);
+      			
+    		}
        	
-       	//fin borramos las categorias previamente
+      		Set<Yng_PropertyAmenities> propertyAmenitiesOrigin=new HashSet<>();
+      		propertyAmenitiesOrigin=propOrigin.getPropertyAmenities();
+      		for (Yng_PropertyAmenities pas : propertyAmenitiesOrigin) {
+				propertyAmenitiesDao.delete(pas);
+				pas.setProperty(serviceTemp);
+			}
+       	
+       	//**************finBorramosLasCategoriasPreviamente*******
     	
-    	
-    	
-    	propertyDao.save(prop);
-    	
+    	//*************inicioInsertar**************
+    	Set<Yng_PropertyAmenities> propertyAmenities=new HashSet<>();
+  		Set<Yng_PropertyAmbient> propertyAmbient=new HashSet<>();
+  		
+  		propertyAmenities=prop.getPropertyAmenities();
+  		propertyAmbient=prop.getPropertyAmbient();
+  		
+  		prop.setPropertyAmbient(null);
+  		prop.setPropertyAmenities(null);
+  		
+        Yng_Property propT = propertyDao.save(prop);
+        
+        
+        
+        for(Yng_PropertyAmbient si:propertyAmbient)
+        {
+        	si.setAmbient(ambientDao.findByAmbientId(si.getAmbient().getAmbientId()));
+        	si.setProperty(propT);
+        	propertyAmbietDao.save(si);        
+        }        
+        for(Yng_PropertyAmenities si:propertyAmenities)       	
+        {
+        	si.setAmenities(amenitiesDao.findByAmenitiesId(si.getAmenities().getAmenitiesId()));
+        	si.setProperty(propT);
+        	propertyAmenitiesDao.save(si);       	
+        }
+
+    	//*************finInsertar****************    	
     	return "save";
     }
     @RequestMapping("/over/{sw}")
@@ -460,7 +670,7 @@ public class ItemController {
     	Yng_Service serv=new Yng_Service();
     	serv=service;
        	Yng_Item yng_Item=serv.getYng_Item();
-       	//inicio borramos las categorias previamente Mejorar no funciona la 100%
+       	//*************inicio_borramos_las_categorias_previamente_Mejorar_no_funciona _la 100%
        	Yng_Service servOrigin=new Yng_Service();
      
        	if(serv.getYng_Item().getType().equals("Service")) {
@@ -470,17 +680,14 @@ public class ItemController {
            	System.out.println("serviceProvinceOrigin:"+serviceProvinceOrigin.toString());
            	Yng_Service serviceTemp=serviceDao.findByServiceId((long) 0);
       		for (Yng_ServiceProvince sp : serviceProvinceOrigin) {
-      			System.out.println("delete sp:"+sp.getProvince().getName());
-      			//provinceService.deleteServiceProvinces(sp.getServiceProvinceId());
-      			//serviceDao.delete(serv.getServiceId());
-      			long d=sp.getServiceProvinceId();
-      			sp.setService(serviceTemp);      			
-      			serviceProvinceDao.save(sp);
-      			//deleteStudent(d);
-      			System.out.println("d sp:"+d);
-    		}
-      		
+      			System.out.println("delete sp:"+sp.getProvince().getName());      			
+      			Long id = sp.getServiceProvinceId();
+				serviceProvinceDao.delete(id);
+      			sp.setService(serviceTemp);
+      			System.out.println("id sp:"+id);
+    		}      		
        	}
+       	
        	//fin borramos las categorias previamente
        
         //obtenemos la lista de provincia de la zona de cobertura
@@ -499,17 +706,7 @@ public class ItemController {
        	itemDao.save(yng_Item);
        	return "save";
        }
-   /* @RequestMapping("/motorized/{itemId}")
-    public Yng_Product findMotorized(@PathVariable("itemId") Long itemId) {
-    	List<Yng_Motorized> motTem=motorizedDao.findByYng_Item(itemId);
-    	System.out.println(motTem.size()+" string: "+motTem.toString());
-    	if(this.getProductByIdItemExist(itemId)) {
-    	Yng_Product yng_Product=this.getProductByIdItem(itemId);
-    	yng_Product.getYng_Item().getUser().setPassword("");
-        return yng_Product;
-    	}
-    	else return null;
-    }*/
+
     @RequestMapping(value = "/ubication/update", method = RequestMethod.POST)
    	@ResponseBody
        public String updateUbicationPost(@Valid @RequestBody Yng_Item item) throws MessagingException {
