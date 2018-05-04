@@ -353,4 +353,135 @@ public class PayUFunds {
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true); // format json
         return mapper;
     }
+	public Yng_Payment authorizeCash(Yng_Buy buy, Yng_User userTemp) throws Exception, ClientProtocolException, IOException{
+		//Datos Principales del comprador 
+		List<Yng_Person> personList= personService.findByUser(buy.getUser());
+		Yng_Person person = personList.get(0);
+		//recuoerar los stanadarts
+		Yng_Standard api = standardDao.findByKey("PAYU_api_p");
+		Yng_Standard test = standardDao.findByKey("PAYU_test_p");
+		Yng_Standard apikey = standardDao.findByKey("PAYU_apiKey_p");
+		Yng_Standard apiLogin = standardDao.findByKey("PAYU_apiLogin_p");
+		Yng_Standard accountId = standardDao.findByKey("PAYU_accountId_p");
+		//Yng_Standard INSTALLMENTS_NUMBER = standardDao.findByKey("PAYU_INSTALLMENTS_NUMBER");
+		Yng_Standard merchantId = standardDao.findByKey("PAYU_merchantId_p");
+		//crear el referenceCode y el signature
+		Date time = new Date();
+    	DateFormat hourdateFormat = new SimpleDateFormat("dd/MM/yyyyHH:mm:ss");
+		String referenceCode="Yingul"+hourdateFormat.format(time);
+		String bSignature=apikey.getValue()+"~"+merchantId.getValue()+"~"+referenceCode+"~"+buy.getCost()+"~ARS";
+	    MessageDigest md = MessageDigest.getInstance("MD5");
+	    md.update(bSignature.getBytes());
+	    byte[] digest = md.digest();
+	    String signature = DatatypeConverter
+	      .printHexBinary(digest).toUpperCase();
+		// crear el request 
+		Yng_Request requestTemp = new Yng_Request(); 
+		requestTemp.setURI(api.getValue());
+		requestTemp.setInfo("Payment Authorization Test");
+		requestTemp = requestDao.save(requestTemp);
+		//crear el response
+		CloseableHttpClient client = HttpClients.createDefault();
+	    HttpPost httpPost = new HttpPost(api.getValue());
+	    String json = "{\r\n" + 
+	    		"   \"language\": \"es\",\r\n" + 
+	    		"   \"command\": \"SUBMIT_TRANSACTION\",\r\n" + 
+	    		"   \"merchant\": {\r\n" + 
+	    		"      \"apiKey\": \""+apikey.getValue()+"\",\r\n" + 
+	    		"      \"apiLogin\": \""+apiLogin.getValue()+"\"\r\n" + 
+	    		"   },\r\n" + 
+	    		"   \"transaction\": {\r\n" + 
+	    		"      \"order\": {\r\n" + 
+	    		"         \"accountId\": \""+accountId.getValue()+"\",\r\n" + 
+	    		"         \"referenceCode\": \""+referenceCode+"\",\r\n" + 
+	    		"         \"description\": \"payment test\",\r\n" + 
+	    		"         \"language\": \"es\",\r\n" + 
+	    		"         \"signature\": \""+signature+"\",\r\n" + 
+	    		"         \"notifyUrl\": \"http://www.tes.com/confirmation\",\r\n" + 
+	    		"         \"additionalValues\": {\r\n" + 
+	    		"            \"TX_VALUE\": {\r\n" + 
+	    		"               \"value\": "+buy.getCost()+",\r\n" + 
+	    		"               \"currency\": \"ARS\"\r\n" + 
+	    		"            }\r\n" + 
+	    		"         },\r\n" + 
+	    		"         \"buyer\": {\r\n" + 
+	    		"            \"emailAddress\": \""+buy.getUser().getEmail()+"\"\r\n" + 
+	    		"         }\r\n" + 
+	    		"      },\r\n" + 
+	    		"      \"type\": \"AUTHORIZATION_AND_CAPTURE\",\r\n" + 
+	    		"      \"paymentMethod\": \""+buy.getYng_Payment().getCashPayment().getPaymentMethod()+"\",\r\n" + 
+	    		"      \"paymentCountry\": \"AR\",\r\n" + 
+	    		"      \"ipAddress\": \""+buy.getIp()+"\"\r\n" + 
+	    		"   },\r\n" + 
+	    		"   \"test\": "+test.getValue()+"\r\n" + 
+	    		"}";
+	    
+	    Yng_RequestBody body= new Yng_RequestBody(); 
+	    body.setKey("body");
+	    body.setValue(json);
+	    body.setRequest(requestTemp);
+		requestBodyDao.save(body);
+	    
+	    StringEntity entity = new StringEntity(json);
+	    httpPost.setEntity(entity);
+	    httpPost.setHeader("Accept", "application/json");
+	    httpPost.setHeader("Content-type", "application/json");
+	 
+	    CloseableHttpResponse response = client.execute(httpPost);
+	    Yng_Response responseTemp = this.logResponse(response);
+	   
+	    Set<Yng_ResponseHeader> responseHeader=responseTemp.getResponseHeader();
+    	Set<Yng_ResponseBody> responseBody=responseTemp.getResponseBody();
+    	responseTemp.setResponseHeader(null);
+    	responseTemp.setResponseBody(null);
+    	responseTemp=responseDao.save(responseTemp);
+    	requestTemp.setYng_Response(responseTemp);
+    	requestTemp=requestDao.save(requestTemp);
+        response.close();
+	    client.close();
+		//
+	    for (Yng_ResponseHeader s : responseHeader) {
+    		s.setResponse(responseTemp);
+    		responseHeaderDao.save(s);
+    	}
+    	for(Yng_ResponseBody t:responseBody) {
+    		t.setResponse(responseTemp);
+    		responseBodyDao.save(t);
+    	}
+    	
+    	
+    	for(Yng_ResponseBody t:responseBody) {
+    		t.setResponse(responseTemp);
+    		if(t.getKey().equals("transactionResponse")) {
+    			if(t.getValue().equals("null")) {
+    				return null;
+    			}else {
+    				JSONObject  jObject = new JSONObject(t.getValue());
+    				Map<String,String> map = new HashMap<String,String>();
+    				Iterator iter = jObject.keys();
+	                while(iter.hasNext()){
+	                    String key = (String)iter.next();
+	                    String value= jObject.get(key).toString();
+	                    map.put(key,value);
+	                    if(key.equals("responseCode")) {
+	                    	if(value.equals("PENDING_TRANSACTION_CONFIRMATION")) {
+	                    		//guardar la tarjeta
+
+	                    		Yng_Payment paymentTemp=buy.getYng_Payment();
+	                    		//para ver si la tarjeta existe 
+	                    		paymentTemp.setYng_Request(requestTemp);
+	                    		return paymentTemp;
+	                    		
+	                    	}
+	                    	else {
+	                    		return null;
+	                    	}
+	                    }
+	                }
+    			}
+    		}
+    	}
+    	return null;
+
+	}
 }

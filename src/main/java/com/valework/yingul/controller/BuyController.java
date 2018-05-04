@@ -228,17 +228,29 @@ public class BuyController {
     	Yng_User sellerTemp = userDao.findByUsername(itemTemp.getUser().getUsername());
     	buy.setSeller(sellerTemp);
     	//hasta aqui para el usuario
-    	
-    	//Autorización de la tarjeta
-    	Yng_Payment autorized =  payUFunds.authorizeCard(buy,userTemp);
-    	//
-    	if(autorized==null) {
-    		return "problemCard";
-    	}else {
-    		buy.setYng_Payment(paymentDao.save(autorized));
+    	//pagos en efectivo 
+    	if(buy.getYng_Payment().getType().equals("CASH")) {
+    		//Autorización de la tarjeta
+	    	Yng_Payment autorized =  payUFunds.authorizeCash(buy,userTemp);
+	    	//
+	    	if(autorized==null) {
+	    		return "problemCash";
+	    	}else {
+	    		autorized.setYng_Card(null);
+	    		buy.setYng_Payment(paymentDao.save(autorized));
+	    	}
     	}
-    	
-		
+    	if(buy.getYng_Payment().getType().equals("CARD")) {
+    		//Autorización de la tarjeta
+	    	Yng_Payment autorized =  payUFunds.authorizeCard(buy,userTemp);
+	    	//
+	    	if(autorized==null) {
+	    		return "problemCard";
+	    	}else {
+	    		autorized.setCashPayment(null);
+	    		buy.setYng_Payment(paymentDao.save(autorized));
+	    	}
+    	}
     	//fin del metodo de pago
     	Date time = new Date();
     	DateFormat hourdateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");

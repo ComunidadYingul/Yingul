@@ -22,6 +22,10 @@ public class Yng_Payment {
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "card_id")
     private Yng_Card yng_Card;
+	
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "cashPayment_id")
+    private Yng_CashPayment cashPayment;
 
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "request_id")
@@ -76,6 +80,14 @@ public class Yng_Payment {
 
 	public void setYng_Request(Yng_Request yng_Request) {
 		this.yng_Request = yng_Request;
+	}
+
+	public Yng_CashPayment getCashPayment() {
+		return cashPayment;
+	}
+
+	public void setCashPayment(Yng_CashPayment cashPayment) {
+		this.cashPayment = cashPayment;
 	}
 
 
