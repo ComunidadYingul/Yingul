@@ -50,7 +50,7 @@ public class AndreaniXML {
 				"                        <item>\r\n" + 
 				"                            <key xsi:type=\"xsd:string\">Localidad</key>\r\n" + 
 				"                            <value xsi:type=\"xsd:string\">"
-				+ quo.getYng_User().getYng_Ubication().getYng_City().getName()
+				//+ quo.getYng_User().getYng_Ubication().getYng_City().getName()
 				+ "</value>\r\n" + 
 				"                        </item>\r\n" + 
 				"                        <item>\r\n" + 
@@ -62,7 +62,7 @@ public class AndreaniXML {
 				"                        <item>\r\n" + 
 				"                            <key xsi:type=\"xsd:string\">Provincia</key>\r\n" + 
 				"                            <value xsi:type=\"xsd:string\">"
-				+ quo.getYng_User().getYng_Ubication().getYng_Province().getName()
+				//+ quo.getYng_User().getYng_Ubication().getYng_Province().getName()
 				+ "</value>\r\n" + 
 				"                        </item>\r\n" + 
 				"                    </value>\r\n" + 

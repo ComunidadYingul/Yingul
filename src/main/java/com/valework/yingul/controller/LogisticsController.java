@@ -74,6 +74,7 @@ import com.valework.yingul.model.AndreaniCot;
 import com.valework.yingul.model.Yng_AndreaniCotizacion;
 import com.valework.yingul.model.Yng_AndreaniSucursal;
 import com.valework.yingul.model.Yng_Branch;
+import com.valework.yingul.model.Yng_BranchAndreani;
 import com.valework.yingul.model.Yng_Cotizacion;
 import com.valework.yingul.model.Yng_Cotizar;
 import com.valework.yingul.model.Yng_Envio;
@@ -91,19 +92,17 @@ import com.valework.yingul.service.ProductService;
 import com.valework.yingul.service.PropertyService;
 import com.valework.yingul.service.ServiceService;
 import com.valework.yingul.service.StandardService;
+import com.valework.yingul.service.UserService;
 
 import andreaniapis.*;
 import ch.qos.logback.core.net.SyslogOutputStream;
 
+import com.valework.yingul.dao.BranchAndreaniDao;
 import com.valework.yingul.dao.CotizacionDao;
 import com.valework.yingul.dao.EnvioDao;
 import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.logistic.*;
-
-
-
-
 
 @RestController
 @RequestMapping("/logistics")
@@ -145,6 +144,11 @@ public class LogisticsController {
 	MotorizedService motorizedService;
 	@Autowired
 	PropertyService propertyService;
+	
+	@Autowired
+	UserService userService;
+	@Autowired
+	BranchAndreaniDao branchAndreaniDao;
 	
     @RequestMapping("/token")
     private String token() {
@@ -430,10 +434,7 @@ public class LogisticsController {
      
 
      public String andreaniSucursales(String CodigoPostal,String Localidad,String Provincia) throws Exception{ 
-    	 String body="<?xml version=\"1.0\" encoding=\"UTF-8\"?><env:Envelope xmlns:env=\"http://www.w3.org/2003/05/soap-envelope\"xmlns:ns1=\"urn:ConsultarSucursales\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ns2=\"http://xml.apache.org/xml-soap\" xmlns:ns3=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" xmlns:enc=\"http://www.w3.org/2003/05/soap-encoding\"> <env:Header><ns3:Security env:mustUnderstand=\"true\"><ns3:UsernameToken> <ns3:Username>STAGING_WS</ns3:Username><ns3:Password>ANDREANI</ns3:Password> </ns3:UsernameToken></ns3:Security></env:Header><env:Body><ns1:ConsultarSucursales env:encodingStyle=\"http://www.w3.org/2003/05/soap-encoding\"><Consulta xsi:type=\"ns2:Map\"><item><key xsi:type=\"xsd:string\">consulta</key><value xsi:type=\"ns2:Map\"> <item><key xsi:type=\"xsd:string\">Localidad</key><value xsi:type=\"xsd:string\"></value></item><item><key xsi:type=\"xsd:string\">"
-		+ "CodigoPostal</key><value xsi:type=\"xsd:string\">"+CodigoPostal+ "</value></item><item><key xsi:type=\"xsd:string\">Provincia</key><value xsi:type=\"xsd:string\"></value></item></value></item></Consulta></ns1:ConsultarSucursales></env:Body></env:Envelope>";
-    	
-		String body3="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
+    	String body3="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
 				"<env:Envelope\r\n" + 
 				"    xmlns:env=\"http://www.w3.org/2003/05/soap-envelope\"\r\n" + 
 				"    xmlns:ns1=\"urn:ConsultarSucursales\"\r\n" + 
@@ -480,27 +481,7 @@ public class LogisticsController {
 				"        </ns1:ConsultarSucursales>\r\n" + 
 				"    </env:Body>\r\n" + 
 				"</env:Envelope>";
-		String body2="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
-				"<env:Envelope\r\n" + 
-				"    xmlns:env=\"http://www.w3.org/2003/05/soap-envelope\"\r\n" + 
-				"    xmlns:ns1=\"urn:ConsultarSucursales\"\r\n" + 
-				"    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n" + 
-				"    xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\r\n" + 
-				"    xmlns:ns2=\"http://xml.apache.org/xml-soap\"\r\n" + 
-				"    xmlns:ns3=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\"\r\n" + 
-				"    xmlns:enc=\"http://www.w3.org/2003/05/soap-encoding\">\r\n" + 
-				"    <env:Header>\r\n" + 
-				"        <ns3:Security env:mustUnderstand=\"true\">\r\n" + 
-				"            <ns3:UsernameToken>\r\n" + 
-				"                <ns3:Username></ns3:Username>\r\n" + 
-				"                <ns3:Password></ns3:Password>\r\n" + 
-				"            </ns3:UsernameToken>\r\n" + 
-				"        </ns3:Security>\r\n" + 
-				"    </env:Header>\r\n" + 
-				"    <env:Body>\r\n" +""+
-				
-				"    </env:Body>\r\n" + 
-				"</env:Envelope>";
+		
 
     	 
     	 StringEntity stringEntity = new StringEntity(body3, "UTF-8");
@@ -523,19 +504,119 @@ public class LogisticsController {
             SucursalHandler handlerS=new SucursalHandler();
             sAXParser.parse(new InputSource(new StringReader(strResponse)), handlerS);
             ArrayList<ResultadoConsultarSucursales> sucursaleses=handlerS.getResultadoSucursales();
-            for (ResultadoConsultarSucursales versione : sucursaleses) {
-            	numero=versione.getNumero();
-                System.out.println("versione.getNumero:"+versione.getNumero());
+            Yng_BranchAndreani branchAndreani=new Yng_BranchAndreani();
             
+            for (ResultadoConsultarSucursales versione : sucursaleses) {            	
+            	numero=versione.getNumero();        	
+            	
+            	branchAndreani.setCodAndreani(versione.getNumero());
+            	branchAndreani.setLocation(versione.getDireccion());
+            	branchAndreani.setPhones(versione.getTipoTelefono1()+"  "+versione.getTelefono2());
+            	branchAndreani.setSchedules(versione.getHoradeTrabajo());
+            	branchAndreani.setStreet(versione.getDireccion());
+            	branchAndreani.setSucursal(""+versione.getSucursal());
+            	
+            	System.out.println("branchAndreani:"+branchAndreani.toString());            
             }
-        }
-        
+            branchAndreaniDao.save(branchAndreani);
+        }        
         System.out.println("strResponse:"+convertiraISO(strResponse));
         return ""+numero;
 
      }
      
-     
+     public Yng_BranchAndreani andreaniSucursalesObject(String CodigoPostal,String Localidad,String Provincia) throws Exception{ 
+     	String body3="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
+ 				"<env:Envelope\r\n" + 
+ 				"    xmlns:env=\"http://www.w3.org/2003/05/soap-envelope\"\r\n" + 
+ 				"    xmlns:ns1=\"urn:ConsultarSucursales\"\r\n" + 
+ 				"    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n" + 
+ 				"    xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\r\n" + 
+ 				"    xmlns:ns2=\"http://xml.apache.org/xml-soap\"\r\n" + 
+ 				"    xmlns:ns3=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\"\r\n" + 
+ 				"    xmlns:enc=\"http://www.w3.org/2003/05/soap-encoding\">\r\n" + 
+ 				"    <env:Header>\r\n" + 
+ 				"        <ns3:Security env:mustUnderstand=\"true\">\r\n" + 
+ 				"            <ns3:UsernameToken>\r\n" + 
+ 				"                <ns3:Username></ns3:Username>\r\n" + 
+ 				"                <ns3:Password></ns3:Password>\r\n" + 
+ 				"            </ns3:UsernameToken>\r\n" + 
+ 				"        </ns3:Security>\r\n" + 
+ 				"    </env:Header>\r\n" + 
+ 				"    <env:Body>\r\n" + 
+ 				"        <ns1:ConsultarSucursales env:encodingStyle=\"http://www.w3.org/2003/05/soap-encoding\">\r\n" + 
+ 				"            <Consulta xsi:type=\"ns2:Map\">\r\n" + 
+ 				"                <item>\r\n" + 
+ 				"                    <key xsi:type=\"xsd:string\">consulta</key>\r\n" + 
+ 				"                    <value xsi:type=\"ns2:Map\">\r\n" + 
+ 				"                        <item>\r\n" + 
+ 				"                            <key xsi:type=\"xsd:string\">Localidad</key>\r\n" + 
+ 				"                            <value xsi:type=\"xsd:string\">"
+ 				+ Localidad
+ 				+ "</value>\r\n" + 
+ 				"                        </item>\r\n" + 
+ 				"                        <item>\r\n" + 
+ 				"                            <key xsi:type=\"xsd:string\">CodigoPostal</key>\r\n" + 
+ 				"                            <value xsi:type=\"xsd:string\">"
+ 				+ CodigoPostal
+ 				+ "</value>\r\n" + 
+ 				"                        </item>\r\n" + 
+ 				"                        <item>\r\n" + 
+ 				"                            <key xsi:type=\"xsd:string\">Provincia</key>\r\n" + 
+ 				"                            <value xsi:type=\"xsd:string\">"
+ 				+ Provincia
+ 				+ "</value>\r\n" + 
+ 				"                        </item>\r\n" + 
+ 				"                    </value>\r\n" + 
+ 				"                </item>\r\n" + 
+ 				"            </Consulta>\r\n" + 
+ 				"        </ns1:ConsultarSucursales>\r\n" + 
+ 				"    </env:Body>\r\n" + 
+ 				"</env:Envelope>";
+ 		
+
+     	 
+     	 StringEntity stringEntity = new StringEntity(body3, "UTF-8");
+ 		
+         stringEntity.setChunked(true);
+         HttpPost httpPost = new HttpPost(urlSuc);
+         httpPost.setEntity(stringEntity);
+         httpPost.addHeader("Content-Type", "text/xml");
+         httpPost.addHeader("SOAPAction", "soapAction");
+         HttpClient httpClient = new DefaultHttpClient();
+         HttpResponse response = httpClient.execute(httpPost);
+         HttpEntity entity = response.getEntity();
+         SAXParserFactory saxParseFactory=SAXParserFactory.newInstance();
+         SAXParser sAXParser=saxParseFactory.newSAXParser();
+
+         String numero="";
+         String strResponse = null;
+         Yng_BranchAndreani branchAndreani=new Yng_BranchAndreani();
+         if (entity != null) {
+             strResponse = EntityUtils.toString(entity);
+             SucursalHandler handlerS=new SucursalHandler();
+             sAXParser.parse(new InputSource(new StringReader(strResponse)), handlerS);
+             ArrayList<ResultadoConsultarSucursales> sucursaleses=handlerS.getResultadoSucursales();
+             
+             
+             for (ResultadoConsultarSucursales versione : sucursaleses) {            	
+             	numero=versione.getNumero();        	
+             	
+             	branchAndreani.setCodAndreani(versione.getNumero());
+             	branchAndreani.setLocation(versione.getDireccion());
+             	branchAndreani.setPhones(versione.getTipoTelefono1()+"  "+versione.getTelefono2());
+             	branchAndreani.setSchedules(versione.getHoradeTrabajo());
+             	branchAndreani.setStreet(versione.getDireccion());
+             	branchAndreani.setSucursal(""+versione.getSucursal());
+             	
+             	System.out.println("branchAndreani:"+branchAndreani.toString());            
+             }
+            // branchAndreaniDao.save(branchAndreani);
+         }        
+         System.out.println("strResponse:"+convertiraISO(strResponse));
+         return branchAndreani;
+
+      }
      public String andreaniCotizacion(String CodigoPostal,String SucursalRetiro,String Peso,String Volumen,String ValorDeclarado) throws Exception{ 
     	 	String body2="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
 				"<env:Envelope\r\n" + 
@@ -1147,8 +1228,7 @@ public class LogisticsController {
     	Yng_User userTemp= userDao.findByUsername(cotizacion.getIdUser());
     	cotizacion.setIdUser(""+userTemp.getUserId());
     	cotizacionDao.save(cotizacion);
-    	
-    	 return "save";
+    	return "save";
     }
     
     @Autowired
@@ -1651,5 +1731,90 @@ public class LogisticsController {
 		return product;	
       }
       
-  	
+      @RequestMapping(value = "/quoteFedex", method = RequestMethod.POST)
+    	@ResponseBody
+        public List<Yng_Quote> quoteFedex(@Valid @RequestBody  Yng_Quote quo){
+        	System.out.println("quoteFedex: "+quo.toString());
+        	getQuoteFedex(quo);
+        	return null;
+        }
+      
+  	public Yng_Quote getQuoteFedex(Yng_Quote quote) {
+  		 Yng_Quote quoteFedex=new Yng_Quote();
+  		 Yng_Product getProductByIdItem=new Yng_Product();
+  		 getProductByIdItem=getProductByIdItem(quote.getYng_Item().getItemId());
+  		 Yng_User user=new Yng_User();
+  		 user=userService.findByUsername(quote.getYng_User().getUsername());
+  		 quote.setYng_User(user);
+  		 
+  		 //Fedex inicio
+  		 FedexXML xmlFedex=new FedexXML();
+	   	 //iniciando variable de desarrolo
+		    	standard= new Yng_Standard();
+		      	standard=standardService.findByKey("FedEXAuthenticationKey");
+		      	FedEXAuthenticationKey= standard.getValue();
+		      	
+		      	standard=standardService.findByKey("FedExMeterNumber");
+		      	FedExMeterNumber= standard.getValue();
+		      	
+		      	standard=standardService.findByKey("FedExAccountNumber");
+		      	FedExAccountNumber= standard.getValue();
+		      	
+		      	standard=standardService.findByKey("FedexPassword");
+		      	FedexPassword= standard.getValue();
+		      	//inirCr
+			      	xmlFedex.inirCre(FedEXAuthenticationKey, FedExMeterNumber, FedExAccountNumber, FedexPassword);
+	   	 	//finalizando variable de desarrolo
+	   	 
+	   		PropertyObjectHttp propertyObjectHttp = new PropertyObjectHttp();
+	   		
+			String cotizacion=xmlFedex.FedexLocation(quote);
+			//obtener xml para el envio
+	   		propertyObjectHttp.setBody(cotizacion);
+	   		// setear el tipo de request GET, POST, PUT etc...
+	   		propertyObjectHttp.setRequestMethod(propertyObjectHttp.POST);
+	   		// setear el url ala que se enviara 
+	   		propertyObjectHttp.setUrl("https://wsbeta.fedex.com:443/web-services");
+	   			http  httoUrlcon=new http();
+	   			String outputString;
+	   			Yng_Branch braFedex = new Yng_Branch();
+	   			FedexResponce fedex=new FedexResponce();
+	   			
+	   			try {
+					 outputString=httoUrlcon.request(propertyObjectHttp);
+					 braFedex=fedex.fedexBranch(outputString);							 
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	   			//branchShipping.add(braFedex);
+	   			quoteFedex.setYng_Branch(braFedex);
+	   		//inicio de rate	
+	   		String rateFedex=xmlFedex.FedexRate(quote, getProductByIdItem);
+				//obtener xml para el envio
+	   		propertyObjectHttp.setBody(rateFedex);
+	   		// setear el tipo de request GET, POST, PUT etc...
+	   		propertyObjectHttp.setRequestMethod(propertyObjectHttp.POST);
+	   		// setear el url ala que se enviara 
+	   		propertyObjectHttp.setUrl("https://wsbeta.fedex.com:443/web-services");	   		
+	   		/*try {
+					 outputString=httoUrlcon.request(propertyObjectHttp);
+					 try {
+						quoteFedex=fedex.fedexQuote(outputString);
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}							 
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	   		standard=standardService.findByKey("shippingPercentage");
+	 		double porce = 1+Double.parseDouble(standard.getValue())/100;
+	   		double dobleF = quoteFedex.getRateOrigin()*porce;
+	   		quoteFedex.setRate(dobleF);*/
+	   	  //fedex fin
+	   	 // quotesList.add(quoteFedex);//se comento solo para pruebas
+  		return quoteFedex;
+  	}
 }

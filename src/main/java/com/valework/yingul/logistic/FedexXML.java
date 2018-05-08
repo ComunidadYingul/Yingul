@@ -151,11 +151,13 @@ public class FedexXML {
     	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd") {
 	        public StringBuffer format(Date date, StringBuffer toAppendTo, java.text.FieldPosition pos) {
 	            StringBuffer toFix = super.format(date, toAppendTo, pos);
-	            return toFix.insert(toFix.length()-2, ':');
+	            //return toFix.insert(toFix.length()-2, ':');
+	            return toFix;
 	        };
 	    };
 	    // Usage:
 	    String fechaA=dateFormat.format(new Date());
+	    System.out.println("fechaA:  "+fechaA);
 		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n" + 
 				" <soapenv:Body>\r\n" + 
 				"  <SearchLocationsRequest xmlns=\"http://fedex.com/ws/locs/v7\">\r\n" + 

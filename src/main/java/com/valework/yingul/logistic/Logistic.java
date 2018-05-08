@@ -11,18 +11,23 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.valework.yingul.controller.LogisticsController;
+import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Product;
 import com.valework.yingul.model.Yng_Shipping;
+import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.StandardService;
-
+@Component
 public class Logistic {
 	@Autowired
 	StandardService standardService;
+	@Autowired 
+	StandardDao standardDao;
 	//String 
  	public String andreaniHttpConection(AndreaniProperty andreaniProp) throws MalformedURLException, IOException {
 		//Code to make a webservice HTTP request
@@ -74,6 +79,16 @@ public class Logistic {
 		return ""+outputString;
 		}
 	public String andreaniStringRe(Yng_Person per,Yng_Shipping shi,Yng_Person perItem,Yng_Product pro) {
+		Yng_Standard Username = standardDao.findByKey("Username");
+		System.out.println("Username:"+Username.getValue());
+		Yng_Standard Password = standardDao.findByKey("Password");
+		System.out.println("Password:"+Password);
+		
+		Yng_Standard Cliente = standardDao.findByKey("Cliente");
+		System.out.println("Cliente:"+Cliente);
+		Yng_Standard Contrato = standardDao.findByKey("Contrato");
+		System.out.println("Contrato:"+Contrato);
+		
 		//LogisticsController  logisticsController=new LogisticsController();
 		//Yng_Product prod = logisticsController.getProductByIdItem(shi.getYng_Quote().getYng_Item().getItemId());
 		   String confirmarcompra="<soapenv:Envelope \r\n" + 
@@ -86,10 +101,10 @@ public class Logistic {
 		   		"<ns3:Security soapenv:mustUnderstand=\"1\">\r\n" + 
 		   		"<ns3:UsernameToken>\r\n" + 
 		   		"<ns3:Username>"
-		   			+ "STAGING_WS"
+		   			+ Username.getValue()
 		   		+ "</ns3:Username>\r\n" + 
 		   		"<ns3:Password>"
-		   			+ "ANDREANI"
+		   			+ Password.getValue()
 		   		+ "</ns3:Password>\r\n" + 
 		   		"</ns3:UsernameToken>\r\n" + 
 		   		"</ns3:Security>\r\n" + 
@@ -103,7 +118,7 @@ public class Logistic {
 		   			+ "1"
 		   		+ "</ecom:categoriaDePeso>\r\n" + 
 		   		"<ecom:contrato>"
-		   			+ "400006711"
+		   			+ Contrato.getValue()
 		   		+ "</ecom:contrato>\r\n" + 
 		   		"<ecom:destinatario>\r\n" + 
 			   		"<and:apellido>"
@@ -130,17 +145,28 @@ public class Logistic {
 			   		+ "</and:numeroDeDocumento>\r\n" + 
 			   		"<!--Optional:-->\r\n" + 
 			   		"<and:telefonos>\r\n" + 
-			   		"<!--Zero or more repetitions:-->\r\n" + 
-			   		"<and:Telefono>\r\n" + 
-			   		"<!--Optional:-->\r\n" + 
-			   		"<and:numero>"
-			   			+ per.getYng_User().getPhone()
-			   		+ "</and:numero>\r\n" + 
-			   		"<!--Optional:-->\r\n" + 
-			   		"<and:tipo>"
-			   			+ "movil"
-			   		+ "</and:tipo>\r\n" + 
-			   		"</and:Telefono>\r\n" + 
+				   	"<!--Zero or more repetitions:-->\r\n" + 
+				   		"<and:Telefono>\r\n" + 
+					   		"<!--Optional:-->\r\n" + 
+					   		"<and:numero>"
+					   			+ per.getYng_User().getPhone()+
+					   		"</and:numero>\r\n" + 
+					   		"<!--Optional:-->\r\n" + 
+					   		"<and:tipo>"
+					   			+ "movil"+
+					   		"</and:tipo>\r\n" + 
+				   		"</and:Telefono>\r\n" +
+					   		
+				   		"<and:Telefono>\r\n" + 
+					   		"<!--Optional:-->\r\n" + 
+					   		"<and:numero>"
+					   			+ shi.getPhoneContact()+
+					   		"</and:numero>\r\n" + 
+					   		"<!--Optional:-->\r\n" + 
+					   		"<and:tipo>"
+					   			+ "movil"+
+					   		"</and:tipo>\r\n" + 
+				   		"</and:Telefono>\r\n" +
 			   		"</and:telefonos>\r\n" + 
 			   		"<!--Optional:-->\r\n" + 
 			   		"<and:tipoDeDocumento>"
@@ -177,12 +203,14 @@ public class Logistic {
 		   		"<ecom:detalleDeProductoARetirar></ecom:detalleDeProductoARetirar>\r\n" + 
 		   		"<!--Optional:-->\r\n" + 
 		   		"<ecom:idCliente>"
-		   			+ "CL0003750"
+		   			+ Cliente.getValue()
 		   		+ "</ecom:idCliente>\r\n" + 
 		   		"<ecom:origen>\r\n" + 
 			   		"<!--Optional:-->\r\n" + 
 			   		"<and:alturaDeDomicilio></and:alturaDeDomicilio>\r\n" + 
-			   		"<and:calle>calle alamos</and:calle>\r\n" + 
+			   		"<and:calle>"
+			   		+ ""+shi.getYng_Quote().getYng_Item().getYng_Ubication().getStreet()//"calle alamos"
+			   		+ "</and:calle>\r\n" + 
 			   		"<and:codigoPostal>"
 			   			+ shi.getYng_Quote().getYng_Item().getYng_Ubication().getPostalCode()//pro.getYng_Item().getUser().getYng_Ubication().getPostalCode()
 			   		+ "</and:codigoPostal>\r\n" + 
@@ -207,7 +235,7 @@ public class Logistic {
 			   		+ "</and:apellido>\r\n" + 
 			   		"<!--Optional:-->\r\n" + 
 			   		"<and:apellidoAlternativo>"
-			   			+ ""
+			   			+ ""+shi.getLastName()
 			   		+ "</and:apellidoAlternativo>\r\n" + 
 			   		"<and:email>"
 			   			+ perItem.getYng_User().getEmail()
@@ -218,7 +246,7 @@ public class Logistic {
 			   		+ "</and:nombre>\r\n" + 
 			   		"<!--Optional:-->\r\n" + 
 			   		"<and:nombreAlternativo>"
-			   			+ ""
+			   			+ ""+shi.getNameContact()
 			   		+ "</and:nombreAlternativo>\r\n" + 
 			   		"<!--Optional:-->\r\n" + 
 			   		"<and:numeroDeDocumento>"
@@ -267,7 +295,8 @@ public class Logistic {
 		   		"</soapenv:Envelope>";
 		   return ""+confirmarcompra;
 	}
-    public String andreaniRemitenteWSDL(String a) throws Exception{
+    
+	public String andreaniRemitenteWSDL(String a) throws Exception{
 		   AndreaniProperty andr=new AndreaniProperty();
 		   andr.setHost("integraciones.andreani.com:5000");
 		   andr.setSOAPAction("http://tempuri.org/IDatosImpresion/GenerarEnvioConDatosDeImpresionYRemitente");
@@ -641,4 +670,7 @@ public class Logistic {
 			System.out.println("outputString1 :"+outputString);
 			return ""+outputString;
 			}
+
+
+	 
 }

@@ -21,6 +21,7 @@ public class Yng_Shipping {
 	private boolean andreani=false;
 	private String shippingStatus="";
 	private String nameContact="";
+	private String lastName="";
 	private String phoneContact="";
 	//crear desde dhl hasta shipment de manera manual 
 	
@@ -117,14 +118,21 @@ public class Yng_Shipping {
 		this.phoneContact = phoneContact;
 	}
 
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
 	@Override
 	public String toString() {
 		return "Yng_Shipping [shippingId=" + shippingId + ", typeShipping=" + typeShipping + ", dhl=" + dhl + ", fedex="
 				+ fedex + ", andreani=" + andreani + ", shippingStatus=" + shippingStatus + ", nameContact="
-				+ nameContact + ", phoneContact=" + phoneContact + ", yng_Quote=" + yng_Quote + ", yng_Shipment="
-				+ yng_Shipment + "]";
+				+ nameContact + ", lastName=" + lastName + ", phoneContact=" + phoneContact + ", yng_Quote=" + yng_Quote
+				+ ", yng_Shipment=" + yng_Shipment + "]";
 	}
-
 
 	
 }

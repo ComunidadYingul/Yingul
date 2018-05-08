@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -25,11 +24,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import com.valework.yingul.PayUFunds;
 
 import org.xml.sax.InputSource;
 
 import com.valework.yingul.SmtpMailSender;
+import com.valework.yingul.dao.BranchAndreaniDao;
 import com.valework.yingul.dao.BranchDao;
 import com.valework.yingul.dao.BuyDao;
 import com.valework.yingul.dao.CardDao;
@@ -55,6 +56,7 @@ import com.valework.yingul.dao.ShipmentDao;
 import com.valework.yingul.dao.ShippingDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
+import com.valework.yingul.logistic.AndreaniXML;
 import com.valework.yingul.logistic.FedexResponce;
 import com.valework.yingul.logistic.FedexXML;
 import com.valework.yingul.logistic.GetStateSend;
@@ -62,6 +64,7 @@ import com.valework.yingul.logistic.Logistic;
 import com.valework.yingul.logistic.PropertyObjectHttp;
 import com.valework.yingul.logistic.http;
 import com.valework.yingul.model.Yng_Branch;
+import com.valework.yingul.model.Yng_BranchAndreani;
 import com.valework.yingul.model.Yng_Buy;
 import com.valework.yingul.model.Yng_Card;
 import com.valework.yingul.model.Yng_CardProvider;
@@ -170,6 +173,12 @@ public class BuyController {
 	Yng_Standard standard;
 	@Autowired
 	StandardService standardService;
+	@Autowired 
+	Logistic logistic;
+	
+	@Autowired
+	BranchAndreaniDao branchAndreaniDao;
+	
 	@RequestMapping("/listCreditCard/all")
     public Set<Yng_ListCreditCard> findProvinceList() {
         List<Yng_ListCreditCard> creditCardList = listCreditCardDao.findAll();
@@ -243,196 +252,152 @@ public class BuyController {
     	Date time = new Date();
     	DateFormat hourdateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     	buy.setTime(hourdateFormat.format(time));
-////////////////////////////////////////////////////////////
-System.out.println("shippingdaniel :"+ buy.getShipping().toString());
-String typeEnvio=buy.getShipping().getTypeShipping();
-if(buy.getShipping().getTypeShipping().equals("home")) {
-//buy.setShipping();
-//buy.getShipping().setYng_envio(null);
-
-//buy.setShipping(shippingDao.save(buy.getShipping()));
-	Yng_Shipping shipping=null;
-	buy.setShipping(shipping);
-
-}
-else {
-/*com.valework.yingul.model.Yng_Envio tempEnvio=buy.getShipping().getYng_envio();
-com.valework.yingul.model.Yng_Envio yi=tempEnvio;
-AndreaniApis andrea=new AndreaniApis();
-
-andreaniapis.Yng_Envio com=new andreaniapis.Yng_Envio();
-tempEnvio.setContrato("400006711");
-com.setProvincia(yi.getProvincia());
-com.setLocalidad(yi.getLocalidad());
-com.setCodigoPostalDestino(yi.getCodigoPostalDestino());
-com.setCalle(yi.getCalle());
-com.setNumero(yi.getNumero());
-com.setSucursalRetiro(yi.getSucursalRetiro());
-com.setSucursalCliente(yi.getSucursalCliente());
-com.setNombreApellido(yi.getNombreApellido());
-com.setNombreApellidoAlternativo(yi.getNombreApellidoAlternativo());
-com.setTipoDocumento(yi.getTipoDocumento());
-com.setNumeroDocumento(yi.getNumeroDocumento());
-com.setEmail(yi.getEmail());
-com.setNumeroCelular(yi.getNumeroCelular());
-com.setNumeroTelefono(yi.getNumeroTelefono());
-com.setContrato("400006711");
-com.setNumeroTransaccion(yi.getNumeroTransaccion());
-com.setTarifa(yi.getTarifa());
-com.setValorACobrar(yi.getValorACobrar());
-com.setCategoriaDistancia(yi.getCategoriaDistancia());
-com.setCategoriaFacturacion(yi.getCategoriaFacturacion());
-com.setCategoriaPeso(yi.getCategoriaPeso());
-com.setDetalleProductosEntrega(yi.getDetalleProductosEntrega());
-com.setDetalleProductosRetiro(yi.getDetalleProductosRetiro());
-com.setVolumen(yi.getVolumen());
-com.setValorDeclarado(yi.getValorDeclarado());
-com.setPeso(yi.getPeso());
-String codAndreani="";
-
-codAndreani=andrea.confirmarEnvio(com);
-tempEnvio.setNumeroAndreani(codAndreani);
-String pdfLink="";
-
-pdfLink=andrea.linkPdf(codAndreani);
-
-tempEnvio.setPdfLink(pdfLink);
-
-
-com.valework.yingul.model.Yng_Envio tempE=envioDao.save(tempEnvio);*/
-///*nuevo codigo
-	
-Yng_Shipping tempShipping =new Yng_Shipping();
-//tempShipping.setYng_envio(tempE);
-Yng_Shipping ship =new Yng_Shipping();
-ship=buy.getShipping();
-String nameMail=ship.getYng_Quote().getYng_Branch().getNameMail();
-String typeMail;
-boolean andreani=false,dhl=false,fedex=false;
-
-switch (nameMail.toLowerCase()) {
-    case "andreani":  andreani = true;typeMail="andreani";
-             break;
-    case "dhl":  dhl = true;typeMail="dhl";
-             break;
-    case "fedex":  fedex = true;typeMail="fedex";
-             break;
-    default: typeMail = "Invalid Mail";
-             break;
-             }
-Yng_Shipment yng_Shipment=new Yng_Shipment();
-System.out.println(nameMail.toLowerCase());
-if(typeMail.equals("andreani")) {
-tempShipping.setAndreani(andreani);
-tempShipping.setDhl(dhl);
-tempShipping.setFedex(fedex);
-
-tempShipping.setShippingStatus("imprecionTicket");
-Yng_Branch branchTemp=branchDao.save(buy.getShipping().getYng_Quote().getYng_Branch());
-Yng_Quote quote=new Yng_Quote();
-quote=buy.getShipping().getYng_Quote();
-quote.setYng_Item(buy.getYng_item());
-quote.setYng_User(buy.getUser());
-quote.setYng_Branch(branchTemp);
-
-quote=quoteDao.save(buy.getShipping().getYng_Quote());
-
-tempShipping.setYng_Quote(quote);
-
-	
-	Logistic logistic=new Logistic();
-	String link="";
-	String pdf="";
-	String numberAndreani="";
-	try {
-		 Yng_Product getProductByIdItem=new Yng_Product();
-   	  getProductByIdItem=getProductByIdItem(quote.getYng_Item().getItemId());
+		////////////////////////////////////////////////////////////
+		System.out.println("shippingdaniel :"+ buy.getShipping().toString());
+		String typeEnvio=buy.getShipping().getTypeShipping();
+		if(buy.getShipping().getTypeShipping().equals("home")) {		
+			Yng_Shipping shipping=null;
+			buy.setShipping(shipping);		
+		}
+		else {
 		
-		SAXParserFactory saxParseFactory=SAXParserFactory.newInstance();
-        SAXParser sAXParser=saxParseFactory.newSAXParser();
-        Yng_Person per=new Yng_Person(); //personDao..findByYng_User(buy.getUser().getUserId());
-        List<Yng_Person> personList=personService.findByUser(buy.getUser());
-        for (Yng_Person yng_Person : personList) {
-			System.out.println(""+yng_Person.toString());
-			per=yng_Person;
+		///*nuevo codigo
+			
+		Yng_Shipping tempShipping =new Yng_Shipping();
+		Yng_Shipping ship =new Yng_Shipping();
+		Yng_BranchAndreani branchAndreani=new Yng_BranchAndreani();
+		ship=buy.getShipping();
+		String nameMail=ship.getYng_Quote().getYng_Branch().getNameMail();
+		String typeMail;
+		boolean andreani=false,dhl=false,fedex=false;
+		
+		switch (nameMail.toLowerCase()) {
+		    case "andreani":  andreani = true;typeMail="andreani";
+		             break;
+		    case "dhl":  dhl = true;typeMail="dhl";
+		             break;
+		    case "fedex":  fedex = true;typeMail="fedex";
+		             break;
+		    default: typeMail = "Invalid Mail";
+		             break;
+		             }
+		Yng_Shipment yng_Shipment=new Yng_Shipment();
+		System.out.println(nameMail.toLowerCase());
+		if(typeMail.equals("andreani")) {
+		tempShipping.setAndreani(andreani);
+		tempShipping.setDhl(dhl);
+		tempShipping.setFedex(fedex);
+		
+		tempShipping.setShippingStatus("imprecionTicket");
+		Yng_Branch branchTemp=branchDao.save(buy.getShipping().getYng_Quote().getYng_Branch());
+		Yng_Quote quote=new Yng_Quote();
+		quote=buy.getShipping().getYng_Quote();
+		quote.setYng_Item(buy.getYng_item());
+		quote.setYng_User(buy.getUser());
+		quote.setYng_Branch(branchTemp);
+		
+		quote=quoteDao.save(buy.getShipping().getYng_Quote());
+		tempShipping.setNameContact(buy.getShipping().getNameContact());
+		tempShipping.setPhoneContact(buy.getShipping().getPhoneContact());
+		tempShipping.setLastName(buy.getShipping().getLastName());
+		tempShipping.setYng_Quote(quote);
+		//branchAndreaniDao.findByCodAndreani();
+			
+			Logistic logistic=new Logistic();
+			String link="";
+			String pdf="";
+			String numberAndreani="";
+			try {
+				 Yng_Product getProductByIdItem=new Yng_Product();
+		   	  getProductByIdItem=getProductByIdItem(quote.getYng_Item().getItemId());
+				
+				SAXParserFactory saxParseFactory=SAXParserFactory.newInstance();
+		        SAXParser sAXParser=saxParseFactory.newSAXParser();
+		        Yng_Person per=new Yng_Person(); //personDao..findByYng_User(buy.getUser().getUserId());
+		        List<Yng_Person> personList=personService.findByUser(buy.getUser());
+		        for (Yng_Person yng_Person : personList) {
+					System.out.println(""+yng_Person.toString());
+					per=yng_Person;
+				}
+		        Yng_Person perItem=new Yng_Person(); //personDao..findByYng_User(buy.getUser().getUserId());
+		        List<Yng_Person> personListItem=personService.findByUser(buy.getUser());
+		        for (Yng_Person yng_Person : personListItem) {
+					System.out.println("perItem"+yng_Person.toString());
+					perItem=yng_Person;
+				}
+				String xml=logistic.andreaniRemitenteWSDL(this.logistic.andreaniStringRe(per,tempShipping,perItem,getProductByIdItem));
+		        com.valework.yingul.logistic.EnvioHandler handlerS=new com.valework.yingul.logistic.EnvioHandler();
+		        
+		        sAXParser.parse(new InputSource(new StringReader(xml)), handlerS);
+		        ArrayList<com.valework.yingul.logistic.EnvioResponce> envios=handlerS.getEnvioResponse();
+		        System.out.println("aniem");
+		        for (com.valework.yingul.logistic.EnvioResponce versione : envios) {
+		        	numberAndreani=versione.getNumeroAndreani();
+		            System.out.println("versione.getNumero1:"+numberAndreani);
+		        	}
+		        System.out.println("logistic.andreaniPdfLink:"+numberAndreani);
+				System.out.println("res:"+xml);
+		        yng_Shipment.setRespuesta(xml);
+		        int i = 0;
+				System.out.println("numberAndreani  daniel :"+numberAndreani);
+				System.out.println(":"+numberAndreani+":");
+		        
+		        
+				
+				link=logistic.andreaniPdfLink(numberAndreani +"");
+		        while (link.equals(logistic.errorPDF())) {          //Condición trivial: siempre cierta
+		            i++;
+		            link=logistic.andreaniPdfLink(numberAndreani +"");
+		            System.out.println ("Valor de i: " + i);
+		            if (i==11) { break;}
+		        } 
+				System.out.println("linkda: "+link);
+				if (link != null) {
+		            //strResponse = link;
+		            com.valework.yingul.logistic.ImprimirConstanciaHandler handlerI=new com.valework.yingul.logistic.ImprimirConstanciaHandler();
+		            sAXParser.parse(new InputSource(new StringReader(link)), handlerI);
+		            ArrayList<com.valework.yingul.logistic.ImprimirConstanciaResponse> impr=handlerI.getImprimirResponce();
+		            for (com.valework.yingul.logistic.ImprimirConstanciaResponse versione : impr) {
+		            	pdf=versione.getPdfLinkFile();
+		                System.out.println("versione.getNumero2:"+versione.getPdfLinkFile());            
+		            }
+		        }
+		
+		        System.out.println("link pdf : "+pdf);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+			yng_Shipment.setShipmentCod(numberAndreani);
+			yng_Shipment.setTicket(pdf);
+			yng_Shipment.setTypeMail(typeMail);
+			yng_Shipment.setYng_Item(buy.getYng_item());
+			yng_Shipment.setYng_User(buy.getUser());
+			Yng_Shipment shipmentTemp=new Yng_Shipment();
+			shipmentTemp=yng_Shipment;
+			System.out.println("shipmentTemp"+shipmentTemp.toString());
+			yng_Shipment=shipmentDao.save(shipmentTemp);
 		}
-        Yng_Person perItem=new Yng_Person(); //personDao..findByYng_User(buy.getUser().getUserId());
-        List<Yng_Person> personListItem=personService.findByUser(buy.getUser());
-        for (Yng_Person yng_Person : personListItem) {
-			System.out.println("perItem"+yng_Person.toString());
-			perItem=yng_Person;
+			//-----fin del nuevo codigo
+			tempShipping.setYng_Shipment(yng_Shipment);
+		
+		tempShipping.setTypeShipping(typeEnvio);
+		tempShipping.setNameContact(buy.getShipping().getNameContact());
+		tempShipping.setPhoneContact(buy.getShipping().getPhoneContact());
+		System.out.println("tempShipping:"+tempShipping.toString());
+		tempShipping=shippingDao.save(tempShipping);
+		
+		//shi
+		buy.setShipping(tempShipping);
+		
+		
+		buy.setShipping(shippingDao.save(buy.getShipping()));
 		}
-		String xml=logistic.andreaniRemitenteWSDL(logistic.andreaniStringRe(per,tempShipping,perItem,getProductByIdItem));
-        com.valework.yingul.logistic.EnvioHandler handlerS=new com.valework.yingul.logistic.EnvioHandler();
-        
-        sAXParser.parse(new InputSource(new StringReader(xml)), handlerS);
-        ArrayList<com.valework.yingul.logistic.EnvioResponce> envios=handlerS.getEnvioResponse();
-        System.out.println("aniem");
-        for (com.valework.yingul.logistic.EnvioResponce versione : envios) {
-        	numberAndreani=versione.getNumeroAndreani();
-            System.out.println("versione.getNumero1:"+numberAndreani);
-        	}
-        System.out.println("logistic.andreaniPdfLink:"+numberAndreani);
-		System.out.println("res:"+xml);
-        yng_Shipment.setRespuesta(xml);
-        int i = 0;
-System.out.println("numberAndreani  daniel :"+numberAndreani);
-System.out.println(":"+numberAndreani+":");
-        
-        
-		//link=logistic.andreaniPdfLink("310000003497162");
-		link=logistic.andreaniPdfLink(numberAndreani +"");
-        while (link.equals(logistic.errorPDF())) {          //Condición trivial: siempre cierta
-            i++;
-            link=logistic.andreaniPdfLink(numberAndreani +"");
-            System.out.println ("Valor de i: " + i);
-            if (i==11) { break;}
-        } 
-		System.out.println("linkda: "+link);
-		if (link != null) {
-            //strResponse = link;
-            com.valework.yingul.logistic.ImprimirConstanciaHandler handlerI=new com.valework.yingul.logistic.ImprimirConstanciaHandler();
-            sAXParser.parse(new InputSource(new StringReader(link)), handlerI);
-            ArrayList<com.valework.yingul.logistic.ImprimirConstanciaResponse> impr=handlerI.getImprimirResponce();
-            for (com.valework.yingul.logistic.ImprimirConstanciaResponse versione : impr) {
-            	pdf=versione.getPdfLinkFile();
-                System.out.println("versione.getNumero2:"+versione.getPdfLinkFile());            
-            }
-        }
-
-        System.out.println("link pdf : "+pdf);
-	} catch (Exception e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-	
-	
-	yng_Shipment.setShipmentCod(numberAndreani);
-	yng_Shipment.setTicket(pdf);
-	yng_Shipment.setTypeMail(typeMail);
-	yng_Shipment.setYng_Item(buy.getYng_item());
-	yng_Shipment.setYng_User(buy.getUser());
-	Yng_Shipment shipmentTemp=new Yng_Shipment();
-	shipmentTemp=yng_Shipment;
-	System.out.println("shipmentTemp"+shipmentTemp.toString());
-	yng_Shipment=shipmentDao.save(shipmentTemp);
-}
-	//-----fin del nuevo codigo
-	tempShipping.setYng_Shipment(yng_Shipment);
-
-tempShipping.setTypeShipping(typeEnvio);
-System.out.println("tempShipping:"+tempShipping.toString());
-tempShipping=shippingDao.save(tempShipping);
-
-//shi
-buy.setShipping(tempShipping);
-
-
-buy.setShipping(shippingDao.save(buy.getShipping()));
-}
-
-
-////////////////////////////////////////
+		
+		
+		////////////////////////////////////////
 		//verificar que el stock funcione
 		Yng_Item itemTemp1=itemDao.findByItemId(buy.getYng_item().getItemId());
 		if(!itemTemp1.getType().equals("Service")) {
@@ -546,10 +511,13 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
     			System.out.println("Ubi:"+ubicationTemp.toString());
     			String codAndreani="";
     			LogisticsController log=new LogisticsController();
+    			Yng_BranchAndreani branchAndreani=new Yng_BranchAndreani();
     			try {
-    				codAndreani=log.andreaniSucursales(ubicationTemp.getPostalCode(), "", "");
+    				//codAndreani=log.andreaniSucursales(ubicationTemp.getPostalCode(), "", "");
+    				codAndreani=log.andreaniSucursalesObject(ubicationTemp.getPostalCode(), "", "").getCodAndreani();
+    				branchAndreani=log.andreaniSucursalesObject(ubicationTemp.getPostalCode(), "", "");
+    				branchAndreaniDao.save(branchAndreani);
     			} catch (Exception e1) {
-    				// TODO Auto-generated catch block
     				e1.printStackTrace();
     			}
     			ubicationTemp.setCodAndreani(""+codAndreani);
@@ -557,8 +525,10 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
     			System.out.println("ubicationTempo:"+
     			ubicationTempo.toString()+
     			" userTemp:"+userTemp.getUsername());
+    			
     			ubicationTempo=ubicationDao.save(ubicationTemp);
     			userTemp.setYng_Ubication(ubicationTempo);
+    			
     	userDao.save(userTemp);
     	return "save";
     	}
