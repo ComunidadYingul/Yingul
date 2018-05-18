@@ -3,13 +3,24 @@ package com.valework.yingul.controller;
 import java.util.List;
 import java.util.Set;
 
+import javax.mail.MessagingException;
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.dao.CountryDao;
 import com.valework.yingul.dao.ProvinceDao;
+import com.valework.yingul.dao.UbicationDao;
+import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.model.Yng_Ambient;
 import com.valework.yingul.model.Yng_Amenities;
 import com.valework.yingul.model.Yng_Barrio;
@@ -22,6 +33,8 @@ import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_Province;
 import com.valework.yingul.model.Yng_Security;
 import com.valework.yingul.model.Yng_Sound;
+import com.valework.yingul.model.Yng_Ubication;
+import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.AmbientProperty;
 import com.valework.yingul.service.AmenitiesProperty;
 import com.valework.yingul.service.BarrioService;
@@ -51,6 +64,12 @@ public class UbicationController {
 	private ProvinceDao provinceDao;
 	@Autowired
 	private CountryDao countryDao;
+	@Autowired
+	private CityDao cityDao;
+	@Autowired
+	private UbicationDao ubicationDao;
+	@Autowired 
+	UserDao userDao;
 	@RequestMapping("/province/all")
     public List<Yng_Province> findProvinceList() {
         List<Yng_Province> provinceList = provinceService.findAll();

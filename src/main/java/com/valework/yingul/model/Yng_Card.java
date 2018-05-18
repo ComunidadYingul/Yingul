@@ -100,11 +100,5 @@ public class Yng_Card {
 	public void setProvider(String provider) {
 		this.provider = provider;
 	}
-	@Override
-	public String toString() {
-		return "Yng_Card [cardId=" + cardId + ", number=" + number + ", dueMonth=" + dueMonth + ", dueYear=" + dueYear
-				+ ", fullName=" + fullName + ", dni=" + dni + ", securityCode=" + securityCode + ", type=" + type
-				+ ", provider=" + provider + ", yng_CardProvider=" + yng_CardProvider + ", user=" + user + "]";
-	}
 	
 }
