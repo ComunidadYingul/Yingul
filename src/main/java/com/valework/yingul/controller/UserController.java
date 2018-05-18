@@ -13,8 +13,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.valework.yingul.SmtpMailSender;
+import com.valework.yingul.dao.CityDao;
+import com.valework.yingul.dao.CountryDao;
+import com.valework.yingul.dao.ProvinceDao;
+import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.model.Yng_Person;
+import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.PersonService;
 import com.valework.yingul.service.S3Services;
@@ -35,6 +40,14 @@ public class UserController {
     private BCryptPasswordEncoder passwordEncoder;
 	@Autowired
 	S3Services s3Services;
+	@Autowired
+	private ProvinceDao provinceDao;
+	@Autowired
+	private CountryDao countryDao;
+	@Autowired
+	private CityDao cityDao;
+	@Autowired
+	private UbicationDao ubicationDao;
 	@RequestMapping("/{username}")
     public Yng_User findByUsername(@PathVariable("username") String username) {
         return userDao.findByUsername(username);
@@ -296,5 +309,31 @@ public class UserController {
 		}else {
 			return "prohibited";
 		}
+    }
+	
+	@RequestMapping(value = "/setUserUbicationEditPersonalInfo", method = RequestMethod.POST)
+	@ResponseBody
+    public Yng_User newUbication(@Valid @RequestBody Yng_User user,@RequestHeader("Authorization") String authorization) throws MessagingException {
+		String token =new String(org.apache.commons.codec.binary.Base64.decodeBase64(authorization));
+		String[] parts = token.split(":");
+		Yng_User yng_User= userDao.findByUsername(parts[0]);
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
+		if(yng_User.getUsername().equals(parts[0]) && yng_User.getUsername().equals(user.getUsername()) && encoder.matches(parts[1], yng_User.getPassword())){
+			Yng_Ubication ubicationTemp = new Yng_Ubication();
+			ubicationTemp.setYng_Country(countryDao.findByCountryId(user.getYng_Ubication().getYng_Country().getCountryId()));
+			ubicationTemp.setYng_Province(provinceDao.findByProvinceId(user.getYng_Ubication().getYng_Province().getProvinceId()));
+			ubicationTemp.setYng_City(cityDao.findByCityId(user.getYng_Ubication().getYng_City().getCityId()));
+			ubicationTemp.setPostalCode(ubicationTemp.getYng_City().getCodigopostal());
+			ubicationTemp=ubicationDao.save(ubicationTemp);
+			yng_User.setYng_Ubication(ubicationTemp);
+			yng_User.setDocumentNumber(user.getDocumentNumber());
+			yng_User.setDocumentType(user.getDocumentType());
+			yng_User.setPhone(user.getPhone());
+			userDao.save(yng_User);
+			return yng_User;
+		}else {
+			return null;
+		}
+    	
     }
 }

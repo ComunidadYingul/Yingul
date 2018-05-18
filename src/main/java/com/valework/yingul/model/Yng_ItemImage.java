@@ -16,7 +16,6 @@ public class Yng_ItemImage {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "itemImageId", nullable = false, updatable = false)
     private Long itemImageId;
-	@Size(max = 500)
 	private java.lang.String image;
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "item_id")

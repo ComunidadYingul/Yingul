@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.valework.yingul.PayUFunds;
 
 import org.xml.sax.InputSource;
@@ -34,6 +36,7 @@ import com.valework.yingul.dao.BranchDao;
 import com.valework.yingul.dao.BuyDao;
 import com.valework.yingul.dao.CardDao;
 import com.valework.yingul.dao.CardProviderDao;
+import com.valework.yingul.dao.CashPaymentDao;
 import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.dao.ConfirmDao;
 import com.valework.yingul.dao.CountryDao;
@@ -53,6 +56,7 @@ import com.valework.yingul.dao.ResponseDao;
 import com.valework.yingul.dao.ResponseHeaderDao;
 import com.valework.yingul.dao.ShipmentDao;
 import com.valework.yingul.dao.ShippingDao;
+import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.logistic.FedexResponce;
@@ -65,6 +69,7 @@ import com.valework.yingul.model.Yng_Branch;
 import com.valework.yingul.model.Yng_Buy;
 import com.valework.yingul.model.Yng_Card;
 import com.valework.yingul.model.Yng_CardProvider;
+import com.valework.yingul.model.Yng_CashPayment;
 import com.valework.yingul.model.Yng_Confirm;
 import com.valework.yingul.model.Yng_Country;
 import com.valework.yingul.model.Yng_Item;
@@ -94,6 +99,7 @@ import com.valework.yingul.service.StandardService;
 import com.valework.yingul.util.VisaAPIClient;
 //import andreaniapis.*;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.json.JSONObject;
 
 @RestController
 @RequestMapping("/buy")
@@ -170,6 +176,11 @@ public class BuyController {
 	Yng_Standard standard;
 	@Autowired
 	StandardService standardService;
+	@Autowired 
+	StandardDao standardDao;
+	@Autowired
+	CashPaymentDao cashPaymentDao; 
+	
 	@RequestMapping("/listCreditCard/all")
     public Set<Yng_ListCreditCard> findProvinceList() {
         List<Yng_ListCreditCard> creditCardList = listCreditCardDao.findAll();
@@ -211,6 +222,22 @@ public class BuyController {
     @RequestMapping(value = "/createBuy", method = RequestMethod.POST)
     @ResponseBody
     public String createBuy(@Valid @RequestBody Yng_Buy buy) throws Exception {	
+    	//backup para pago en efectivo
+    	JSONObject cashBuy=null;
+    	String jsonInString = "";
+    	ObjectMapper mapper = new ObjectMapper();
+		try {
+			jsonInString = mapper.writeValueAsString(buy);
+			System.out.println(jsonInString);
+			jsonInString = jsonInString.replace(",\"credentialsNonExpired\":true", "");
+			jsonInString = jsonInString.replace(",\"accountNonExpired\":true", "");
+			jsonInString = jsonInString.replace(",\"accountNonLocked\":true", "");
+			System.out.println(jsonInString);
+	    	cashBuy = new JSONObject(jsonInString);
+		} catch (JsonProcessingException e1) {
+			
+			e1.printStackTrace();
+		}
     	//para setear el item
     	Yng_Item itemTemp=itemDao.findByItemId(buy.getYng_item().getItemId());
     	if(itemTemp.getQuantity()<=0||!itemTemp.isEnabled()||itemTemp.getQuantity()<buy.getQuantity()) {
@@ -230,15 +257,47 @@ public class BuyController {
     	//hasta aqui para el usuario
     	//pagos en efectivo 
     	if(buy.getYng_Payment().getType().equals("CASH")) {
-    		//Autorización de la tarjeta
-	    	Yng_Payment autorized =  payUFunds.authorizeCash(buy,userTemp);
-	    	//
-	    	if(autorized==null) {
-	    		return "problemCash";
-	    	}else {
-	    		autorized.setYng_Card(null);
-	    		buy.setYng_Payment(paymentDao.save(autorized));
-	    	}
+    		if(buy.getYng_Payment().getPaymentId()!=null) {
+    			Yng_Payment paymentSw= paymentDao.findByPaymentId(buy.getYng_Payment().getPaymentId());
+    			Yng_Standard confirmCode = standardDao.findByKey("PAYU_cashConfirm");
+    			if(paymentSw.getStatus().equals(confirmCode.getValue())) {
+    				buy.setYng_Payment(paymentDao.save(paymentSw));
+    			}else {
+    				return "internError";
+    			}
+    		}else {
+    			//Autorización de la tarjeta
+		    	Yng_Payment autorized =  payUFunds.authorizeCash(buy,userTemp);
+		    	//
+		    	if(autorized==null) {
+		    		return "problemCash";
+		    	}else {	
+		    		autorized.setUser(null);
+		    		try {
+		    			jsonInString = mapper.writeValueAsString(autorized);
+		    		} catch (JsonProcessingException e1) {
+		    			
+		    			e1.printStackTrace();
+		    		}
+		    		
+		    		cashBuy.put("yng_Payment", new JSONObject(jsonInString));
+
+		    		Yng_CashPayment cashTemp = cashPaymentDao.findByCashPaymentId(autorized.getCashPayment().getCashPaymentId());
+		    		cashTemp.setBuyJson(cashBuy.toString());
+            		cashPaymentDao.save(cashTemp);
+
+		    		Yng_Item itemTempE=itemDao.findByItemId(buy.getYng_item().getItemId());
+		    		if(!itemTempE.getType().equals("Service")) {
+		    			itemTempE.setQuantity(itemTempE.getQuantity()-buy.getQuantity());
+		    		}
+		    		if(itemTempE.getQuantity()<=0) {
+		    			itemTempE.setEnabled(false);
+		    		}
+		    		itemTempE=itemDao.save(itemTempE);
+		    		
+		    		return "cash:"+autorized.getPaymentId();
+		    	}
+    		}
     	}
     	if(buy.getYng_Payment().getType().equals("CARD")) {
     		//Autorización de la tarjeta
@@ -475,12 +534,23 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 					+ "<br/> - No entregues el producto sin que tu y el vendedor firmen la entrega no aceptaremos reclamos si la confirmacion no esta firmada por ambas partes"
 					+ "<br/> - Por tu seguridad no entregues el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
 					+ "<br/> - Despues de entregar el producto tu comprador tiene 7 dias para observar sus condiciones posterior a eso te daremos mas instrucciones para recoger tu dinero");
-			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" Cumpla las siguientes instrucciones:."
-					+ "<br/> - Al Momento de recibir el producto dile este codigo a tu vendedor: "+confirm.getCodeConfirm()+" si el producto esta en buenas condiciones "
-					+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
-					+ "<br/> - No recibas el producto ni des el código si no estas conforme con el producto no aceptaremos reclamos posteriores"
-					+ "<br/> - Por tu seguridad no recibas el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
-					+ "<br/> - Despues de recibir el producto tienes 10 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero");
+			if(buy.getYng_Payment().getType().equals("CASH")) {
+				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getCashPayment().getPaymentMethod()+" Cumpla las siguientes instrucciones:."
+						+ "<br/> - Al Momento de recibir el producto dile este codigo a tu vendedor: "+confirm.getCodeConfirm()+" si el producto esta en buenas condiciones "
+						+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
+						+ "<br/> - No recibas el producto ni des el código si no estas conforme con el producto no aceptaremos reclamos posteriores"
+						+ "<br/> - Por tu seguridad no recibas el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
+						+ "<br/> - Despues de recibir el producto tienes 10 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero");
+			}
+			if(buy.getYng_Payment().getType().equals("CARD")) {
+				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" Cumpla las siguientes instrucciones:."
+						+ "<br/> - Al Momento de recibir el producto dile este codigo a tu vendedor: "+confirm.getCodeConfirm()+" si el producto esta en buenas condiciones "
+						+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
+						+ "<br/> - No recibas el producto ni des el código si no estas conforme con el producto no aceptaremos reclamos posteriores"
+						+ "<br/> - Por tu seguridad no recibas el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
+						+ "<br/> - Despues de recibir el producto tienes 10 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero");
+			}
+			
 		}
 		else {
 			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","Se realizo la venta del producto :  "+buy.getYng_item().getName() +"  Descripción : "+buy.getYng_item().getDescription()+ "  " +"  Precio: " +buy.getYng_item().getPrice()+"   Costo del envio : " +buy.getShipping().getYng_Quote().getRate()+  
@@ -492,7 +562,12 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 					+ "   Al Momento de entregar el producto en la sucursal Andreani ingresa a: http://www.yingul.com/confirmws/"+confirm.getConfirmId()+" donde firmaras la entrega del producto en buenas condiciones"
 					+ "Despues de entregar el producto Andreani tiene 2 dias para entregarlo a tu comprador "
 					+ "Y tu comprador tiene 10 dias para observar sus condiciones, posterior a eso te daremos mas instrucciones para recoger tu dinero");
-			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible.");
+			if(buy.getYng_Payment().getType().equals("CASH")) {
+				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getCashPayment().getPaymentMethod()+" nos pondremos en contacto con usted lo mas pronto posible.");
+			}
+			if(buy.getYng_Payment().getType().equals("CARD")) {
+				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible.");
+			}
 		}
     	return "save";
     }
@@ -530,10 +605,11 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
      }
 
     public Yng_Product getProductByIdItem(Long itemId) {
-  		Yng_Item yng_Item = itemDao.findByItemId(itemId);
+    	System.out.println(itemId);
+    	Yng_Item yng_Item = itemDao.findByItemId(itemId);
   		List<Yng_Product> productList= productService.findByItem(yng_Item);
   		Yng_Product product = productList.get(0);
-  		System.out.println("pro: "+product);
+  		//System.out.println("pro: "+product);
   		return product;	
       }
     @RequestMapping(value = "/updateUserUbication", method = RequestMethod.POST)

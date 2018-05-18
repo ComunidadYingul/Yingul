@@ -355,6 +355,7 @@ public class SellController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        System.out.println("save");
         return "save";
     }
 	

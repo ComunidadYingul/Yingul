@@ -6,7 +6,9 @@ import java.io.InputStreamReader;
 import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -27,6 +29,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
+import org.assertj.core.util.DateUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +38,11 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.valework.yingul.controller.BuyController;
 import com.valework.yingul.dao.CardDao;
 import com.valework.yingul.dao.CardProviderDao;
+import com.valework.yingul.dao.CashPaymentDao;
+import com.valework.yingul.dao.PaymentDao;
 import com.valework.yingul.dao.RequestBodyDao;
 import com.valework.yingul.dao.RequestDao;
 import com.valework.yingul.dao.ResponseBodyDao;
@@ -44,6 +51,7 @@ import com.valework.yingul.dao.ResponseHeaderDao;
 import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.model.Yng_Buy;
 import com.valework.yingul.model.Yng_Card;
+import com.valework.yingul.model.Yng_CashPayment;
 import com.valework.yingul.model.Yng_Payment;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Request;
@@ -55,6 +63,7 @@ import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.PersonService;
 import com.valework.yingul.util.VisaAPIClient;
+
 
 @Component
 public class PayUFunds {
@@ -77,6 +86,12 @@ public class PayUFunds {
 	StandardDao standardDao;
 	@Autowired 
 	PersonService personService;
+	@Autowired
+	CashPaymentDao cashPaymentDao; 
+	@Autowired
+	PaymentDao paymentDao;
+	@Autowired
+	BuyController buyController;
 	
 	public Yng_Payment authorizeCard(Yng_Buy buy, Yng_User userTemp) throws Exception, ClientProtocolException, IOException{
 		//Datos Principales del comprador 
@@ -394,7 +409,7 @@ public class PayUFunds {
 	    		"      \"order\": {\r\n" + 
 	    		"         \"accountId\": \""+accountId.getValue()+"\",\r\n" + 
 	    		"         \"referenceCode\": \""+referenceCode+"\",\r\n" + 
-	    		"         \"description\": \"payment test\",\r\n" + 
+	    		"         \"description\": \"pago en efectivo\",\r\n" + 
 	    		"         \"language\": \"es\",\r\n" + 
 	    		"         \"signature\": \""+signature+"\",\r\n" + 
 	    		"         \"notifyUrl\": \"http://www.tes.com/confirmation\",\r\n" + 
@@ -457,6 +472,7 @@ public class PayUFunds {
     				return null;
     			}else {
     				JSONObject  jObject = new JSONObject(t.getValue());
+    				System.out.println("eddy:"+jObject.toString());
     				Map<String,String> map = new HashMap<String,String>();
     				Iterator iter = jObject.keys();
 	                while(iter.hasNext()){
@@ -465,11 +481,51 @@ public class PayUFunds {
 	                    map.put(key,value);
 	                    if(key.equals("responseCode")) {
 	                    	if(value.equals("PENDING_TRANSACTION_CONFIRMATION")) {
-	                    		//guardar la tarjeta
-
+	                    		//guardar la el pago en efectivo
+	                    		Yng_CashPayment cashTemp =buy.getYng_Payment().getCashPayment();
+	                    		cashTemp.setURL_PAYMENT_RECEIPT_HTML(jObject.getJSONObject("extraParameters").getString("URL_PAYMENT_RECEIPT_HTML"));
+	                    		cashTemp.setURL_PAYMENT_RECEIPT_PDF(jObject.getJSONObject("extraParameters").getString("URL_PAYMENT_RECEIPT_PDF"));
+	                    		Date fecha = new Date();
+	                    		Date newDate;
+	                    		System.out.println (fecha);
+	                    		switch (buy.getYng_Payment().getCashPayment().getPaymentMethod()) {
+								case "ProvinciaNET":
+									newDate = addDays(fecha,7);
+									cashTemp.setExpiration(newDate);
+									break;
+								case "COBRO_EXPRESS":
+									newDate = addDays(fecha,7);
+									cashTemp.setExpiration(newDate);
+									break;
+								case "PAGOFACIL":
+									newDate = addDays(fecha,15);
+									cashTemp.setExpiration(newDate);
+									break;
+								case "RAPIPAGO":
+									newDate = addDays(fecha,15);
+									cashTemp.setExpiration(newDate);
+									break;
+								case "RIPSA":
+									newDate = addDays(fecha,7);
+									cashTemp.setExpiration(newDate);
+									break;
+								default:
+									break;
+								}
 	                    		Yng_Payment paymentTemp=buy.getYng_Payment();
-	                    		//para ver si la tarjeta existe 
+	                    	
+	                    		paymentTemp.setOrderId(jObject.getLong("orderId"));
+	                    		paymentTemp.setReferenceCode(referenceCode);
+	                    		paymentTemp.setTransactionId(jObject.getString("transactionId"));
+	                    		paymentTemp.setStatus(jObject.getString("state"));
+	                    		paymentTemp.setBuyStatus(jObject.getString("state"));
+	                    		paymentTemp.setUser(userTemp);
+	                    		paymentTemp.setCashPayment(cashPaymentDao.save(cashTemp)); 
 	                    		paymentTemp.setYng_Request(requestTemp);
+	                    		paymentTemp.setYng_Card(null);
+	                    		paymentTemp.setCurrency("ARS");
+	                    		paymentTemp.setValue(buy.getCost());
+	                    		paymentTemp=paymentDao.save(paymentTemp);
 	                    		return paymentTemp;
 	                    		
 	                    	}
@@ -484,4 +540,83 @@ public class PayUFunds {
     	return null;
 
 	}
+	
+	public String queryByOrderId(Yng_Payment payment) throws Exception, ClientProtocolException, IOException{
+		//recuoerar los stanadarts
+		//Yng_Standard api = standardDao.findByKey("PAYU_apisQuery_p");
+		Yng_Standard test = standardDao.findByKey("PAYU_test_p");
+		Yng_Standard apikey = standardDao.findByKey("PAYU_apiKey_p");
+		Yng_Standard apiLogin = standardDao.findByKey("PAYU_apiLogin_p");
+		//crear el response
+		CloseableHttpClient client = HttpClients.createDefault();
+	    HttpPost httpPost = new HttpPost("https://api.payulatam.com/reports-api/4.0/service.cgi");
+	    String json = "{\r\n" + 
+	    		"   \"test\": "+test.getValue()+",\r\n" + 
+	    		"   \"language\": \"en\",\r\n" + 
+	    		"   \"command\": \"ORDER_DETAIL\",\r\n" + 
+	    		"   \"merchant\": {\r\n" + 
+	    		"      \"apiLogin\": \""+apiLogin.getValue()+"\",\r\n" + 
+	    		"      \"apiKey\": \""+apikey.getValue()+"\"\r\n" + 
+	    		"   },\r\n" + 
+	    		"   \"details\": {\r\n" + 
+	    		"      \"orderId\": "+payment.getOrderId()+"\r\n" + 
+	    		"   }\r\n" + 
+	    		"}";
+	    
+	    
+	    StringEntity entity = new StringEntity(json);
+	    httpPost.setEntity(entity);
+	    httpPost.setHeader("Accept", "application/json");
+	    httpPost.setHeader("Content-type", "application/json");
+	 
+	    CloseableHttpResponse response = client.execute(httpPost);
+	    
+	    BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+        StringBuffer result = new StringBuffer();
+        String line;
+        while ((line = rd.readLine()) != null) {
+            result.append(line);
+        }
+        
+	    if(!StringUtils.isEmpty(result.toString())) {
+            ObjectMapper mapper = getObjectMapperInstance();
+            Object tree;
+            
+            tree = mapper.readValue(result.toString(), Object.class);
+            //logger.info("ResponseBody: " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(tree));
+            String s = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(tree);
+            JSONObject  jObject = new JSONObject(s);
+            System.out.println(jObject.toString());
+            System.out.println(jObject.getJSONObject("result").getJSONObject("payload").getJSONArray("transactions").getJSONObject(0).getJSONObject("transactionResponse").getString("state"));
+            payment.setStatus(jObject.getJSONObject("result").getJSONObject("payload").getJSONArray("transactions").getJSONObject(0).getJSONObject("transactionResponse").getString("state"));
+            payment = paymentDao.save(payment);
+            Yng_Standard cashConfirm = standardDao.findByKey("PAYU_cashConfirm");
+            if(cashConfirm.getValue().equals(payment.getStatus())) {
+            	ObjectMapper mapper2 = new ObjectMapper();
+            	Yng_Buy buy = mapper2.readValue(payment.getCashPayment().getBuyJson(), Yng_Buy.class);
+            	if(buyController.createBuy(buy).equals("save")){
+            		return "save";
+            	}
+            }
+            
+            
+	    }
+        
+        response.close();
+	    client.close();
+		//
+
+    	return "notFound";
+
+	}
+	public static Date addDays(Date date, int days) {
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.setTime(date);
+		cal.add(Calendar.DATE, days);
+				
+		return cal.getTime();
+	}
+
+	
+	
 }

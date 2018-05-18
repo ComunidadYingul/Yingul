@@ -1,25 +1,39 @@
 package com.valework.yingul.batch;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.http.client.ClientProtocolException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.valework.yingul.PayUFunds;
 import com.valework.yingul.dao.AccountDao;
 import com.valework.yingul.dao.CommissionDao;
 import com.valework.yingul.dao.ConfirmDao;
+import com.valework.yingul.dao.ItemDao;
+import com.valework.yingul.dao.PaymentDao;
 import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.TransactionDao;
 import com.valework.yingul.dao.TransactionDetailDao;
 import com.valework.yingul.model.Yng_Account;
+import com.valework.yingul.model.Yng_Buy;
 import com.valework.yingul.model.Yng_Commission;
 import com.valework.yingul.model.Yng_Confirm;
+import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_Motorized;
+import com.valework.yingul.model.Yng_Payment;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Property;
+import com.valework.yingul.model.Yng_Token;
 import com.valework.yingul.model.Yng_Transaction;
 import com.valework.yingul.model.Yng_TransactionDetail;
 import com.valework.yingul.service.MotorizedService;
@@ -49,6 +63,12 @@ public class GreetingBatchBean {
 	StandardDao standardDao;
 	@Autowired
 	TransactionDetailDao transactionDetailDao;
+	@Autowired
+	PaymentDao paymentDao;
+	@Autowired
+	ItemDao itemDao;
+	@Autowired
+	PayUFunds payUFunds;
 
 	
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
@@ -296,6 +316,46 @@ public class GreetingBatchBean {
 				confirmDao.save(s);
 			}
     	}
+	}
+	//@Scheduled(cron = "0,59 * * * * *")//para cada 30 segundos
+	@Scheduled(cron = "0 0 5 * * *")//cada dia a las 5 de la mañana
+	public void cronJob1() throws ClientProtocolException, IOException, Exception {
+		System.out.println("inicio de verificacion de cashpaymetn");
+		List<Yng_Payment> confirmCashPayment= paymentDao.findByTypeAndStatusAndBuyStatus("CASH","PENDING","PENDING");
+		for (Yng_Payment s : confirmCashPayment) {
+			Date fecha = new Date();
+			if(s.getCashPayment().getExpiration().before(fecha)) {
+				s.setBuyStatus("EXPIRED");
+				s=paymentDao.save(s);
+				ObjectMapper mapper = new ObjectMapper();
+				Yng_Buy buyTemp = new Yng_Buy();
+				try {
+					buyTemp = mapper.readValue(s.getCashPayment().getBuyJson(), Yng_Buy.class);
+					// System.out.println(token.toString());	 
+				} catch (JsonParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JsonMappingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Yng_Item itemTemp= itemDao.findByItemId(buyTemp.getYng_item().getItemId());
+				itemTemp.setQuantity(itemTemp.getQuantity()+1);
+				itemTemp.setEnabled(true);
+				itemTemp=itemDao.save(itemTemp);
+			}else {
+				if(payUFunds.queryByOrderId(s).equals("save")){
+					s.setBuyStatus("AUTHORIZED");
+					s=paymentDao.save(s);
+				}else {
+					//poner algo para guardar los que no se pudo por alguna razon
+				}
+			}
+			
+		}
 	}
 	
 	

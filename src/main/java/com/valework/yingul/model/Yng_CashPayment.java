@@ -1,5 +1,7 @@
 package com.valework.yingul.model;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,6 +17,11 @@ public class Yng_CashPayment {
 	private String documentType;
 	private String documentNumber;
 	private String paymentMethod;
+	private String URL_PAYMENT_RECEIPT_PDF;
+	private String URL_PAYMENT_RECEIPT_HTML;
+	@Column(columnDefinition = "text")
+	private java.lang.String buyJson;
+    private Date expiration;
 	
 	public Yng_CashPayment(){}
 
@@ -48,6 +55,38 @@ public class Yng_CashPayment {
 
 	public void setPaymentMethod(String paymentMethod) {
 		this.paymentMethod = paymentMethod;
+	}
+
+	public String getURL_PAYMENT_RECEIPT_PDF() {
+		return URL_PAYMENT_RECEIPT_PDF;
+	}
+
+	public void setURL_PAYMENT_RECEIPT_PDF(String uRL_PAYMENT_RECEIPT_PDF) {
+		URL_PAYMENT_RECEIPT_PDF = uRL_PAYMENT_RECEIPT_PDF;
+	}
+
+	public String getURL_PAYMENT_RECEIPT_HTML() {
+		return URL_PAYMENT_RECEIPT_HTML;
+	}
+
+	public void setURL_PAYMENT_RECEIPT_HTML(String uRL_PAYMENT_RECEIPT_HTML) {
+		URL_PAYMENT_RECEIPT_HTML = uRL_PAYMENT_RECEIPT_HTML;
+	}
+
+	public java.lang.String getBuyJson() {
+		return buyJson;
+	}
+
+	public void setBuyJson(java.lang.String buyJson) {
+		this.buyJson = buyJson;
+	}
+
+	public Date getExpiration() {
+		return expiration;
+	}
+
+	public void setExpiration(Date expiration) {
+		this.expiration = expiration;
 	}
 
 }
