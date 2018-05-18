@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -26,12 +27,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.AmbientDao;
 import com.valework.yingul.dao.AmenitiesDao;
 import com.valework.yingul.dao.BarrioDao;
+import com.valework.yingul.dao.BranchAndreaniDao;
 import com.valework.yingul.dao.CategoryDao;
 import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.dao.ConfortDao;
@@ -60,6 +64,11 @@ import com.valework.yingul.dao.StandarCostAndreaniDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.dao.YingulRequestDao;
+import com.valework.yingul.logistic.PropertyObjectHttp;
+import com.valework.yingul.logistic.RequestPropertyHeders;
+import com.valework.yingul.logistic.http;
+import com.valework.yingul.model.FacebookPhoto;
+import com.valework.yingul.model.Yng_BranchAndreani;
 import com.valework.yingul.model.Yng_Country;
 import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_ItemCategory;
@@ -220,6 +229,8 @@ public class SellController {
 	StandarCostAndreaniDao standarCostAndreaniDao;
 	@Autowired
 	YingulRequestDao yingulRequestDao; 
+	@Autowired
+	BranchAndreaniDao branchAndreaniDao;
 	@RequestMapping(value = "/service", method = RequestMethod.POST)
 	@ResponseBody
 	public String sellServicePost(@Valid @RequestBody Yng_Service service) throws MessagingException, IOException {	
@@ -418,12 +429,16 @@ public class SellController {
 		//ubicationTemp.setYng_Barrio(barrioDao.findByBarrioId(productTemp.getYng_Item().getYng_Ubication().getYng_Barrio().getBarrioId()));
 		String codAndreani="";
 		LogisticsController log=new LogisticsController();
+		Yng_BranchAndreani branchAndreani=new Yng_BranchAndreani();
 		try {
-			codAndreani=log.andreaniSucursales(ubicationTemp.getPostalCode(), "", "");
+			branchAndreani=log.andreaniSucursales(ubicationTemp.getPostalCode(), "", "");
+			codAndreani=branchAndreani.getCodAndreani();
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		
+		branchAndreaniDao.save(branchAndreani);
 		ubicationTemp.setCodAndreani(""+codAndreani);
 		Yng_Ubication ubicationTempo= new Yng_Ubication();
 		ubicationTempo=ubicationDao.save(ubicationTemp);
@@ -520,6 +535,8 @@ public class SellController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        Yng_Item item=productTemp.getYng_Item();
+		facebookPostPhoto(item);
         return "save";
     }
 	
@@ -1056,4 +1073,58 @@ public class SellController {
 		System.out.println("peso final"+jpegData.length/1024);
 		return jpegData;
     }
+    
+    public String facebookPostPhoto(Yng_Item item) {
+    	String BUCKET_URL ="https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/dev/image/";
+        //String BUCKET_URL ="https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/image/";
+    	FacebookPhoto photo= new FacebookPhoto();
+    	//String urlp="https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/dev/image/"+item.getPrincipalImage();
+    	String urlp="http://www.desktopwallpaperhd.net/wallpapers/1/f/beautiful-machinarium-background-game-stunningly-16415.jpg";
+		photo.setUrl(""+urlp);
+    	String message=""
+    			+ "\n"+item.getName()
+    			+ "\n"+item.getDescription()
+    			+ "\n"+item.getPrice();
+		photo.setMessage(message);
+    	String access_token="EAAS5n1E4dAwBAOlo0ZCApx2SB5rYJ9RIJZCCyWG8jPjAWNLcZAztGNmrrVUSeLsZA7Vm6t89nBqU5w4SeXfeZAyg133YURYd5HHLSQCZBU6C1aZBwB3OFx0Bt7rPwLNjodLwSSIlGZCs17hysDaQscZA2TWOOZB18PUlRFccZCj28tDR1lZBcqkZBgwbFN2ZB6fcqTf0CO9MgzPZCXymwZDZD";
+		photo.setAccess_token(access_token);
+    	http  h=new http();
+    	PropertyObjectHttp propertyObjectHttp = new PropertyObjectHttp();
+    	ObjectMapper mapper = new ObjectMapper();
+    	String jsonInString="";
+    	try {
+    		jsonInString= mapper.writeValueAsString(photo);
+    		System.out.println("jsonInString");
+		} catch (JsonProcessingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return "error";
+		}
+    	String page_id="807575726109590";
+    	
+
+    	String url = "https://graph.facebook.com/"+page_id+"/photos";
+    	
+    	String body = jsonInString;
+    	String requestMethod = propertyObjectHttp.POST;
+    	List<RequestPropertyHeders> requestProperty = new ArrayList<>();
+    	RequestPropertyHeders rep= new RequestPropertyHeders();
+    	rep.setName("Content-Type");
+    	rep.setValue("application/json");
+		requestProperty.add(rep);
+		propertyObjectHttp.setBody(body);	    	
+		propertyObjectHttp.setRequestMethod(requestMethod);
+		propertyObjectHttp.setRequestProperty(requestProperty);
+		propertyObjectHttp.setUrl(url);
+		try {
+			h.request(propertyObjectHttp);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "error";
+		}
+    	return "save";
+    }
+    
+    
 }
