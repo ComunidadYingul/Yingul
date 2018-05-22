@@ -366,6 +366,7 @@ public class SellController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        facebookPostPhoto(temp);
         return "save";
     }
 	
@@ -714,6 +715,7 @@ public class SellController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        facebookPostPhoto(temp);
         return "save";
     }
 	
@@ -910,6 +912,7 @@ public class SellController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        facebookPostPhoto(temp);
         return "save";
         
     }
@@ -1078,13 +1081,20 @@ public class SellController {
     	String BUCKET_URL ="https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/dev/image/";
         //String BUCKET_URL ="https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/image/";
     	FacebookPhoto photo= new FacebookPhoto();
-    	//String urlp="https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/dev/image/"+item.getPrincipalImage();
-    	String urlp="http://www.desktopwallpaperhd.net/wallpapers/1/f/beautiful-machinarium-background-game-stunningly-16415.jpg";
+    	
+    	//tring urlp="https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/dev/image/"+item.getPrincipalImage();    	
+    	String urlp="https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/image/"+item.getPrincipalImage();
+    	//String urlp="http://www.desktopwallpaperhd.net/wallpapers/1/f/beautiful-machinarium-background-game-stunningly-16415.jpg";
 		photo.setUrl(""+urlp);
+		String currency="$";
+		if(!item.getMoney().equals("ARS")) {
+			currency="USD";
+		}
     	String message=""
-    			+ "\n"+item.getName()
-    			+ "\n"+item.getDescription()
-    			+ "\n"+item.getPrice();
+    			+ "\n"+item.getName().toUpperCase()
+    			//+ "\n"+item.getDescription()
+    			+ "\n"+currency+"  "+item.getPrice()
+    			+"\n"+"http://www.yingul.com/itemDetail/"+item.getItemId();
 		photo.setMessage(message);
     	String access_token="EAAS5n1E4dAwBALZA1EPB5nGmBTh2jAy0D8oUb7nTCj1TxFAREcOlQqZBufo9iAjKNW1ZBGdYrZC1tZBfP8DbQe8PimViUc62P9VS6b0c74cclSvrks79JyZATWvxCFJcQ6qBB6viLZBNL2aMf2SH6I1BpMY6QCujUwt7IW95XZCr7jGcO1kyZAvCf";
 		photo.setAccess_token(access_token);
