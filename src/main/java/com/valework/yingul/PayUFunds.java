@@ -29,7 +29,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
-import org.assertj.core.util.DateUtil;
+//import org.assertj.core.util.DateUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
