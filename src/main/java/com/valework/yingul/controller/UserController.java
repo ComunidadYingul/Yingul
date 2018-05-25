@@ -18,6 +18,7 @@ import com.valework.yingul.dao.CountryDao;
 import com.valework.yingul.dao.ProvinceDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
+import com.valework.yingul.model.Yng_BranchAndreani;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
@@ -325,7 +326,7 @@ public class UserController {
 			ubicationTemp.setYng_City(cityDao.findByCityId(user.getYng_Ubication().getYng_City().getCityId()));
 			ubicationTemp.setPostalCode(ubicationTemp.getYng_City().getCodigopostal());
 			
-			String codAndreani="";
+			Yng_BranchAndreani codAndreani=new Yng_BranchAndreani();
 			LogisticsController log=new LogisticsController();
 			try {
 				codAndreani=log.andreaniSucursales(ubicationTemp.getPostalCode(), "", "");
@@ -333,7 +334,7 @@ public class UserController {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			ubicationTemp.setCodAndreani(""+codAndreani);
+			ubicationTemp.setCodAndreani(""+codAndreani.getCodAndreani());
 			
 			ubicationTemp=ubicationDao.save(ubicationTemp);
 			yng_User.setYng_Ubication(ubicationTemp);
