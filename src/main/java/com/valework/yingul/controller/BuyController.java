@@ -35,7 +35,6 @@ import com.valework.yingul.dao.BranchAndreaniDao;
 import com.valework.yingul.dao.BranchDao;
 import com.valework.yingul.dao.BuyDao;
 import com.valework.yingul.dao.CardDao;
-import com.valework.yingul.dao.CardProviderDao;
 import com.valework.yingul.dao.CashPaymentDao;
 import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.dao.ConfirmDao;
@@ -70,7 +69,6 @@ import com.valework.yingul.model.Yng_Branch;
 import com.valework.yingul.model.Yng_BranchAndreani;
 import com.valework.yingul.model.Yng_Buy;
 import com.valework.yingul.model.Yng_Card;
-import com.valework.yingul.model.Yng_CardProvider;
 import com.valework.yingul.model.Yng_CashPayment;
 import com.valework.yingul.model.Yng_Confirm;
 import com.valework.yingul.model.Yng_Country;
@@ -94,7 +92,6 @@ import com.valework.yingul.model.Yng_StateShipping;
 import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.CardService;
-import com.valework.yingul.service.CreditCardProviderService;
 import com.valework.yingul.service.ProductService;
 import com.valework.yingul.service.StandardService;
 //import com.valework.yingul.VisaFunds;
@@ -114,8 +111,6 @@ public class BuyController {
 	private SmtpMailSender smtpMailSender;
 	@Autowired
     private ListCreditCardDao listCreditCardDao;
-	@Autowired
-	private CreditCardProviderService creditCardProviderService;
 	@Autowired
 	UserDao userDao;
 	@Autowired
@@ -148,8 +143,6 @@ public class BuyController {
 	ShippingDao shippingDao;
 	 @Autowired
 	 EnvioDao  envioDao;
-	@Autowired 
-	CardProviderDao cardProviderDao;
 	@Autowired 
 	ConfirmDao confirmDao;
 	@Autowired
@@ -188,23 +181,11 @@ public class BuyController {
 	CashPaymentDao cashPaymentDao; 
 	
 	@RequestMapping("/listCreditCard/all")
-    public Set<Yng_ListCreditCard> findProvinceList() {
+    public List<Yng_ListCreditCard> findProvinceList() {
         List<Yng_ListCreditCard> creditCardList = listCreditCardDao.findAll();
-        Set<Yng_ListCreditCard> creditCardList1 = new HashSet<>();
-        for (Yng_ListCreditCard si : creditCardList) {
-        	if(si.getListCreditCardId()==0||si.getListCreditCardId()==1||si.getListCreditCardId()==2) {
-        		creditCardList1.add(si);
-        	}
-		}
-        
-        return creditCardList1;
+        return creditCardList;
     }
 
-    @RequestMapping("/getCreditCardProvider/{listCreditCardId}")
-    public List<Yng_CardProvider> findProviderByCreditCard(@PathVariable("listCreditCardId") Long listCreditCardId) {
-    	Yng_ListCreditCard yng_ListCreditCard = listCreditCardDao.findByListCreditCardId(listCreditCardId);
-        return creditCardProviderService.findByListCreditCard(yng_ListCreditCard);
-    }
     @RequestMapping("/getCardForUser/{username}")
     public List<Yng_Card> findCardForUser(@PathVariable("username") String username) {
     	Yng_User yng_User = userDao.findByUsername(username);

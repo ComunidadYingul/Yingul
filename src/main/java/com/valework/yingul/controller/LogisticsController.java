@@ -1510,6 +1510,7 @@ public class LogisticsController {
     	  quote.setYng_User(userDao.findByUsername(quote.getYng_User().getUsername()));  
    		
     	  String type=quoteType(quote.getYng_Item().getItemId());
+    	  System.out.println(type);
 		  if(type.equals("Producto")) {	    	  
 			    	  
 			    	  standard= new Yng_Standard();

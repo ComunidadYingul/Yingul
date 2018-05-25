@@ -24,9 +24,6 @@ public class Yng_Card {
 	private int securityCode;
 	private String type;
 	private String provider;
-	@OneToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "cardProvider_id")
-    private Yng_CardProvider yng_CardProvider;
 
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
@@ -74,12 +71,6 @@ public class Yng_Card {
 	}
 	public void setSecurityCode(int securityCode) {
 		this.securityCode = securityCode;
-	}
-	public Yng_CardProvider getYng_CardProvider() {
-		return yng_CardProvider;
-	}
-	public void setYng_CardProvider(Yng_CardProvider yng_CardProvider) {
-		this.yng_CardProvider = yng_CardProvider;
 	}
 	public String getType() {
 		return type;
