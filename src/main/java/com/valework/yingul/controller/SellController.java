@@ -95,6 +95,13 @@ import com.valework.yingul.service.ItemService;
 import com.valework.yingul.service.S3Services;
 import com.valework.yingul.service.ServiceService;
 import com.valework.yingul.service.UserServiceImpl.S3ServicesImpl;
+
+import twitter4j.StatusUpdate;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.conf.ConfigurationBuilder;
+
 import com.valework.yingul.service.StorageService;
 
 import org.springframework.web.bind.annotation.PathVariable;
@@ -107,6 +114,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
@@ -543,6 +551,7 @@ public class SellController {
 		}
         Yng_Item item=productTemp.getYng_Item();
 		facebookPostPhoto(item);
+		
         return "save";
     }
 	
@@ -1083,11 +1092,16 @@ public class SellController {
     }
     
     public String facebookPostPhoto(Yng_Item item) {
+    	PropertySocial p=new PropertySocial();
+    	//****Local
+    	p=propertyLocal();
+    	//****production
+    	//p=propertyProduction();
 
     	FacebookPhoto photo= new FacebookPhoto();
     	
-    	String urlp="https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/dev/image/"+item.getPrincipalImage();    	
-    	//String urlp="https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/image/"+item.getPrincipalImage();
+    	String urlp=p.getUrlImage()+item.getPrincipalImage();    	
+    	
     	
 		photo.setUrl(""+urlp);
 		String currency="$";
@@ -1098,9 +1112,9 @@ public class SellController {
     			+ "\n"+item.getName().toUpperCase()
     			//+ "\n"+item.getDescription()
     			+ "\n"+currency+"  "+item.getPrice()
-    			+"\n"+"http://www.yingul.com/itemDetail/"+item.getItemId();
+    			+"\n"+p.urlPagina+item.getItemId();
 		photo.setMessage(message);
-    	//String access_token="EAAS5n1E4dAwBALZA1EPB5nGmBTh2jAy0D8oUb7nTCj1TxFAREcOlQqZBufo9iAjKNW1ZBGdYrZC1tZBfP8DbQe8PimViUc62P9VS6b0c74cclSvrks79JyZATWvxCFJcQ6qBB6viLZBNL2aMf2SH6I1BpMY6QCujUwt7IW95XZCr7jGcO1kyZAvCf";
+    	
     	Yng_Standard access_token = standardDao.findByKey("Facebook_access_token");
     	photo.setAccess_token(access_token.getValue());
     	http  h=new http();
@@ -1138,8 +1152,81 @@ public class SellController {
 			e.printStackTrace();
 			return "error";
 		}
+		twitterPostPhoto(item,p);
     	return "save";
     }
     
+    public String twitterPostPhoto(Yng_Item item,PropertySocial p) { 	
+    	
+    	String currency="$";
+		if(!item.getMoney().equals("ARS")) {
+			currency="USD";
+		}
+    	ConfigurationBuilder twitterConfigBuilder = new ConfigurationBuilder();
+    	twitterConfigBuilder.setDebugEnabled(true);
+    	Yng_Standard Twitter_consumer_key = standardDao.findByKey("Twitter_consumer_key");
+    	twitterConfigBuilder.setOAuthConsumerKey(""+Twitter_consumer_key.getValue());
+    	Yng_Standard Twitter_consumer_secret = standardDao.findByKey("Twitter_consumer_secret");
+    	twitterConfigBuilder.setOAuthConsumerSecret(""+Twitter_consumer_secret.getValue());
+    	Yng_Standard Twitter_access_token = standardDao.findByKey("Twitter_access_token");
+    	twitterConfigBuilder.setOAuthAccessToken(""+Twitter_access_token.getValue());
+    	Yng_Standard Twitter_access_token_secret = standardDao.findByKey("Twitter_access_token_secret");
+    	twitterConfigBuilder.setOAuthAccessTokenSecret(""+Twitter_access_token_secret.getValue());
+
+    	Twitter twitter = new TwitterFactory(twitterConfigBuilder.build()).getInstance();
+    	String statusMessage = ""
+    			+ "\n"+item.getName().toUpperCase()
+    			//+ "\n"+item.getDescription()
+    			+ "\n"+currency+"  "+item.getPrice()
+    			+"\n"+p.getUrlPagina()+item.getItemId();    	
+    	StatusUpdate status = new StatusUpdate(statusMessage);
+		String Photo=p.getUrlImage()+item.getPrincipalImage();
+		InputStream is;
+		try {
+			is = new URL(Photo).openStream();
+			status.setMedia("nu", is);//;(file); // set the image to be uploaded here.
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}    	
+    	try {
+			twitter.updateStatus(status);
+		} catch (TwitterException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "fallo";
+		}
+    	return "Save";
+    }
+    public PropertySocial propertyLocal(){
+		PropertySocial p=new PropertySocial();
+		p.setUrlImage("https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/dev/image/");
+		p.setUrlPagina("http://localhost:8080/itemDetail/");
+		return p;
+	}
+	public PropertySocial propertyProduction(){
+		PropertySocial p=new PropertySocial();
+		p.setUrlImage("https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/image/");
+		p.setUrlPagina("http://www.yingul.com/itemDetail/");
+		return p;
+	}
+    public class PropertySocial{
+    	public String urlPagina="";
+    	public String urlImage="";
+    	
+		public String getUrlPagina() {
+			return urlPagina;
+		}
+		public void setUrlPagina(String urlPagina) {
+			this.urlPagina = urlPagina;
+		}
+		public String getUrlImage() {
+			return urlImage;
+		}
+		public void setUrlImage(String urlImage) {
+			this.urlImage = urlImage;
+		}
+    	
+    }
     
 }
