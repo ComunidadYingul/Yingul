@@ -21,10 +21,6 @@ public class Yng_ListCreditCard {
 	private String name;
 	private String keyPayu;
 	
-	@OneToMany(mappedBy = "listCreditCard", cascade = CascadeType.ALL, fetch = FetchType.LAZY)  
-	@JsonBackReference(value="creditCardProvider")
-    private Set<Yng_CreditCardProvider> creditCardProvider = new HashSet<>();
-	
     public Yng_ListCreditCard() {}
 
 	public Long getListCreditCardId() {
@@ -41,14 +37,6 @@ public class Yng_ListCreditCard {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public Set<Yng_CreditCardProvider> getCreditCardProvider() {
-		return creditCardProvider;
-	}
-
-	public void setCreditCardProvider(Set<Yng_CreditCardProvider> creditCardProvider) {
-		this.creditCardProvider = creditCardProvider;
 	}
 
 	public String getKeyPayu() {

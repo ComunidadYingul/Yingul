@@ -40,7 +40,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.valework.yingul.controller.BuyController;
 import com.valework.yingul.dao.CardDao;
-import com.valework.yingul.dao.CardProviderDao;
 import com.valework.yingul.dao.CashPaymentDao;
 import com.valework.yingul.dao.PaymentDao;
 import com.valework.yingul.dao.RequestBodyDao;
@@ -68,8 +67,6 @@ import com.valework.yingul.util.VisaAPIClient;
 @Component
 public class PayUFunds {
 	final static Logger logger = Logger.getLogger(VisaAPIClient.class);
-	@Autowired 
-	CardProviderDao cardProviderDao;
 	@Autowired 
 	CardDao cardDao;
 	@Autowired 
@@ -265,13 +262,6 @@ public class PayUFunds {
 	                    		Yng_Card cardTemp=buy.getYng_Payment().getYng_Card();
 	                    		cardTemp.setFullName(cardTemp.getFullName().trim().toUpperCase());
 	                    		cardTemp.setUser(userTemp);
-	                    		if(cardTemp.getType().toString().equals("DEBIT"))
-	                    		{
-	                    			cardTemp.setYng_CardProvider(null);
-	                    		}
-	                    		else {
-	                    			cardTemp.setYng_CardProvider(cardProviderDao.findByCardProviderId(cardTemp.getYng_CardProvider().getCardProviderId()));
-	                    		}
 	                    		Yng_Payment paymentTemp=buy.getYng_Payment();
 	                    		//para ver si la tarjeta existe 
 	                    		if (null == cardDao.findByNumberAndUser(cardTemp.getNumber(),buy.getUser())) {
