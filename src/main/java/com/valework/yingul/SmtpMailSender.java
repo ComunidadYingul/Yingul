@@ -15,16 +15,34 @@ public class SmtpMailSender {
 	private JavaMailSender javaMailSender;
 	
 	public void send(String to, String subject, String body) throws MessagingException {
-		MimeMessage message = javaMailSender.createMimeMessage();
+		/*MimeMessage message = javaMailSender.createMimeMessage();
 		MimeMessageHelper helper;
 		helper = new MimeMessageHelper(message, true);
 		helper.setSubject(subject);
 		helper.setTo(to);
 		helper.setText(body,true);
-		helper.setFrom("yingul@valework.com");
+		//helper.setFrom("yingul@yingul.com");
 		//helper.setFrom("daniel@internetvale.com");
-		javaMailSender.send(message);
+		javaMailSender.send(message);*/
+
 		
+		System.out.println(to+"   subject:   "+subject+"  body: "+ body);
+		 MimeMessage message = javaMailSender.createMimeMessage();
+			MimeMessageHelper helper;
+			try {
+				helper = new MimeMessageHelper(message, true);
+				helper.setSubject(subject);
+				helper.setTo(to);
+				helper.setText(body,true);
+				helper.setFrom("yingul@internetvale.com");
+				
+				System.out.println("email send");
+				javaMailSender.send(message);			
+			} catch (MessagingException e) {
+				System.out.println("email send error");
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 
 }
