@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.AmbientDao;
 import com.valework.yingul.dao.AmenitiesDao;
+import com.valework.yingul.dao.BranchAndreaniDao;
 import com.valework.yingul.dao.CategoryDao;
 import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.dao.ConfortDao;
@@ -47,6 +48,7 @@ import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.model.Yng_Ambient;
+import com.valework.yingul.model.Yng_BranchAndreani;
 import com.valework.yingul.model.Yng_Category;
 import com.valework.yingul.model.Yng_Favorite;
 import com.valework.yingul.model.Yng_FindMotorized;
@@ -175,6 +177,8 @@ public class ItemController {
 	
 	@Autowired
 	MotorizedSoundDao motorizedSoundDao;
+	@Autowired
+	BranchAndreaniDao branchAndreaniDao;
 	@RequestMapping("/itemType/{itemId}")
     public String getItemTypeById(@PathVariable("itemId") Long itemId) {
 		Yng_Item yng_Item = itemDao.findByItemId(itemId);System.out.println("itemId 1 :"+itemId);
@@ -718,12 +722,16 @@ public class ItemController {
        	ubiTemp.setAditional(ubiEnt.getAditional());
        	String codAndreani="";
    		LogisticsController log=new LogisticsController();
+   		Yng_BranchAndreani branchAndreani=new Yng_BranchAndreani();
    		try {
-   			codAndreani=log.andreaniSucursales(ubiTemp.getPostalCode(), "", "");
+   			branchAndreani=log.andreaniSucursales(ubiTemp.getPostalCode(), "", "");
+   			//codAndreani=log.andreaniSucursales(ubiTemp.getPostalCode(), "", "").getCodAndreani();
+   			codAndreani=branchAndreani.getCodAndreani();
    		} catch (Exception e1) {
    			// TODO Auto-generated catch block
    			e1.printStackTrace();
-   		}		
+   		}	
+   		branchAndreaniDao.save(branchAndreani);
        	ubiTemp.setCodAndreani(codAndreani);
        	ubiTemp.setDepartment(ubiEnt.getDepartment());
        	ubiTemp.setNumber(ubiEnt.getNumber());

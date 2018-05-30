@@ -18,6 +18,7 @@ import com.valework.yingul.dao.CountryDao;
 import com.valework.yingul.dao.ProvinceDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
+import com.valework.yingul.model.Yng_BranchAndreani;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
@@ -320,12 +321,13 @@ public class UserController {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
 		if(yng_User.getUsername().equals(parts[0]) && yng_User.getUsername().equals(user.getUsername()) && encoder.matches(parts[1], yng_User.getPassword())){
 			Yng_Ubication ubicationTemp = new Yng_Ubication();
+			ubicationTemp = user.getYng_Ubication();
 			ubicationTemp.setYng_Country(countryDao.findByCountryId(user.getYng_Ubication().getYng_Country().getCountryId()));
 			ubicationTemp.setYng_Province(provinceDao.findByProvinceId(user.getYng_Ubication().getYng_Province().getProvinceId()));
 			ubicationTemp.setYng_City(cityDao.findByCityId(user.getYng_Ubication().getYng_City().getCityId()));
 			ubicationTemp.setPostalCode(ubicationTemp.getYng_City().getCodigopostal());
 			
-			String codAndreani="";
+			Yng_BranchAndreani codAndreani=new Yng_BranchAndreani();
 			LogisticsController log=new LogisticsController();
 			try {
 				codAndreani=log.andreaniSucursales(ubicationTemp.getPostalCode(), "", "");
@@ -333,7 +335,7 @@ public class UserController {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			ubicationTemp.setCodAndreani(""+codAndreani);
+			ubicationTemp.setCodAndreani(""+codAndreani.getCodAndreani());
 			
 			ubicationTemp=ubicationDao.save(ubicationTemp);
 			yng_User.setYng_Ubication(ubicationTemp);

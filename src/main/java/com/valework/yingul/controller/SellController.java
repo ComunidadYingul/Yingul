@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -26,12 +27,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.AmbientDao;
 import com.valework.yingul.dao.AmenitiesDao;
 import com.valework.yingul.dao.BarrioDao;
+import com.valework.yingul.dao.BranchAndreaniDao;
 import com.valework.yingul.dao.CategoryDao;
 import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.dao.ConfortDao;
@@ -57,9 +61,15 @@ import com.valework.yingul.dao.ServiceDao;
 import com.valework.yingul.dao.ServiceProvinceDao;
 import com.valework.yingul.dao.SoundDao;
 import com.valework.yingul.dao.StandarCostAndreaniDao;
+import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.dao.YingulRequestDao;
+import com.valework.yingul.logistic.PropertyObjectHttp;
+import com.valework.yingul.logistic.RequestPropertyHeders;
+import com.valework.yingul.logistic.http;
+import com.valework.yingul.model.FacebookPhoto;
+import com.valework.yingul.model.Yng_BranchAndreani;
 import com.valework.yingul.model.Yng_Country;
 import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_ItemCategory;
@@ -77,6 +87,7 @@ import com.valework.yingul.model.Yng_PropertyAmenities;
 import com.valework.yingul.model.Yng_Service;
 import com.valework.yingul.model.Yng_ServiceProvince;
 import com.valework.yingul.model.Yng_StandarCostAndreani;
+import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.model.Yng_YingulRequest;
@@ -220,6 +231,10 @@ public class SellController {
 	StandarCostAndreaniDao standarCostAndreaniDao;
 	@Autowired
 	YingulRequestDao yingulRequestDao; 
+	@Autowired
+	BranchAndreaniDao branchAndreaniDao;
+	@Autowired
+	StandardDao standardDao;
 	@RequestMapping(value = "/service", method = RequestMethod.POST)
 	@ResponseBody
 	public String sellServicePost(@Valid @RequestBody Yng_Service service) throws MessagingException, IOException {	
@@ -356,6 +371,7 @@ public class SellController {
 			e.printStackTrace();
 		}
         System.out.println("save");
+        facebookPostPhoto(temp);
         return "save";
     }
 	
@@ -419,12 +435,16 @@ public class SellController {
 		//ubicationTemp.setYng_Barrio(barrioDao.findByBarrioId(productTemp.getYng_Item().getYng_Ubication().getYng_Barrio().getBarrioId()));
 		String codAndreani="";
 		LogisticsController log=new LogisticsController();
+		Yng_BranchAndreani branchAndreani=new Yng_BranchAndreani();
 		try {
-			codAndreani=log.andreaniSucursales(ubicationTemp.getPostalCode(), "", "");
+			branchAndreani=log.andreaniSucursales(ubicationTemp.getPostalCode(), "", "");
+			codAndreani=branchAndreani.getCodAndreani();
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		
+		branchAndreaniDao.save(branchAndreani);
 		ubicationTemp.setCodAndreani(""+codAndreani);
 		Yng_Ubication ubicationTempo= new Yng_Ubication();
 		ubicationTempo=ubicationDao.save(ubicationTemp);
@@ -521,6 +541,8 @@ public class SellController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        Yng_Item item=productTemp.getYng_Item();
+		facebookPostPhoto(item);
         return "save";
     }
 	
@@ -698,6 +720,7 @@ public class SellController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        facebookPostPhoto(temp);
         return "save";
     }
 	
@@ -894,6 +917,7 @@ public class SellController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        facebookPostPhoto(temp);
         return "save";
         
     }
@@ -1057,4 +1081,65 @@ public class SellController {
 		System.out.println("peso final"+jpegData.length/1024);
 		return jpegData;
     }
+    
+    public String facebookPostPhoto(Yng_Item item) {
+
+    	FacebookPhoto photo= new FacebookPhoto();
+    	
+    	String urlp="https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/dev/image/"+item.getPrincipalImage();    	
+    	//String urlp="https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/image/"+item.getPrincipalImage();
+    	
+		photo.setUrl(""+urlp);
+		String currency="$";
+		if(!item.getMoney().equals("ARS")) {
+			currency="USD";
+		}
+    	String message=""
+    			+ "\n"+item.getName().toUpperCase()
+    			//+ "\n"+item.getDescription()
+    			+ "\n"+currency+"  "+item.getPrice()
+    			+"\n"+"http://www.yingul.com/itemDetail/"+item.getItemId();
+		photo.setMessage(message);
+    	//String access_token="EAAS5n1E4dAwBALZA1EPB5nGmBTh2jAy0D8oUb7nTCj1TxFAREcOlQqZBufo9iAjKNW1ZBGdYrZC1tZBfP8DbQe8PimViUc62P9VS6b0c74cclSvrks79JyZATWvxCFJcQ6qBB6viLZBNL2aMf2SH6I1BpMY6QCujUwt7IW95XZCr7jGcO1kyZAvCf";
+    	Yng_Standard access_token = standardDao.findByKey("Facebook_access_token");
+    	photo.setAccess_token(access_token.getValue());
+    	http  h=new http();
+    	PropertyObjectHttp propertyObjectHttp = new PropertyObjectHttp();
+    	ObjectMapper mapper = new ObjectMapper();
+    	String jsonInString="";
+    	try {
+    		jsonInString= mapper.writeValueAsString(photo);
+    		System.out.println("jsonInString");
+		} catch (JsonProcessingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return "error";
+		}
+    	//String page_id="807575726109590";
+    	
+    	Yng_Standard page_id = standardDao.findByKey("Facebook_page_id");
+    	String url = "https://graph.facebook.com/"+page_id.getValue()+"/photos";
+    	
+    	String body = jsonInString;
+    	String requestMethod = propertyObjectHttp.POST;
+    	List<RequestPropertyHeders> requestProperty = new ArrayList<>();
+    	RequestPropertyHeders rep= new RequestPropertyHeders();
+    	rep.setName("Content-Type");
+    	rep.setValue("application/json");
+		requestProperty.add(rep);
+		propertyObjectHttp.setBody(body);	    	
+		propertyObjectHttp.setRequestMethod(requestMethod);
+		propertyObjectHttp.setRequestProperty(requestProperty);
+		propertyObjectHttp.setUrl(url);
+		try {
+			h.request(propertyObjectHttp);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "error";
+		}
+    	return "save";
+    }
+    
+    
 }

@@ -433,7 +433,8 @@ public class LogisticsController {
     }
      
 
-     public String andreaniSucursales(String CodigoPostal,String Localidad,String Provincia) throws Exception{ 
+     public Yng_BranchAndreani andreaniSucursales(String CodigoPostal,String Localidad,String Provincia) throws Exception{ 
+    	 Yng_BranchAndreani branchAndreani1=new Yng_BranchAndreani();
     	String body3="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
 				"<env:Envelope\r\n" + 
 				"    xmlns:env=\"http://www.w3.org/2003/05/soap-envelope\"\r\n" + 
@@ -515,13 +516,15 @@ public class LogisticsController {
             	branchAndreani.setSchedules(versione.getHoradeTrabajo());
             	branchAndreani.setStreet(versione.getDireccion());
             	branchAndreani.setSucursal(""+versione.getSucursal());
-            	
+            	branchAndreani1=branchAndreani;
             	System.out.println("branchAndreani:"+branchAndreani.toString());            
             }
-            branchAndreaniDao.save(branchAndreani);
+            
+            //branchAndreaniDao.save(branchAndreani);
         }        
         System.out.println("strResponse:"+convertiraISO(strResponse));
-        return ""+numero;
+        
+		return branchAndreani1;
 
      }
      
