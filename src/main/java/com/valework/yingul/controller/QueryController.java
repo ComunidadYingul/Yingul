@@ -3,7 +3,10 @@ package com.valework.yingul.controller;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,7 @@ import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.QueryDao;
 import com.valework.yingul.dao.UserDao;
+import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_Query;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.QueryService;
@@ -91,6 +95,18 @@ public class QueryController {
     	Yng_User yng_User = userDao.findByUsername(username);
         List<Yng_Query> queryList = queryDao.findByUserOrderByQueryId(yng_User);
         return queryList;
+    }
+    @RequestMapping("/queryByItemAndBuyer/{itemId}/{username}")
+    public Set<Yng_Query> queryByItemAndBuyer(@PathVariable("username") String username,@PathVariable("itemId") Long itemId) {
+    	Yng_User yng_User = userDao.findByUsername(username);
+    	Set<Yng_Query> queriList = new HashSet<>();
+        List<Yng_Query> queryList = queryDao.findByUserOrderByQueryId(yng_User);
+        for (Yng_Query yng_Query : queryList) {
+			if(yng_Query.getYng_Item().getItemId().equals(itemId)) {
+				queriList.add(yng_Query);
+			}
+		}
+        return queriList;
     }
     @RequestMapping("/queryBySellerAndStatus/{username}/{status}")
     public List<Yng_Query> findQueriesBySellerAndStatus(@PathVariable("username") String username,@PathVariable("status") String status) {
