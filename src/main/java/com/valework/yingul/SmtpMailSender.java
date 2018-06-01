@@ -34,7 +34,7 @@ public class SmtpMailSender {
 				helper.setSubject(subject);
 				helper.setTo(to);
 				helper.setText(body,true);
-				helper.setFrom("yingul@internetvale.com");
+				helper.setFrom("eddy@internetvale.com");
 				
 				System.out.println("email send");
 				javaMailSender.send(message);			
