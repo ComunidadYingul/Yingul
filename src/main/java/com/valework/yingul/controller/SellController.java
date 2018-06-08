@@ -70,6 +70,7 @@ import com.valework.yingul.logistic.RequestPropertyHeders;
 import com.valework.yingul.logistic.http;
 import com.valework.yingul.model.FacebookPhoto;
 import com.valework.yingul.model.Yng_BranchAndreani;
+import com.valework.yingul.model.Yng_Category;
 import com.valework.yingul.model.Yng_Country;
 import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_ItemCategory;
@@ -596,7 +597,10 @@ public class SellController {
 		Set<Yng_ItemCategory> itemCategory = new HashSet<>();
 		itemCategory=propertyTemp.getYng_Item().getItemCategory();
 		for (Yng_ItemCategory t : itemCategory) {
-			if((t.getCategory().getName()).contains("Alquiler")) {
+			Yng_Category cate = new Yng_Category();
+			cate=categoryDao.findByCategoryId(t.getItemCategoryId());
+			//if((t.getCategory().getName()).contains("Alquiler")) {
+			if(cate.getName().contains("Alquiler")) {
 				propertyTemp.setCondition("Rental");
 			}
 		}
