@@ -417,20 +417,7 @@ public class LogisticsController {
      String Localidad="";
      String Provincia="";
      
-     @RequestMapping("/test")
-     private String testP() throws Exception {
-    	 
-  		try {
-  			this.CodigoPostal="";
-  			this.Localidad="";
-  			this.Provincia="";
-  			andreaniSucursales(this.CodigoPostal,this.Localidad,this.Provincia);
-		} catch (Exception e) {
-						e.printStackTrace();
-		}
-   	
-    	 return "save";
-    }
+ 
      
 
      public Yng_BranchAndreani andreaniSucursales(String CodigoPostal,String Localidad,String Provincia) throws Exception{ 
@@ -488,6 +475,13 @@ public class LogisticsController {
     	 StringEntity stringEntity = new StringEntity(body3, "UTF-8");
 		
         stringEntity.setChunked(true);
+      //***
+        standard= new Yng_Standard();
+  	  	standard=standardService.findByKey("Andreani_Branch_Url");
+   	  	String urlSuc=standard.getValue();
+   	  	//***
+        
+        
         HttpPost httpPost = new HttpPost(urlSuc);
         httpPost.setEntity(stringEntity);
         httpPost.addHeader("Content-Type", "text/xml");
@@ -993,6 +987,11 @@ public class LogisticsController {
     	 StringEntity stringEntity = new StringEntity(body3, "UTF-8");
 		
         stringEntity.setChunked(true);
+        //***
+        standard= new Yng_Standard();
+  	  	standard=standardService.findByKey("Andreani_Branch_Url");
+   	  	String urlSuc=standard.getValue();
+   	  	//***
         HttpPost httpPost = new HttpPost(urlSuc);
         httpPost.setEntity(stringEntity);
         httpPost.addHeader("Content-Type", "text/xml");
