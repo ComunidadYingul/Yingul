@@ -1232,5 +1232,70 @@ public class SellController {
 		}
     	
     }
+	@RequestMapping("/meta/{itemId}")
+    public String  getProductByIdItem(@PathVariable("itemId") Long itemId) {
+		Yng_Item item=new Yng_Item();
+		item=itemService.findByItemId(itemId);
+		System.out.println("item:"+item);
+		if(item!=null) {
+		
+		String urlImage="\"https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/image/principal"+ itemId	+ ".jpeg\" />\r\n";
+		String url="\"http://yingulbackend-env.accmfbwpye.us-west-2.elasticbeanstalk.com/ft/"+ itemId+ "\" />\r\n" ;
+		
+		
+		String title="\""
+				+ item.getName()
+				+ "\" />\r\n" ;
+		String description="\""
+				+ item.getPrice()
+				+ "\" />\r\n" ;
+		
+		return "<!doctype html>\r\n" + 
+				"<html lang=\"en\">\r\n" + 
+				"<head>\r\n" + 
+				"  <meta charset=\"utf-8\">\r\n" + 
+				"  <meta property=\"fb:app_id\" content=\"432316930562411\" />\r\n" + 
+				"  <!--meta property=\"fb:admins\" content=\"100000189380463\" /-->\r\n" + 
+				"    <meta name=\"twitter:card\" content=\"summary_large_image\" />\r\n" + 
+				"    <meta name=\"twitter:site\" content=\"@YingulPruebas\" />\r\n" + 
+				"    <meta name=\"twitter:image\" content="+
+				urlImage + 
+				"    <meta name=\"twitter:title\" content="				+ 
+				 title+
+				"    <meta name=\"twitter:description\" content="+
+				description+ 
+				"    <meta name=\"twitter:creator\" content=\"@rockcontent_es\" />\r\n" + 
+				"    \r\n" + 
+				"    <meta property=\"og:url\"                content="	+ 
+				 url+
+				"    <meta property=\"og:type\"               content=\"article\" />\r\n" + 
+				"    <meta property=\"og:title\"              content="
+				+ title + 
+				"    <meta property=\"og:description\"        content="
+				+ description + 
+				"    <meta property=\"og:image\"              content="
+				+urlImage + 
+				"  <title>"
+				+ title
+				+ "</title>\r\n" + 
+				"  <base href=\"/\">\r\n" + 
+				"  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n" + 
+				"     <!-- HTML meta refresh URL redirection -->\r\n" + 
+				"   <meta http-equiv=\"refresh\" \r\n" + 
+				"   content=\"0; url=http://www.yingul.com/itemDetail/"
+				+ itemId
+				+ "\">\r\n" + 
+				"</head>\r\n" + 
+				"<body>\r\n" + 
+				"     <p>The page has moved to: \r\n" + 
+				"   <a href=\"http://www.yingul.com/itemDetail/"
+				+ itemId
+				+ "\">this page</a></p>\r\n" + 
+				"\r\n" + 
+				"</body>\r\n" + 
+				"</html>";	
     
+	}
+	return "";
+	}
 }
