@@ -7,7 +7,7 @@ import com.valework.yingul.model.Yng_User;
 
 public interface QueryDao extends CrudRepository<Yng_Query, Long>{
 	List<Yng_Query> findAll();
-	List<Yng_Query> findByUserOrderByQueryId(Yng_User user);
+	List<Yng_Query> findByUserOrderByQueryIdAsc(Yng_User user);
 	List<Yng_Query> findByUserAndStatusOrderByQueryId(Yng_User user,String status);
 	List<Yng_Query> findBySellerOrderByQueryId(Yng_User user);
 	List<Yng_Query> findBySellerAndStatusOrderByQueryId(Yng_User user,String status);

@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+import java.util.stream.Collectors;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,6 @@ import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.QueryDao;
 import com.valework.yingul.dao.UserDao;
-import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_Query;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.QueryService;
@@ -77,7 +76,6 @@ public class QueryController {
     	}
     }
 	
-	
 	@RequestMapping("/Number/{username}")
     public int numberQueryByUser(@PathVariable("username") String username) {
     	Yng_User yng_User = userDao.findByUsername(username);
@@ -93,20 +91,25 @@ public class QueryController {
     @RequestMapping("/queryByBuyer/{username}")
     public List<Yng_Query> findQueriesByBuyer(@PathVariable("username") String username) {
     	Yng_User yng_User = userDao.findByUsername(username);
-        List<Yng_Query> queryList = queryDao.findByUserOrderByQueryId(yng_User);
+        List<Yng_Query> queryList = queryDao.findByUserOrderByQueryIdAsc(yng_User);
         return queryList;
     }
     @RequestMapping("/queryByItemAndBuyer/{itemId}/{username}")
-    public Set<Yng_Query> queryByItemAndBuyer(@PathVariable("username") String username,@PathVariable("itemId") Long itemId) {
+    public List<Yng_Query> queryByItemAndBuyer(@PathVariable("username") String username,@PathVariable("itemId") Long itemId) {
     	Yng_User yng_User = userDao.findByUsername(username);
     	Set<Yng_Query> queriList = new HashSet<>();
-        List<Yng_Query> queryList = queryDao.findByUserOrderByQueryId(yng_User);
+    	//queriList=LinkedHashSet(queriList);
+        List<Yng_Query> queryList = queryDao.findByUserOrderByQueryIdAsc(yng_User);
         for (Yng_Query yng_Query : queryList) {
 			if(yng_Query.getYng_Item().getItemId().equals(itemId)) {
+				System.out.println(yng_Query.getQueryId());
 				queriList.add(yng_Query);
 			}
 		}
-        return queriList;
+        List<Yng_Query> finalQ = queriList.stream().sorted((e1, e2) -> 
+        Long.compare(e1.getQueryId(),e2.getQueryId())).collect(Collectors.toList());
+
+        return finalQ;
     }
     @RequestMapping("/queryBySellerAndStatus/{username}/{status}")
     public List<Yng_Query> findQueriesBySellerAndStatus(@PathVariable("username") String username,@PathVariable("status") String status) {
@@ -167,5 +170,6 @@ public class QueryController {
 			return "algo salio mal vuelve a intentarlo";
 		}
     }
+    
 
 }

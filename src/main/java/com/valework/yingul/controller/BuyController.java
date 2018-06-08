@@ -604,7 +604,12 @@ public class BuyController {
     	Yng_User yng_User = userDao.findByUsername(username);
         List<Yng_Buy> buyList = buyDao.findByUserOrderByBuyIdDesc(yng_User);
         for (Yng_Buy s : buyList) {
-        	s.setYng_Payment(null);
+        	if(s.getYng_Payment().getYng_Card()==null) {
+        		
+        	}else {
+        		s.getYng_Payment().getYng_Card().setNumber(s.getYng_Payment().getYng_Card().getNumber()%10000);
+        		s.getYng_Payment().getYng_Card().setSecurityCode(0);
+        	}
         }
         return buyList;
     }
@@ -613,7 +618,12 @@ public class BuyController {
     	Yng_User yng_User = userDao.findByUsername(username);
         List<Yng_Buy> buyList = buyDao.findBySellerOrderByBuyIdDesc(yng_User);
         for (Yng_Buy s : buyList) {
-        	s.setYng_Payment(null);
+        	if(s.getYng_Payment().getYng_Card().equals(null)||s.getYng_Payment().getYng_Card().equals("")) {
+        		
+        	}else {
+        		s.getYng_Payment().getYng_Card().setNumber(s.getYng_Payment().getYng_Card().getNumber()%10000);
+        		s.getYng_Payment().getYng_Card().setSecurityCode(0);
+        	}
         }
         return buyList;
 
