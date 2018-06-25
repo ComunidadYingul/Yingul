@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.valework.yingul.SmtpMailSender;
+import com.valework.yingul.dao.BranchAndreaniDao;
 import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.dao.CountryDao;
 import com.valework.yingul.dao.ProvinceDao;
@@ -49,6 +50,8 @@ public class UserController {
 	private CityDao cityDao;
 	@Autowired
 	private UbicationDao ubicationDao;
+	@Autowired
+	BranchAndreaniDao branchAndreaniDao;
 	@RequestMapping("/{username}")
     public Yng_User findByUsername(@PathVariable("username") String username) {
         return userDao.findByUsername(username);
@@ -321,7 +324,7 @@ public class UserController {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
 		if(yng_User.getUsername().equals(parts[0]) && yng_User.getUsername().equals(user.getUsername()) && encoder.matches(parts[1], yng_User.getPassword())){
 			Yng_Ubication ubicationTemp = new Yng_Ubication();
-			ubicationTemp = user.getYng_Ubication();
+			/*ubicationTemp = user.getYng_Ubication();
 			ubicationTemp.setYng_Country(countryDao.findByCountryId(user.getYng_Ubication().getYng_Country().getCountryId()));
 			ubicationTemp.setYng_Province(provinceDao.findByProvinceId(user.getYng_Ubication().getYng_Province().getProvinceId()));
 			ubicationTemp.setYng_City(cityDao.findByCityId(user.getYng_Ubication().getYng_City().getCityId()));
@@ -335,9 +338,9 @@ public class UserController {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			ubicationTemp.setCodAndreani(""+codAndreani.getCodAndreani());
+			ubicationTemp.setCodAndreani(""+codAndreani.getCodAndreani());*/
 			
-			ubicationTemp=ubicationDao.save(ubicationTemp);
+			ubicationTemp=updateUserUbication(user);
 			yng_User.setYng_Ubication(ubicationTemp);
 			yng_User.setDocumentNumber(user.getDocumentNumber());
 			yng_User.setDocumentType(user.getDocumentType());
@@ -349,4 +352,48 @@ public class UserController {
 		}
     	
     }
+	public Yng_Ubication updateUserUbication( Yng_User yng_user) throws MessagingException {	
+		System.out.println("Ubicacion llegada :"+yng_user.getYng_Ubication().toString());//ubicationTemp.toString());
+	    	//Yng_User userTemp=new Yng_User();
+	    	
+	    	Yng_User userTemp= userDao.findByUsername(yng_user.getUsername());
+	    	System.out.println("userTemp:"+userTemp.getUsername());
+	    			Yng_Ubication ubicationTemp = new Yng_Ubication();
+	    			ubicationTemp.setStreet(yng_user.getYng_Ubication().getStreet());
+	    			ubicationTemp.setNumber(yng_user.getYng_Ubication().getNumber());
+	    			
+	    			ubicationTemp.setAditional(yng_user.getYng_Ubication().getAditional());
+	    			ubicationTemp.setWithinStreets(yng_user.getYng_Ubication().getWithinStreets());
+	    			ubicationTemp.setDepartment(yng_user.getYng_Ubication().getDepartment());
+	    			ubicationTemp.setYng_Province(provinceDao.findByProvinceId(yng_user.getYng_Ubication().getYng_Province().getProvinceId()));
+	    			ubicationTemp.setYng_City(cityDao.findByCityId(yng_user.getYng_Ubication().getYng_City().getCityId()));	
+	    			ubicationTemp.setPostalCode(ubicationTemp.getYng_City().getCodigopostal());
+	    			ubicationTemp.setYng_Country(countryDao.findByCountryId(yng_user.getYng_Ubication().getYng_Country().getCountryId()));
+	    			//ubicationTemp.setYng_Barrio(barrioDao.findByBarrioId(productTemp.getYng_Item().getYng_Ubication().getYng_Barrio().getBarrioId()));
+	    			System.out.println("Ubi:"+ubicationTemp.toString());
+	    			String codAndreani="";
+	    			LogisticsController log=new LogisticsController();
+	    			Yng_BranchAndreani branchAndreani=new Yng_BranchAndreani();
+	    			try {
+	    				//codAndreani=log.andreaniSucursales(ubicationTemp.getPostalCode(), "", "");
+	    				//codAndreani=log.andreaniSucursalesObject(ubicationTemp.getPostalCode(), "", "").getCodAndreani();
+	    				branchAndreani=log.andreaniSucursalesObject(ubicationTemp.getPostalCode(), "", "");
+	    				codAndreani=branchAndreani.getCodAndreani();
+	    				branchAndreaniDao.save(branchAndreani);
+	    			} catch (Exception e1) {
+	    				e1.printStackTrace();
+	    			}
+	    			ubicationTemp.setCodAndreani(""+codAndreani);
+	    			Yng_Ubication ubicationTempo= new Yng_Ubication();
+	    			System.out.println("ubicationTempo:"+
+	    			ubicationTempo.toString()+
+	    			" userTemp:"+userTemp.getUsername());
+	    			
+	    			ubicationTempo=ubicationDao.save(ubicationTemp);
+	    			userTemp.setYng_Ubication(ubicationTempo);
+	    			
+	    	userDao.save(userTemp);
+	    	return ubicationTempo;
+	    	}
+
 }
