@@ -1098,15 +1098,11 @@ public class SellController {
     public String facebookPostPhoto(Yng_Item item) {
     	PropertySocial p=new PropertySocial();
     	//****Local
-    	p=propertyLocal();
+    	//p=propertyLocal();
     	//****production
-    	//p=propertyProduction();
-
-    	FacebookPhoto photo= new FacebookPhoto();
-    	
-    	String urlp=p.getUrlImage()+item.getPrincipalImage();    	
-    	
-    	
+    	p=propertyProduction();
+    	FacebookPhoto photo= new FacebookPhoto();    	
+    	String urlp=p.getUrlImage()+item.getPrincipalImage();      	
 		photo.setUrl(""+urlp);
 		String currency="$";
 		if(!item.getMoney().equals("ARS")) {
@@ -1117,8 +1113,7 @@ public class SellController {
     			//+ "\n"+item.getDescription()
     			+ "\n"+currency+"  "+item.getPrice()
     			+"\n"+p.urlPagina+item.getItemId();
-		photo.setMessage(message);
-    	
+		photo.setMessage(message);    	
     	Yng_Standard access_token = standardDao.findByKey("Facebook_access_token");
     	photo.setAccess_token(access_token.getValue());
     	http  h=new http();
@@ -1200,7 +1195,8 @@ public class SellController {
 			e.printStackTrace();
 			return "fallo";
 		}
-    	return "Save";
+    	 pinteres(item,p);
+    	return "save";
     }
     public PropertySocial propertyLocal(){
 		PropertySocial p=new PropertySocial();
@@ -1298,4 +1294,43 @@ public class SellController {
 	}
 	return "";
 	}
+	 public String pinteres(Yng_Item item,PropertySocial p) {
+		 String currency="$";
+			if(!item.getMoney().equals("ARS")) {
+				currency="USD";
+			}
+			http h=new http();
+			PropertyObjectHttp objectHttp =new PropertyObjectHttp();
+			//String image_url="https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/image/principal2485.jpeg";
+			String board="734297982933088001";
+			String note="" +item.getName().toUpperCase()	    			
+	    			+ " "+currency+"  "+item.getPrice();
+			String image_url=""+p.getUrlImage()+item.getPrincipalImage();
+			String link=p.getUrlPagina()+item.getItemId(); ;
+			String body="&board="
+					+ board
+					+ "&note="
+					+ note
+					+ "&image_url="
+					+ image_url
+					+ "&link="
+					+ link
+					+ "";
+			List<RequestPropertyHeders> requestProperty=new ArrayList<>();
+			RequestPropertyHeders urlR=new RequestPropertyHeders();
+			urlR.setName("Content-Type");
+			urlR.setValue("application/x-www-form-urlencoded");
+			String url="https://api.pinterest.com/v1/pins/?access_token=Adzz4jrNImxw1M6McRp724d7a2iPFTnoZ0xEdflFBKWK3qA40AAAAAA&fields=id%2Clink%2Cnote%2Curl";
+			objectHttp.setRequestMethod(objectHttp.POST);
+			objectHttp.setBody(body);
+			objectHttp.setRequestProperty(requestProperty);
+			objectHttp.setUrl(url);
+			try {
+				h.request(objectHttp);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return "save";
+		}
 }
