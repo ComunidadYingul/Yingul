@@ -656,6 +656,38 @@ public class ItemController {
     	}
         
     }
+    @RequestMapping("/listItemParams/{type}/{over}/{order}/{start}/{end}")
+    public List<Yng_Item> listItemParams(@PathVariable("type") String type,@PathVariable("over") boolean over,@PathVariable("order") String order,@PathVariable("start") int start,@PathVariable("end") int end, @RequestHeader("X-API-KEY") String XAPIKEY) {
+    	Yng_Standard api = standardDao.findByKey("BACKEND_API_KEY");
+    	if(XAPIKEY.equals(api.getValue())) {
+    		List<Yng_Item> itemList;
+    		if(type.equals("All")) {
+    			if(order.equals("Asc")) {
+					itemList = itemDao.findByIsOverOrderByItemIdAsc(over);
+				}else {
+					itemList = itemDao.findByIsOverOrderByItemIdDesc(over);	
+				}
+    		}else {
+    			if(order.equals("Asc")) {
+					itemList = itemDao.findByIsOverAndTypeOrderByItemIdAsc(over,type);
+				}else {
+					itemList = itemDao.findByIsOverAndTypeOrderByItemIdDesc(over,type);	
+				}
+    		}
+    		if(itemList.size()>=start) {
+    			System.out.println("si "+end+"es mayor que"+itemList.size());
+    			if(end>=itemList.size()) {
+    				itemList=itemList.subList(start, itemList.size());	
+    			}else{
+    				itemList=itemList.subList(start, end);	
+    			}
+    		}
+            return itemList;
+    	}else {
+    		return null;
+    	}
+        
+    }
     @RequestMapping("/ListItemsToEdit/{username}")
     public List<Yng_Item> ListItemsToEdit(@PathVariable("username") String username) {
     	Yng_User yng_User = userDao.findByUsername(username);

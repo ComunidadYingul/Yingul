@@ -95,5 +95,15 @@ public class FavoritesController {
 		}
         return listItemTemp;
     }
-	
+    @RequestMapping("/itemIsFavorite/{itemId}/{username}")
+    public String itemIsFavorite(@PathVariable("itemId") Long itemId,@PathVariable("username") String username) {
+		Yng_Item yng_Item = itemDao.findByItemId(itemId);
+		Yng_User yng_User = userDao.findByUsername(username);
+		if(favoriteDao.findByItemAndUser(yng_Item, yng_User)!=null) {
+			return "isFavorite";
+		}
+    	else {
+			return "noFavorite";
+    	}	
+    }
 }
