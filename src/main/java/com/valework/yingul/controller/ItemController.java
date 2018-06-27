@@ -657,21 +657,61 @@ public class ItemController {
         
     }
     @RequestMapping("/listItemParams/{type}/{over}/{order}/{start}/{end}")
-    public List<Yng_Item> listItemParams(@PathVariable("type") String type,@PathVariable("over") boolean over,@PathVariable("order") String order,@PathVariable("start") int start,@PathVariable("end") int end, @RequestHeader("X-API-KEY") String XAPIKEY) {
+    public List<Yng_Item> listItemParams(@PathVariable("type") String type,@PathVariable("over") String over,@PathVariable("order") String order,@PathVariable("start") int start,@PathVariable("end") int end, @RequestHeader("X-API-KEY") String XAPIKEY) {
     	Yng_Standard api = standardDao.findByKey("BACKEND_API_KEY");
     	if(XAPIKEY.equals(api.getValue())) {
-    		List<Yng_Item> itemList;
+    		List<Yng_Item> itemList = new ArrayList<Yng_Item>();
     		if(type.equals("All")) {
     			if(order.equals("Asc")) {
-					itemList = itemDao.findByIsOverOrderByItemIdAsc(over);
+    				switch (over) {
+	    	            case "All":  
+	    	            	itemList = itemDao.findByOrderByItemIdAsc();
+	    	                break;
+	    	            case "true":  
+	    	            	itemList = itemDao.findByIsOverOrderByItemIdAsc(true);
+	    	                break;
+	    	            case "false":  
+	    	            	itemList = itemDao.findByIsOverOrderByItemIdAsc(false);
+	    	                break;
+    	            }
 				}else {
-					itemList = itemDao.findByIsOverOrderByItemIdDesc(over);	
+					switch (over) {
+    	            case "All":  
+    	            	itemList = itemDao.findByOrderByItemIdDesc();
+    	                break;
+    	            case "true":  
+    	            	itemList = itemDao.findByIsOverOrderByItemIdDesc(true);
+    	                break;
+    	            case "false":  
+    	            	itemList = itemDao.findByIsOverOrderByItemIdDesc(false);
+    	                break;
+					}
 				}
     		}else {
     			if(order.equals("Asc")) {
-					itemList = itemDao.findByIsOverAndTypeOrderByItemIdAsc(over,type);
+    				switch (over) {
+    	            case "All":  
+    	            	itemList = itemDao.findByTypeOrderByItemIdAsc(type);
+    	                break;
+    	            case "true":  
+    	            	itemList = itemDao.findByIsOverAndTypeOrderByItemIdAsc(true,type);
+    	                break;
+    	            case "false":  
+    	            	itemList = itemDao.findByIsOverAndTypeOrderByItemIdAsc(false,type);
+    	                break;
+					}
 				}else {
-					itemList = itemDao.findByIsOverAndTypeOrderByItemIdDesc(over,type);	
+					switch (over) {
+    	            case "All":  
+    	            	itemList = itemDao.findByTypeOrderByItemIdDesc(type);
+    	                break;
+    	            case "true":  
+    	            	itemList = itemDao.findByIsOverAndTypeOrderByItemIdDesc(true,type);
+    	                break;
+    	            case "false":  
+    	            	itemList = itemDao.findByIsOverAndTypeOrderByItemIdDesc(false,type);
+    	                break;
+					}
 				}
     		}
     		if(itemList.size()>=start) {
