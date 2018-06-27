@@ -580,8 +580,9 @@ public class BuyController {
     			Yng_BranchAndreani branchAndreani=new Yng_BranchAndreani();
     			try {
     				//codAndreani=log.andreaniSucursales(ubicationTemp.getPostalCode(), "", "");
-    				codAndreani=log.andreaniSucursalesObject(ubicationTemp.getPostalCode(), "", "").getCodAndreani();
+    				//codAndreani=log.andreaniSucursalesObject(ubicationTemp.getPostalCode(), "", "").getCodAndreani();
     				branchAndreani=log.andreaniSucursalesObject(ubicationTemp.getPostalCode(), "", "");
+    				codAndreani=branchAndreani.getCodAndreani();
     				branchAndreaniDao.save(branchAndreani);
     			} catch (Exception e1) {
     				e1.printStackTrace();

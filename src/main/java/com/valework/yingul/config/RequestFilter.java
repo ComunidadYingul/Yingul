@@ -27,6 +27,7 @@ public class RequestFilter implements Filter {
         //response.setHeader("Access-Control-Allow-Origin", "http://192.168.100.17:4200");        
         //response.setHeader("Access-Control-Allow-Origin", "http://192.168.100.16:4200");
         response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+        //response.setHeader("Access-Control-Allow-Origin", " https://30ff5eb3.ngrok.io");
 
         response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
         response.setHeader("Access-Control-Allow-Headers", "authorization,Access-Control-Allow-Origin, Access-Control-Allow-Headers, Access-Control-Allow-Methods, Access-Control-Allow-Credentials, content-type," +

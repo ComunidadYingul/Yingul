@@ -48,7 +48,11 @@ public class http {
 		if (httpConn.getResponseCode() == 200) {
 		  isr = new InputStreamReader(httpConn.getInputStream());
 		} else {
-		  isr = new InputStreamReader(httpConn.getErrorStream());
+		 // isr = new InputStreamReader(httpConn.getErrorStream());
+			if (httpConn.getResponseCode() == 201) {
+				  isr = new InputStreamReader(httpConn.getInputStream());
+				}
+			else {isr = new InputStreamReader(httpConn.getErrorStream());}
 		}
 		BufferedReader in = new BufferedReader(isr);
 		//Write the SOAP message response to a String.
