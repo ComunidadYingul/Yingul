@@ -15,7 +15,7 @@ public class Yng_ResetPassword {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "resetpasswordId", nullable = false, updatable = false)
     private Long resetpasswordId;
-	
+	private int codeResetPassword;
 	@OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private Yng_User user;
@@ -38,6 +38,14 @@ public class Yng_ResetPassword {
 
 	public void setUser(Yng_User user) {
 		this.user = user;
+	}
+
+	public int getCodeResetPassword() {
+		return codeResetPassword;
+	}
+
+	public void setCodeResetPassword(int codeResetPassword) {
+		this.codeResetPassword = codeResetPassword;
 	}
     
 }

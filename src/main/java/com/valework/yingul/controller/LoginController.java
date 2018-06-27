@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.ResetPasswordDao;
 import com.valework.yingul.dao.UserDao;
@@ -43,14 +45,18 @@ public class LoginController {
         	Yng_User userTemp= userService.findByEmail(user.getEmail().trim());
         	if(resetPasswordDao.findByUser(userTemp) == null) {
         		resetPassword.setUser(userDao.findByUsername(userTemp.getUsername()));
+        		resetPassword.setCodeResetPassword(1000 + (int)(Math.random() * ((9999 - 1000) + 1)));
         		resetPassword=resetPasswordDao.save(resetPassword);
         		
         	}else {
         		resetPassword=resetPasswordDao.findByUser(userTemp);
+        		resetPassword.setCodeResetPassword(1000 + (int)(Math.random() * ((9999 - 1000) + 1)));
+        		resetPassword=resetPasswordDao.save(resetPassword);
         	}
         	smtpMailSender.send(userTemp.getEmail(), "Restaure la contraseña del usuario de Yingul", "Estimado "+userTemp.getUsername()+":<br>" + 
         			"Para restaurar la contraseña, haga clic en este vínculo.<br>" + 
-        			"http://www.yingul.com/resetPassword/"+resetPassword.getResetpasswordId()+"<br>" + 
+        			"http://www.yingul.com/resetPassword/"+resetPassword.getResetpasswordId()+"<br>" +
+        			"Ingres este código "+resetPassword.getCodeResetPassword()+"<br>" +
         			"Tenga en cuenta lo siguiente: <br>" + 
         			"Por motivos de seguridad, el vínculo caducará 72 horas después de su envío.<br>" + 
         			"Si no puede acceder al vínculo, copie y pegue toda la URL en el navegador.<br>" + 
@@ -58,10 +64,10 @@ public class LoginController {
         			"Copyright 2018 Yigul S.R.L.. All rights reserved.");
         	return "save";
         }else {
-        	return "algo salio mal vuelva a intentarlo";
+        	return "El email ingresado no esta registrado en Yingul.";
         }     
     }
-	@RequestMapping(value = "/updatePasswordUser", method = RequestMethod.POST)
+	@RequestMapping(value = "/editPassword", method = RequestMethod.POST)
 	@ResponseBody
     public String updatePasswordUser(@Valid @RequestBody Yng_ResetPassword resetPassword) throws MessagingException {
         if(resetPasswordDao.findByResetpasswordId(resetPassword.getResetpasswordId()) != null) {
@@ -85,6 +91,20 @@ public class LoginController {
         	return "prohibited";
         }     
     }
+	@RequestMapping(value = "/checkAuthorizationAndroid", method = RequestMethod.POST)
+	@ResponseBody
+    public String checkAuthorizationAndroid(@Valid @RequestBody Yng_ResetPassword resetPassword) throws MessagingException, JsonProcessingException {
+		Yng_User user = userDao.findByEmail(resetPassword.getUser().getEmail());
+		Yng_ResetPassword resetPasswordTemp = resetPasswordDao.findByUserAndCodeResetPassword(user, resetPassword.getCodeResetPassword()); 
+        if(resetPasswordTemp != null) {
+        	ObjectMapper mapper = new ObjectMapper();
+    		String jsonInString = mapper.writeValueAsString(resetPasswordTemp);
+        	return jsonInString;
+        }else {
+        	System.out.println("incorrecto");
+        	return "prohibited";
+        }     
+    }
 	@RequestMapping("/checkAuthorization/{resetPasswordId}")
     public String checkAuthorization(@PathVariable("resetPasswordId") Long resetPasswordId) {
     	if(resetPasswordDao.findByResetpasswordId(resetPasswordId) != null) {
@@ -93,5 +113,6 @@ public class LoginController {
     		return "false";
     	}
     }
+	
     
 }
