@@ -1,6 +1,11 @@
 package com.valework.yingul.controller;
 
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -82,6 +87,27 @@ public class CategoryController {
         	categoryTemp=categoryDao.findByCategoryId(categoryTemp.getFatherId());
         }
         return categoryTemp.getItemType();
+    }
+    @RequestMapping("/fatherForItemTypeAndNamecategory/{itemType}/{name}")
+    public Set<Yng_Category> fatherForItemTypeAndNamecategory(@PathVariable("itemType") String itemType,@PathVariable("name") String name) {
+        if(name.equals("temporario")) {
+        	name="Alquiler temporario";
+        }
+    	List<Yng_Category> categoryList = categoryDao.findByItemTypeAndNameOrderByNameAsc(itemType,name);
+        Set<Yng_Category> fathers= new HashSet<>();
+        for (Yng_Category yng_Category : categoryList) {
+        	fathers.add(categoryDao.findByCategoryId(yng_Category.getFatherId()));
+		}
+        return fathers;
+    }
+    @RequestMapping("/categoryForFatherAndNamecategory/{fatherId}/{name}")
+    public Yng_Category categoryForFatherAndNamecategory(@PathVariable("fatherId") Long fatherId,@PathVariable("name") String name) {
+        if(name.equals("temporario")) {
+        	name="Alquiler temporario";
+        }
+    	Yng_Category category = categoryDao.findByFatherIdAndNameOrderByNameAsc(fatherId,name);
+
+        return category;
     }
     
 }

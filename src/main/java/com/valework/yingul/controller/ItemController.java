@@ -179,6 +179,9 @@ public class ItemController {
 	MotorizedSoundDao motorizedSoundDao;
 	@Autowired
 	BranchAndreaniDao branchAndreaniDao;
+	@Autowired
+	CategoryController categoryController;
+	
 	@RequestMapping("/itemType/{itemId}")
     public String getItemTypeById(@PathVariable("itemId") Long itemId) {
 		Yng_Item yng_Item = itemDao.findByItemId(itemId);System.out.println("itemId 1 :"+itemId);
@@ -372,6 +375,70 @@ public class ItemController {
     		Set<Yng_Item> itemList = itemService.searchMotorized(motorizedList, categoryId, minPrice, maxPrice, minYear, maxYear);
             return itemList;
     	}
+
+    }
+    @RequestMapping("/searchPropertyCategoryConditonUbication/{categoryId}/{condition}/{typeUbication}/{idTypeUbication}")
+    public Set<Yng_Item> searchPropertyCategoryConditonUbication(@PathVariable("categoryId") Long categoryId,@PathVariable("condition") String condition,@PathVariable("typeUbication") String typeUbication,@PathVariable("idTypeUbication") int idTypeUbication) {
+    	Set<Yng_Item> filtered = new HashSet<>();
+    	Set<Yng_Item> filteredB = new HashSet<>();
+    	System.out.println(" "+categoryId+"/"+condition+"/"+typeUbication+"/"+idTypeUbication);
+    	Set<Yng_Category> categories = new HashSet<>();
+    	categories = categoryController.fatherForItemTypeAndNamecategory("Property",condition);
+    	for (Yng_Category yng_Category : categories) {
+    		Set<Yng_Item> itemCategory = new HashSet<>();
+    		itemCategory = findOnlyItemsByCategory(yng_Category.getCategoryId());
+    		for (Yng_Item yng_Item : itemCategory) {
+				filtered.add(yng_Item);
+			}
+		}
+    	
+    	if(categoryId==0) {
+  
+    	}else {
+    		filtered=new HashSet<>();
+    		Yng_Category category = categoryController.categoryForFatherAndNamecategory(categoryId, condition);
+    		Set<Yng_Item> itemCategory = new HashSet<>();
+    		itemCategory = findOnlyItemsByCategory(category.getCategoryId());
+    		for (Yng_Item yng_Item : itemCategory) {
+				filtered.add(yng_Item);
+			}
+    	}
+    	
+    	if(idTypeUbication==0) {
+    		
+    	}else {
+    		filteredB = filtered;
+			filtered = new HashSet<>();
+    		switch (typeUbication) {
+			case "country":
+				for (Yng_Item yng_Item : filteredB) {
+					if(yng_Item.getYng_Ubication().getYng_Country().getCountryId()==idTypeUbication) {
+						filtered.add(yng_Item);
+					}
+				}
+				break;
+			case "province":
+				for (Yng_Item yng_Item : filteredB) {
+					if(yng_Item.getYng_Ubication().getYng_Province().getProvinceId()==idTypeUbication) {
+						filtered.add(yng_Item);
+					}
+				}
+				
+				break;
+			case "city":
+				for (Yng_Item yng_Item : filteredB) {
+					if(yng_Item.getYng_Ubication().getYng_City().getCityId()==idTypeUbication) {
+						filtered.add(yng_Item);
+					}
+				}
+				break;
+			default:
+				break;
+			}
+    	}
+    	
+    	return filtered;
+    	
 
     }
     @RequestMapping("/property/all")
