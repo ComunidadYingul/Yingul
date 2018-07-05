@@ -44,7 +44,7 @@ public class Yng_Product {
 	private String productWarranty="";
 	@Column(name="productPagoEnvio")
 	private String productPagoEnvio="";
-	private String productPeso="";
+	//private String productPeso="";
 	private String producVolumen="";
 	//private String 
 	//@Column(name="productLength", columnDefinition="default '0'")
@@ -117,13 +117,13 @@ public class Yng_Product {
 		this.productPagoEnvio = productPagoEnvio;
 	}
 
-	public String getProductPeso() {
+	/*public String getProductPeso() {
 		return productPeso;
 	}
 
 	public void setProductPeso(String productPeso) {
 		this.productPeso = productPeso;
-	}
+	}*/
 
 	public String getProducVolumen() {
 		return producVolumen;

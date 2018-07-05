@@ -227,7 +227,7 @@ public class Logistic {
 		   		"</ecom:origen>\r\n" + 
 		   		"<!--Optional:-->\r\n" + 
 		   		"<ecom:pesoNetoDelEnvioEnGr>"
-		   			+ pro.getProductPeso()
+		   			+ pro.getProductWeight()
 		   		+ "</ecom:pesoNetoDelEnvioEnGr>\r\n" + 
 		   		"<ecom:remitente>\r\n" + 
 			   		"<and:apellido>"
