@@ -1335,7 +1335,9 @@ public class SellController {
 		}
 	 @RequestMapping("/delete")
 	    public String  deleteImage() {
-		 s3Services.deleteFile("fedex2.pdf");
+		 String bucketName="jsa-s3-bucketimage/dev";
+		String KeyName="";
+		s3Services.deleteFile(bucketName, KeyName);
 		 return "delete";
 	 }
 }
