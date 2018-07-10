@@ -985,6 +985,8 @@ public class ItemController {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
 		if(yng_User.getUsername().equals(parts[0]) && encoder.matches(parts[1], yng_User.getPassword())){
 			itemTemp.setPrice(item.getPrice());
+			itemTemp.setPriceDiscount(item.getPriceDiscount());
+			itemTemp.setPriceNormal(item.getPriceNormal());
 			itemTemp.setMoney(item.getMoney());
 	    	itemTemp=itemDao.save(itemTemp);
 	    	smtpMailSender.send(yng_User.getEmail(), "El Precio de un Artículo de Yingul ha cambiado", "Estimado "+yng_User.getUsername()+":<br>" + 
