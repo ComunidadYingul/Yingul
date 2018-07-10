@@ -1,6 +1,10 @@
 package com.valework.yingul.controller;
 
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -8,6 +12,7 @@ import java.util.Set;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.AmbientDao;
 import com.valework.yingul.dao.AmenitiesDao;
@@ -50,6 +58,7 @@ import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.model.Yng_Ambient;
 import com.valework.yingul.model.Yng_BranchAndreani;
 import com.valework.yingul.model.Yng_Category;
+import com.valework.yingul.model.Yng_Country;
 import com.valework.yingul.model.Yng_Favorite;
 import com.valework.yingul.model.Yng_FindMotorized;
 import com.valework.yingul.model.Yng_Item;
@@ -72,6 +81,7 @@ import com.valework.yingul.model.Yng_ServiceProvince;
 import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
+import com.valework.yingul.model.Yng_YingulRequest;
 import com.valework.yingul.service.ItemCategoryService;
 import com.valework.yingul.service.ItemImageService;
 import com.valework.yingul.service.ItemService;
@@ -886,4 +896,108 @@ public class ItemController {
 	public void deleteStudent(@PathVariable long id) {
     	serviceProvinceDao.delete(id);
 	}
+    
+    @RequestMapping(value = "/updateName", method = RequestMethod.POST)
+	@ResponseBody
+	public String updateName(@Valid @RequestBody Yng_Item item,@RequestHeader("Authorization") String authorization) throws MessagingException, IOException {	
+    	String token =new String(org.apache.commons.codec.binary.Base64.decodeBase64(authorization));
+		String[] parts = token.split(":");
+		Yng_Item itemTemp = itemDao.findByItemId(item.getItemId());
+		Yng_User yng_User= userDao.findByUsername(itemTemp.getUser().getUsername());
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
+		if(yng_User.getUsername().equals(parts[0]) && encoder.matches(parts[1], yng_User.getPassword())){
+			itemTemp.setName(item.getName());
+	    	itemTemp=itemDao.save(itemTemp);
+	    	smtpMailSender.send(yng_User.getEmail(), "El Título de un Artículo de Yingul ha cambiado", "Estimado "+yng_User.getUsername()+":<br>" + 
+        			"<br>" + 
+        			"Su Título de un Artículo de Yingul ha cambiado recientemente.<br>" + 
+        			"Puede ver sus modificacione en: www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
+        			"<br>" + 
+        			"El equipo de Yingul<br>" + 
+        			"<br>" + 
+        			"Copyright 2018 Yingul S.R.L. All rights reserved.");
+	    	return "save";				
+		}else {
+			return "prohibited";
+		}
+    }
+    @RequestMapping(value = "/updateDescription", method = RequestMethod.POST)
+	@ResponseBody
+	public String updateDescription(@Valid @RequestBody Yng_Item item,@RequestHeader("Authorization") String authorization) throws MessagingException, IOException {	
+    	String token =new String(org.apache.commons.codec.binary.Base64.decodeBase64(authorization));
+		String[] parts = token.split(":");
+		Yng_Item itemTemp = itemDao.findByItemId(item.getItemId());
+		Yng_User yng_User= userDao.findByUsername(itemTemp.getUser().getUsername());
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
+		if(yng_User.getUsername().equals(parts[0]) && encoder.matches(parts[1], yng_User.getPassword())){
+			itemTemp.setDescription(item.getDescription());
+	    	itemTemp=itemDao.save(itemTemp);
+	    	smtpMailSender.send(yng_User.getEmail(), "La Descripción de un Artículo de Yingul ha cambiado", "Estimado "+yng_User.getUsername()+":<br>" + 
+        			"<br>" + 
+        			"Su Descripción de un Artículo de Yingul ha cambiado recientemente.<br>" + 
+        			"Puede ver sus modificacione en: www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
+        			"<br>" + 
+        			"El equipo de Yingul<br>" + 
+        			"<br>" + 
+        			"Copyright 2018 Yingul S.R.L. All rights reserved.");
+	    	return "save";				
+		}else {
+			return "prohibited";
+		}
+    }
+    @RequestMapping(value = "/updateQuantity", method = RequestMethod.POST)
+	@ResponseBody
+	public String updateQuantity(@Valid @RequestBody Yng_Item item,@RequestHeader("Authorization") String authorization) throws MessagingException, IOException {	
+    	String token =new String(org.apache.commons.codec.binary.Base64.decodeBase64(authorization));
+		String[] parts = token.split(":");
+		Yng_Item itemTemp = itemDao.findByItemId(item.getItemId());
+		Yng_User yng_User= userDao.findByUsername(itemTemp.getUser().getUsername());
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
+		if(yng_User.getUsername().equals(parts[0]) && encoder.matches(parts[1], yng_User.getPassword())){
+			itemTemp.setQuantity(item.getQuantity());
+			if(itemTemp.getQuantity()==0) {
+				itemTemp.setEnabled(false);
+			}
+			if(itemTemp.getQuantity()>0) {
+				itemTemp.setEnabled(true);
+			}
+	    	itemTemp=itemDao.save(itemTemp);
+	    	smtpMailSender.send(yng_User.getEmail(), "La Cantidad en Stock de un Artículo de Yingul ha cambiado", "Estimado "+yng_User.getUsername()+":<br>" + 
+        			"<br>" + 
+        			"Su Cantidad en Stock de un Artículo de Yingul ha cambiado recientemente.<br>" + 
+        			"Puede ver sus modificacione en: www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
+        			"<br>" + 
+        			"El equipo de Yingul<br>" + 
+        			"<br>" + 
+        			"Copyright 2018 Yingul S.R.L. All rights reserved.");
+	    	return "save";				
+		}else {
+			return "prohibited";
+		}
+    }
+    @RequestMapping(value = "/updatePrice", method = RequestMethod.POST)
+	@ResponseBody
+	public String updatePrice(@Valid @RequestBody Yng_Item item,@RequestHeader("Authorization") String authorization) throws MessagingException, IOException {	
+    	String token =new String(org.apache.commons.codec.binary.Base64.decodeBase64(authorization));
+		String[] parts = token.split(":");
+		Yng_Item itemTemp = itemDao.findByItemId(item.getItemId());
+		Yng_User yng_User= userDao.findByUsername(itemTemp.getUser().getUsername());
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
+		if(yng_User.getUsername().equals(parts[0]) && encoder.matches(parts[1], yng_User.getPassword())){
+			itemTemp.setPrice(item.getPrice());
+			itemTemp.setMoney(item.getMoney());
+	    	itemTemp=itemDao.save(itemTemp);
+	    	smtpMailSender.send(yng_User.getEmail(), "El Precio de un Artículo de Yingul ha cambiado", "Estimado "+yng_User.getUsername()+":<br>" + 
+        			"<br>" + 
+        			"Su Precio de un Artículo de Yingul ha cambiado recientemente.<br>" + 
+        			"Puede ver sus modificacione en: www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
+        			"<br>" + 
+        			"El equipo de Yingul<br>" + 
+        			"<br>" + 
+        			"Copyright 2018 Yingul S.R.L. All rights reserved.");
+	    	return "save";				
+		}else {
+			return "prohibited";
+		}
+    }
 }

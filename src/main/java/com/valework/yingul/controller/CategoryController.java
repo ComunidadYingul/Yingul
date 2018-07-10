@@ -1,10 +1,9 @@
 package com.valework.yingul.controller;
 
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,11 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.valework.yingul.dao.CategoryDao;
+import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.model.Yng_Category;
 import com.valework.yingul.model.Yng_Item;
+import com.valework.yingul.model.Yng_ItemCategory;
 import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.service.CategoryService;
+
+
 
 @RestController
 @RequestMapping("/category")
@@ -29,6 +32,9 @@ public class CategoryController {
 	private CategoryDao categoryDao;
 	@Autowired
 	private StandardDao standardDao;
+	@Autowired
+	private ItemDao itemDao;
+	@Autowired ItemController itemController;
 	
 	@RequestMapping("/all")
     public List<Yng_Category> findCategoryList() {
@@ -66,9 +72,14 @@ public class CategoryController {
     public String findBestMatch(@PathVariable("name") String name) {
     	List<Yng_Category> categoryList = categoryService.findByName(name);
     	if(categoryList.isEmpty()) {
-    		System.out.println("/"+(int) (Math.random() * 5000));
+    		List<Yng_Item> itemList = itemDao.findByOrderByItemIdAsc();
+    		for (Yng_Item yng_Item : itemList) {
+				if(yng_Item.getName().toLowerCase().replace(" ","").contains(name.toLowerCase().replace(" ",""))){
+					List<Yng_ItemCategory> itemCategoryList = itemController.findCategoriesByItem(yng_Item.getItemId());
+					return "/"+itemCategoryList.get(0).getCategory().getCategoryId();
+				}
+			}
     		return "/"+(int) (Math.random() * 5000);
-    		
     	}else {
     		System.out.println("/"+categoryList.get(0).getCategoryId());
     		return "/"+categoryList.get(0).getCategoryId();

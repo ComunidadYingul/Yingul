@@ -94,6 +94,17 @@ public class ConfirmController {
     	return setConfirm;
     }
     
+    @RequestMapping("/findConfirmForSeller/{username}")
+    public List<Yng_Confirm> findConfirmForSeller(@PathVariable("username") String username) throws ParseException {
+    	Yng_User yng_User = userDao.findByUsername(username);
+    	return confirmDao.findBySellerOrderByConfirmIdDesc(yng_User);	
+    }
+    
+    @RequestMapping("/findConfirmForBuyer/{username}")
+    public List<Yng_Confirm> findConfirmForBuyer(@PathVariable("username") String username) throws ParseException {
+    	Yng_User yng_User = userDao.findByUsername(username);
+    	return confirmDao.findByBuyerOrderByConfirmIdDesc(yng_User);
+    }
     
     @RequestMapping(value = "/updateConfirm", method = RequestMethod.POST)
 	@ResponseBody
