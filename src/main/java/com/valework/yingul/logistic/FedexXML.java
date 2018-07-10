@@ -121,7 +121,7 @@ public class FedexXML {
 				+ "KG"
 				+ "</Units>\r\n" + 
 				"      <Value>"
-				+ getProductByIdItem.getProductPeso()
+				+ getProductByIdItem.getProductWeight()
 				+ "</Value>\r\n" + 
 				"     </Weight>\r\n" + 
 				"     <Dimensions>\r\n" + 
