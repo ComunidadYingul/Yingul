@@ -1333,4 +1333,9 @@ public class SellController {
 			}
 			return "save";
 		}
+	 @RequestMapping("/delete")
+	    public String  deleteImage() {
+		 s3Services.deleteFile("fedex2.pdf");
+		 return "delete";
+	 }
 }
