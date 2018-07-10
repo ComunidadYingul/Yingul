@@ -10,5 +10,7 @@ public interface CategoryDao extends CrudRepository<Yng_Category, Long>{
 	List<Yng_Category> findByOrderByNameAsc();
 	List<Yng_Category> findByItemTypeAndLevelOrderByNameAsc(String itemType, int level);
 	List<Yng_Category> findByFatherIdOrderByNameAsc(Long father);
+	List<Yng_Category> findByItemTypeAndNameOrderByNameAsc(String itemType, String name);
+	Yng_Category findByFatherIdAndNameOrderByNameAsc(Long fatherId, String name);
 }
 

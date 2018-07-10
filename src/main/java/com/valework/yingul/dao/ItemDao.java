@@ -8,9 +8,12 @@ public interface ItemDao extends CrudRepository<Yng_Item, Long> {
 	Yng_Item findByItemId(Long id);
 	//List<Yng_Item> findAll();
 	List<Yng_Item> findByOrderByItemIdDesc();
+	List<Yng_Item> findByOrderByItemIdAsc();
 	List<Yng_Item> findByIsOverOrderByItemIdDesc(boolean sw);
 	List<Yng_Item> findByIsOverOrderByItemIdAsc(boolean sw);
 	List<Yng_Item> findByIsOverAndTypeOrderByItemIdDesc(boolean over, String type);
 	List<Yng_Item> findByIsOverAndTypeOrderByItemIdAsc(boolean over, String type);
+	List<Yng_Item> findByTypeOrderByItemIdDesc(String type);
+	List<Yng_Item> findByTypeOrderByItemIdAsc(String type);
 	
 }
