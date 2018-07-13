@@ -45,15 +45,20 @@ public class StoreController {
 		Yng_Store storeTemp = store;
 		//para el video de youtube
 		if(store.getVideo()!="" && store.getVideo()!=null) {
-		if(store.getVideo().contains("embed")){}
-		else {
-			//https://youtu.be/zabDFISMtJI
-			if(store.getVideo().contains("https://youtu.be/")) {
-				storeTemp.setVideo(store.getVideo().replace("https://youtu.be/", "https://www.youtube.com/embed/"));
+			if(store.getVideo().contains("youtu")&&store.getVideo().contains("https://")) {
+				if(store.getVideo().contains("embed")){}
+				else {
+					//https://youtu.be/zabDFISMtJI
+					if(store.getVideo().contains("https://youtu.be/")) {
+						storeTemp.setVideo(store.getVideo().replace("https://youtu.be/", "https://www.youtube.com/embed/"));
+					}else {
+						storeTemp.setVideo("https://www.youtube.com/embed/"+store.getVideo().substring(store.getVideo().indexOf("=")+1));
+					}
+				}
 			}else {
-				storeTemp.setVideo("https://www.youtube.com/embed/"+store.getVideo().substring(store.getVideo().indexOf("=")+1));
+				store.setVideo(null);
 			}
-		}}
+		}
 		//fin de video de youtube
 		storeTemp.setName(storeTemp.getName().replace(" ", ""));
 		Yng_User userTemp =userDao.findByUsername(storeTemp.getUser().getUsername());

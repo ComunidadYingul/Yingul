@@ -1,6 +1,7 @@
 package com.valework.yingul.service.UserServiceImpl;
 
 import java.io.ByteArrayInputStream;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -109,6 +110,32 @@ public class S3ServicesImpl implements S3Services {
             logger.info("Error Message: " + ace.getMessage());
         }
 		
+	}
+	@Override
+	public void deleteFile(String bucketName,String KeyName) {
+		// TODO Auto-generated method stub
+		try {
+			//s3client.deleteBucket("img11457.webp");
+			//DeleteBucketRequest deleteBucketRequest = new DeleteBucketRequest(bucketName+"/image");
+			DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(bucketName+"/image", KeyName);
+			//delete()BucketRequest.set
+			s3client.deleteObject(deleteObjectRequest);//(deleteBucketRequest );
+			//s3client.putObject(bucketName+"/image", nombre+"."+extension, fis, metadata);
+	        //s3client.putObject(new PutObjectRequest(bucketName+"/image", nombre, fis));
+	        
+	        logger.info(KeyName+"  =================== Delete File - Done! =====================");
+	        
+		} catch (AmazonServiceException ase) {
+			logger.info("Caught an AmazonServiceException from PUT requests, rejected reasons:");
+			logger.info("Error Message:    " + ase.getMessage());
+			logger.info("HTTP Status Code: " + ase.getStatusCode());
+			logger.info("AWS Error Code:   " + ase.getErrorCode());
+			logger.info("Error Type:       " + ase.getErrorType());
+			logger.info("Request ID:       " + ase.getRequestId());
+        } catch (AmazonClientException ace) {
+            logger.info("Caught an AmazonClientException: ");
+            logger.info("Error Message: " + ace.getMessage());
+        }
 	}
 
 

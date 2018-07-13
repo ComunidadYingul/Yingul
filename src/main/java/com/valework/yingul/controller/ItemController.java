@@ -1,6 +1,10 @@
 package com.valework.yingul.controller;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,9 +13,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+
+import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +48,7 @@ import com.valework.yingul.dao.EquipmentDao;
 import com.valework.yingul.dao.ExteriorDao;
 import com.valework.yingul.dao.FindMotorizedDao;
 import com.valework.yingul.dao.ItemDao;
+import com.valework.yingul.dao.ItemImageDao;
 import com.valework.yingul.dao.MotorizedConfortDao;
 import com.valework.yingul.dao.MotorizedDao;
 import com.valework.yingul.dao.MotorizedEquipmentDao;
@@ -90,6 +103,7 @@ import com.valework.yingul.service.PersonService;
 import com.valework.yingul.service.ProductService;
 import com.valework.yingul.service.PropertyService;
 import com.valework.yingul.service.QueryService;
+import com.valework.yingul.service.S3Services;
 import com.valework.yingul.service.ServiceProvinceService;
 import com.valework.yingul.service.ServiceService;
 import com.valework.yingul.service.UserServiceImpl.ServiceProvinceServiceImp;
@@ -191,6 +205,13 @@ public class ItemController {
 	BranchAndreaniDao branchAndreaniDao;
 	@Autowired
 	CategoryController categoryController;
+	@Autowired
+	S3Services s3Services;
+	@Autowired 
+	ItemImageDao itemImageDao;
+	
+	@Value("${jsa.s3.bucket}")
+	private String bucketName;
 	
 	@RequestMapping("/itemType/{itemId}")
     public String getItemTypeById(@PathVariable("itemId") Long itemId) {
@@ -1002,4 +1023,129 @@ public class ItemController {
 			return "prohibited";
 		}
     }
+    @RequestMapping(value = "/updateImages", method = RequestMethod.POST)
+	@ResponseBody
+	public String updateImages(@Valid @RequestBody Yng_Item item,@RequestHeader("Authorization") String authorization) throws MessagingException, IOException {	
+    	String token =new String(org.apache.commons.codec.binary.Base64.decodeBase64(authorization));
+		String[] parts = token.split(":");
+		Yng_Item itemTemp = itemDao.findByItemId(item.getItemId());
+		Yng_User yng_User= userDao.findByUsername(itemTemp.getUser().getUsername());
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
+		if(yng_User.getUsername().equals(parts[0]) && encoder.matches(parts[1], yng_User.getPassword())){
+			/*************para reemplazar la imagen principal**************/
+			String image=item.getPrincipalImage();
+			String extension="jpeg";
+			String nombre="principal"+itemTemp.getItemId();
+			deleteImage(nombre+"."+extension);
+			
+			byte[] bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
+			bI=convertImage(bI);
+			s3Services.uploadFile(nombre,extension, bI);
+			nombre=nombre+"."+extension;   
+			itemTemp.setPrincipalImage(nombre);
+			/***************************************************************/
+			/********************para reemplzar la otras imagenes*********************************/
+			List<Yng_ItemImage> imagelist=findImageByItem(itemTemp.getItemId());
+			for (Yng_ItemImage yng_ItemImage : imagelist) {
+				deleteImage(yng_ItemImage.getImage());
+				itemImageDao.delete(yng_ItemImage);
+			}
+			
+			Set<Yng_ItemImage> imageListUp = item.getItemImage();
+			int k=0;
+			for (Yng_ItemImage st : imageListUp) {
+	        	k++;
+	        	image=st.getImage();
+	    		st.setImage("");
+	    		extension="jpeg";
+	    		nombre="img"+k+itemTemp.getItemId();
+	    		bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
+	    		bI=convertImage(bI);
+	    		s3Services.uploadFile(nombre,extension, bI);
+	    		nombre=nombre+"."+extension;   
+	    		st.setImage(nombre);
+	    		st.setItem(itemTemp);	
+	        	itemImageDao.save(st);	    
+			}
+			/*************************************************************************************/
+			itemTemp=itemDao.save(itemTemp);
+	    	smtpMailSender.send(yng_User.getEmail(), "La(s) imagen(es) de un Artículo de Yingul ha cambiado", "Estimado "+yng_User.getUsername()+":<br>" + 
+        			"<br>" + 
+        			"Su(s) imagen(es) de un Artículo de Yingul ha cambiado recientemente.<br>" + 
+        			"Puede ver sus modificacione en: www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
+        			"<br>" + 
+        			"El equipo de Yingul<br>" + 
+        			"<br>" + 
+        			"Copyright 2018 Yingul S.R.L. All rights reserved.");
+	    	return "save";				
+		}else {
+			return "prohibited";
+		}
+    }
+    public String  deleteImage(String nombre) {
+		String KeyName="";
+		s3Services.deleteFile(bucketName+"/image", nombre);
+		 return "delete";
+	 }
+    public byte[] convertImage(byte[] inputImage) throws IOException {
+    	int weight =inputImage.length/1024;
+    	if(weight>=0 && weight<20) {
+			return inputImage;
+		}
+    	
+    	InputStream is = new ByteArrayInputStream(inputImage);
+		// create a BufferedImage as the result of decoding the supplied InputStream
+		BufferedImage image = ImageIO.read(is);
+		image = Scalr.resize(image,  Scalr.Method.SPEED, Scalr.Mode.FIT_TO_WIDTH,500, 500, Scalr.OP_ANTIALIAS);
+		
+		System.out.println(image.getHeight()+": "+image.getWidth());
+		
+		ByteArrayOutputStream compressed = new ByteArrayOutputStream();
+		ImageOutputStream outputStream = ImageIO.createImageOutputStream(compressed);
+
+		// NOTE: The rest of the code is just a cleaned up version of your code
+
+		// Obtain writer for JPEG format
+		ImageWriter jpgWriter = ImageIO.getImageWritersByFormatName("jpeg").next();
+
+		// Configure JPEG compression: 70% quality
+		ImageWriteParam jpgWriteParam = jpgWriter.getDefaultWriteParam();
+		jpgWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+		System.out.println("peso inicial"+inputImage.length/1024);
+
+		if(weight>=20 && weight<30) {
+			jpgWriteParam.setCompressionQuality(0.5f);
+		}
+		if(weight>=30 && weight<40) {
+			jpgWriteParam.setCompressionQuality(0.6f);
+		}
+		if(weight>=40 && weight<60) {
+			jpgWriteParam.setCompressionQuality(0.7f);
+		}
+		if(weight>=60 && weight<120) {
+			jpgWriteParam.setCompressionQuality(0.7f);
+		}
+		if(weight>=120 && weight<180) {
+			jpgWriteParam.setCompressionQuality(0.6f);
+		}
+		if(weight>=180 && weight<540) {
+			jpgWriteParam.setCompressionQuality(0.4f);
+		}
+		if(weight>=540) {
+			jpgWriteParam.setCompressionQuality(0.3f);
+		}
+		// Set your in-memory stream as the output
+		jpgWriter.setOutput(outputStream);
+		// Write image as JPEG w/configured settings to the in-memory stream
+		// (the IIOImage is just an aggregator object, allowing you to associate
+		// thumbnails and metadata to the image, it "does" nothing)
+		jpgWriter.write(null, new IIOImage(image, null, null), jpgWriteParam);
+		// Dispose the writer to free resources
+		jpgWriter.dispose();
+		// Get data for further processing...
+		byte[] jpegData = compressed.toByteArray();
+		System.out.println("peso final"+jpegData.length/1024);
+		return jpegData;
+    }
+    
 }
