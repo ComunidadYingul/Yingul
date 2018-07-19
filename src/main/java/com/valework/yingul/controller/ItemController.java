@@ -932,7 +932,7 @@ public class ItemController {
 	    	smtpMailSender.send(yng_User.getEmail(), "El Título de un Artículo de Yingul ha cambiado", "Estimado "+yng_User.getUsername()+":<br>" + 
         			"<br>" + 
         			"Su Título de un Artículo de Yingul ha cambiado recientemente.<br>" + 
-        			"Puede ver sus modificacione en: www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
+        			"Puede ver sus modificacione en: http://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
         			"<br>" + 
         			"El equipo de Yingul<br>" + 
         			"<br>" + 
@@ -956,7 +956,7 @@ public class ItemController {
 	    	smtpMailSender.send(yng_User.getEmail(), "La Descripción de un Artículo de Yingul ha cambiado", "Estimado "+yng_User.getUsername()+":<br>" + 
         			"<br>" + 
         			"Su Descripción de un Artículo de Yingul ha cambiado recientemente.<br>" + 
-        			"Puede ver sus modificacione en: www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
+        			"Puede ver sus modificacione en: http://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
         			"<br>" + 
         			"El equipo de Yingul<br>" + 
         			"<br>" + 
@@ -986,7 +986,7 @@ public class ItemController {
 	    	smtpMailSender.send(yng_User.getEmail(), "La Cantidad en Stock de un Artículo de Yingul ha cambiado", "Estimado "+yng_User.getUsername()+":<br>" + 
         			"<br>" + 
         			"Su Cantidad en Stock de un Artículo de Yingul ha cambiado recientemente.<br>" + 
-        			"Puede ver sus modificacione en: www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
+        			"Puede ver sus modificacione en: http://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
         			"<br>" + 
         			"El equipo de Yingul<br>" + 
         			"<br>" + 
@@ -1013,7 +1013,7 @@ public class ItemController {
 	    	smtpMailSender.send(yng_User.getEmail(), "El Precio de un Artículo de Yingul ha cambiado", "Estimado "+yng_User.getUsername()+":<br>" + 
         			"<br>" + 
         			"Su Precio de un Artículo de Yingul ha cambiado recientemente.<br>" + 
-        			"Puede ver sus modificacione en: www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
+        			"Puede ver sus modificacione en: http://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
         			"<br>" + 
         			"El equipo de Yingul<br>" + 
         			"<br>" + 
@@ -1072,7 +1072,7 @@ public class ItemController {
 	    	smtpMailSender.send(yng_User.getEmail(), "La(s) imagen(es) de un Artículo de Yingul ha cambiado", "Estimado "+yng_User.getUsername()+":<br>" + 
         			"<br>" + 
         			"Su(s) imagen(es) de un Artículo de Yingul ha cambiado recientemente.<br>" + 
-        			"Puede ver sus modificacione en: www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
+        			"Puede ver sus modificacione en: http://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
         			"<br>" + 
         			"El equipo de Yingul<br>" + 
         			"<br>" + 

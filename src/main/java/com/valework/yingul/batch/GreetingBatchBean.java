@@ -7,15 +7,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 import org.apache.http.client.ClientProtocolException;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.valework.yingul.PayUFunds;
+import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.AccountDao;
 import com.valework.yingul.dao.CommissionDao;
 import com.valework.yingul.dao.ConfirmDao;
@@ -29,11 +32,9 @@ import com.valework.yingul.model.Yng_Buy;
 import com.valework.yingul.model.Yng_Commission;
 import com.valework.yingul.model.Yng_Confirm;
 import com.valework.yingul.model.Yng_Item;
-import com.valework.yingul.model.Yng_Motorized;
 import com.valework.yingul.model.Yng_Payment;
 import com.valework.yingul.model.Yng_Person;
-import com.valework.yingul.model.Yng_Property;
-import com.valework.yingul.model.Yng_Token;
+import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_Transaction;
 import com.valework.yingul.model.Yng_TransactionDetail;
 import com.valework.yingul.service.MotorizedService;
@@ -42,7 +43,8 @@ import com.valework.yingul.service.PropertyService;
 
 @Component
 public class GreetingBatchBean {
-	
+	@Autowired
+	private SmtpMailSender smtpMailSender;
 	@Autowired
 	ConfirmDao confirmDao;
 	@Autowired
@@ -318,7 +320,7 @@ public class GreetingBatchBean {
     	}
 	}
 	//@Scheduled(cron = "0,59 * * * * *")//para cada 30 segundos
-	@Scheduled(cron = "0 0 5 * * *")//cada dia a las 5 de la mañana
+	@Scheduled(cron = "0 0 4 * * *")//cada dia a las 5 de la mañana
 	public void cronJob1() throws ClientProtocolException, IOException, Exception {
 		System.out.println("inicio de verificacion de cashpaymetn");
 		List<Yng_Payment> confirmCashPayment= paymentDao.findByTypeAndStatusAndBuyStatus("CASH","PENDING","PENDING");
@@ -357,6 +359,72 @@ public class GreetingBatchBean {
 			
 		}
 	}
+	//@Scheduled(cron = "0,59 * * * * *")//para cada 30 segundos
+	@Scheduled(cron = "0 0 5 * * *")//cada dia a las 6 de la mañana
+	public void deliveryConfirmation() throws MessagingException{
+		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("pending");
+		for (Yng_Confirm s : listConfirm) {
+			Yng_Confirm confirmTemp=s;
+	    	if(confirmTemp.getBuy().getShipping().getTypeShipping().equals("branch")) {
+	    		String status="Envío no ingresado";
+	    		Yng_Standard codeDeliveryConfirmAndreani = standardDao.findByKey("codeDeliveryConfirmAndreani");
+	    		if(status.equals(codeDeliveryConfirmAndreani.getValue())) {
+	    			confirmTemp.setBuyerConfirm(false);
+	        		confirmTemp.setSellerConfirm(true);
+	        		Date date = new Date();
+	            	DateFormat hourdateFormat = new SimpleDateFormat("dd");
+	            	DateFormat hourdateFormat1 = new SimpleDateFormat("MM");
+	            	DateFormat hourdateFormat2 = new SimpleDateFormat("yyyy");
+	            	DateTime now = new DateTime( date );
+	            	confirmTemp.setDaySellerConfirm(Integer.parseInt(hourdateFormat.format(date)));
+	            	confirmTemp.setMonthSellerConfirm(Integer.parseInt(hourdateFormat1.format(date)));
+	            	confirmTemp.setYearSellerConfirm(Integer.parseInt(hourdateFormat2.format(date)));
+	            	confirmTemp.setStatus("delivered");
+	            	confirmDao.save(confirmTemp);
+	            	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(), "CONFIRMACIÓN DE ENTREGA EXITOSA","Se realizo la confirmacion de la entrega del producto en una sucursal andreani:  "+confirmTemp.getBuy().getYng_item().getName() +"  Descripción : "+confirmTemp.getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +confirmTemp.getBuy().getYng_item().getPrice()
+	            			+ "<br/>--Despues de que tu comprador recoja el producto tendra 10 dias vigentes para realizar reclamos acerca del producto.");
+	            	DateTime endClaim = now.plusDays(4);
+	            	smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "CONFIRMACIÓN DE ENTREGA EXITOSA", "Tu vendedor realizo la entrega del producto : "+confirmTemp.getBuy().getQuantity()+" "+confirmTemp.getBuy().getYng_item().getName()+" a:"+confirmTemp.getBuy().getCost()+" en la sucursal andreani"
+	    					+ "<br/>--Puedes recoger el producto de la sucursal Andreani desde "+Integer.parseInt(hourdateFormat.format(endClaim.toDate()))+"/"+Integer.parseInt(hourdateFormat1.format(endClaim.toDate()))+"/"+Integer.parseInt(hourdateFormat2.format(endClaim.toDate())));
+	    		}		
+	    	}
+		}
+	}
 	
-	
+	@Scheduled(cron = "0 0 7 * * *")//cada dia a las 6 de la mañana
+	public void whithdrawalConfirmation() throws MessagingException{
+		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("delivered");
+		for (Yng_Confirm s : listConfirm) {
+			Yng_Confirm confirmTemp=s;
+			String status="Envío no ingresado";
+			Yng_Standard codeWhithdrawalConfirmAndreani = standardDao.findByKey("codeWhithdrawalConfirmAndreani");
+	    	if(status.equals(codeWhithdrawalConfirmAndreani.getValue())) {
+	        		confirmTemp.setBuyerConfirm(true);
+	        		confirmTemp.setSellerConfirm(true);
+	        		Date date = new Date();
+	            	DateFormat hourdateFormat = new SimpleDateFormat("dd");
+	            	DateFormat hourdateFormat1 = new SimpleDateFormat("MM");
+	            	DateFormat hourdateFormat2 = new SimpleDateFormat("yyyy");
+	            	DateTime now = new DateTime( date );
+	            	Yng_Standard daysForClaims = standardDao.findByKey("daysForClaims");
+	            	DateTime endClaim = now.plusDays( Integer.parseInt(daysForClaims.getValue()) );
+	            	
+	            	confirmTemp.setDayBuyerConfirm(Integer.parseInt(hourdateFormat.format(date)));
+	            	confirmTemp.setMonthBuyerConfirm(Integer.parseInt(hourdateFormat1.format(date)));
+	            	confirmTemp.setYearBuyerConfirm(Integer.parseInt(hourdateFormat2.format(date)));
+	            	confirmTemp.setDayInitClaim(Integer.parseInt(hourdateFormat.format(date)));
+	            	confirmTemp.setMonthInitClaim(Integer.parseInt(hourdateFormat1.format(date)));
+	            	confirmTemp.setYearInitiClaim(Integer.parseInt(hourdateFormat2.format(date)));
+	            	confirmTemp.setDayEndClaim(Integer.parseInt(hourdateFormat.format(endClaim.toDate())));
+	            	confirmTemp.setMonthEndClaim(Integer.parseInt(hourdateFormat1.format(endClaim.toDate())));
+	            	confirmTemp.setYearEndClaim(Integer.parseInt(hourdateFormat2.format(endClaim.toDate())));
+	            	confirmTemp.setStatus("confirm");
+	            	confirmDao.save(confirmTemp);
+	            	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(), "CONFIRMACIÓN DE RECEPCIÓN EXITOSA","Tu comprador realizo la confirmacion de la recepción del producto :  "+confirmTemp.getBuy().getYng_item().getName() +"  Descripción : "+confirmTemp.getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +confirmTemp.getBuy().getYng_item().getPrice()+" de la suscursal Andreani"
+	            			+ "<br/>--Si tu comprador no tiene ninguna observacion del producto en "+daysForClaims.getValue()+" días podras recoger tu dinero ingresando a : http://www.yingul.com/frontYingulPay");
+	    			smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "CONFIRMACIÓN DE RECEPCIÓN EXITOSA", "Se realizo la confirmacion de la recepción del producto : "+confirmTemp.getBuy().getQuantity()+" "+confirmTemp.getBuy().getYng_item().getName()+" a:"+confirmTemp.getBuy().getCost()+" de la sucursal Andreani"
+	    					+ "<br/> --Tiene "+daysForClaims.getValue()+" días de garantia con Yingul para realizar alguna observación ingrese a: http://www.yingul.com/userFront/claims despues de ese lapso no se aceptaran reclamos.");
+	    	}
+		}
+	}
 }

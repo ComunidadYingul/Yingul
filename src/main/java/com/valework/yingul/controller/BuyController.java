@@ -6,16 +6,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,13 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.valework.yingul.PayUFunds;
-
 import org.xml.sax.InputSource;
-
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.BranchAndreaniDao;
 import com.valework.yingul.dao.BranchDao;
@@ -44,8 +36,6 @@ import com.valework.yingul.dao.EnvioDao;
 import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.ListCreditCardDao;
 import com.valework.yingul.dao.PaymentDao;
-
-//import com.valework.yingul.dao.PersonDao;
 import com.valework.yingul.dao.ProvinceDao;
 import com.valework.yingul.dao.QuoteDao;
 import com.valework.yingul.dao.RequestBodyDao;
@@ -58,7 +48,6 @@ import com.valework.yingul.dao.ShippingDao;
 import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
-import com.valework.yingul.logistic.AndreaniXML;
 import com.valework.yingul.logistic.FedexResponce;
 import com.valework.yingul.logistic.FedexXML;
 import com.valework.yingul.logistic.GetStateSend;
@@ -75,16 +64,9 @@ import com.valework.yingul.model.Yng_Country;
 import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_ListCreditCard;
 import com.valework.yingul.model.Yng_Payment;
-
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Product;
 import com.valework.yingul.model.Yng_Quote;
-import com.valework.yingul.model.Yng_ServiceProvince;
-//import com.valework.yingul.model.Yng_Request;
-//import com.valework.yingul.model.Yng_RequestBody;
-//import com.valework.yingul.model.Yng_Response;
-//import com.valework.yingul.model.Yng_ResponseBody;
-//import com.valework.yingul.model.Yng_ResponseHeader;
 import com.valework.yingul.model.Yng_Shipment;
 import com.valework.yingul.model.Yng_Shipping;
 import com.valework.yingul.model.Yng_Standard;
@@ -94,9 +76,7 @@ import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.CardService;
 import com.valework.yingul.service.ProductService;
 import com.valework.yingul.service.StandardService;
-//import com.valework.yingul.VisaFunds;
 import com.valework.yingul.util.VisaAPIClient;
-//import andreaniapis.*;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.json.JSONObject;
 
@@ -492,24 +472,22 @@ public class BuyController {
 						+ "<br/> - No recibas el producto ni des el código si no estas conforme con el producto no aceptaremos reclamos posteriores"
 						+ "<br/> - Por tu seguridad no recibas el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
 						+ "<br/> - Despues de recibir el producto tienes 10 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero");
-			}
-			
+			}	
 		}
 		else {
 			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","Se realizo la venta del producto :  "+buy.getYng_item().getName() +"  Descripción : "+buy.getYng_item().getDescription()+ "  " +"  Precio: " +buy.getYng_item().getPrice()+"   Costo del envio : " +buy.getShipping().getYng_Quote().getRate()+  
-					"      --Imprimir la etiqueta de Andreani "
-					+ "--Preparar y embalar el paquete junto a la etiqueta " + 
-					"      --Preparar y embalar el paquete junto a la etiqueta   " + 
-					"      --Déjalo en la sucursal Andreani más cercana ." + 
-					"           "+buy.getShipping().getYng_Shipment().getTicket()
-					+ "   Al Momento de entregar el producto en la sucursal Andreani ingresa a: http://www.yingul.com/confirmws/"+confirm.getConfirmId()+" donde firmaras la entrega del producto en buenas condiciones"
-					+ "Despues de entregar el producto Andreani tiene 2 dias para entregarlo a tu comprador "
-					+ "Y tu comprador tiene 10 dias para observar sus condiciones, posterior a eso te daremos mas instrucciones para recoger tu dinero");
+					"<br/>--Imprimir la etiqueta de Andreani."+
+					"<br/>--Preparar y embalar el paquete junto a la etiqueta." + 
+					"<br/>--Preparar y embalar el paquete junto a la etiqueta." + 
+					"<br/>--Déjalo en la sucursal Andreani más cercana." + 
+					"<br/>"+buy.getShipping().getYng_Shipment().getTicket() +
+					"<br/>Despues de entregar el producto Andreani tiene 2 dias para entregarlo a tu comprador."+
+					"<br/>Cuando tu comprador recoja el producto tiene 10 dias para observar sus condiciones, posterior a eso te daremos mas instrucciones para recoger tu dinero");
 			if(buy.getYng_Payment().getType().equals("CASH")) {
-				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getCashPayment().getPaymentMethod()+" nos pondremos en contacto con usted lo mas pronto posible.");
+				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getCashPayment().getPaymentMethod()+" nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani.");
 			}
 			if(buy.getYng_Payment().getType().equals("CARD")) {
-				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible.");
+				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani.");
 			}
 		}
     	return "save";
