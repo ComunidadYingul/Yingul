@@ -183,4 +183,21 @@ public class UbicationController {
         List<Yng_Province> provinceList = provinceDao.findByOrderByNameAsc();
         return provinceList;
     }
+
+	@RequestMapping("/getCitiesByZip/{zip}")
+    public List<Yng_City> getCitiesByZip(@PathVariable("zip") String zip) {
+    	List<Yng_City> cityList = cityDao.findByCodigopostal(zip);
+        return cityList;
+    }
+    @RequestMapping("/getUbicationByCity/{cityId}")
+    public Yng_Ubication getUbicationByCity(@PathVariable("cityId") int cityId) {
+    	Yng_City city = cityDao.findByCityId(cityId);
+    	Yng_Province province = provinceDao.findByProvinceId(city.getYng_Province().getProvinceId());
+    	Yng_Country country = countryDao.findByCountryId(province.getYng_Country().getCountryId());
+    	Yng_Ubication ubication = new Yng_Ubication();
+    	ubication.setYng_City(city);
+    	ubication.setYng_Province(province);
+    	ubication.setYng_Country(country);
+        return ubication;
+    }
 }

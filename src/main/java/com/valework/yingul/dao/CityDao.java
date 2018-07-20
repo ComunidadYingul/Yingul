@@ -9,5 +9,6 @@ public interface CityDao extends CrudRepository<Yng_City, Long>{
 	List<Yng_City> findAll();
 	Yng_City findByCityId(int cityId);
 	List<Yng_City> findByOrderByNameAsc();
+	List<Yng_City> findByCodigopostal(String zip);
 	
 }
