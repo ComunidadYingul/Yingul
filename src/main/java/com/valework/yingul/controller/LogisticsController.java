@@ -61,8 +61,6 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 import java.io.IOException;
-
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -984,7 +982,7 @@ public class LogisticsController {
 		
 
     	 
-    	 StringEntity stringEntity = new StringEntity(body3, "UTF-8");
+    	 /*StringEntity stringEntity = new StringEntity(body3, "UTF-8");
 		
         stringEntity.setChunked(true);
         //***
@@ -1018,9 +1016,46 @@ public class LogisticsController {
             
             }
         }
-        
+        */
         // List<ResultadoConsultarSucursales> sucursal
-        
+    	String strResponse = null;
+    	PropertyObjectHttp objectHttp= new PropertyObjectHttp();
+		
+		String url="https://sucursales.andreani.com/ws?wsdl";
+		objectHttp.setUrl(url);
+		objectHttp.setRequestMethod(objectHttp.POST);
+		String body;
+		AndreaniXML andreaniXML=new AndreaniXML(); 
+		body=body3;
+		objectHttp.setBody(body);
+		http  request=new http();
+		String bb=null;
+		try {
+			bb=request.request(objectHttp);
+			System.out.println("bb:"+bb);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 SAXParserFactory saxParseFactory=SAXParserFactory.newInstance();
+	        SAXParser sAXParser=saxParseFactory.newSAXParser();
+
+	        String numero="";
+	      //  String strResponse = null;
+	     List<ResultadoConsultarSucursales> sucursal = null;
+	        if (bb != null) {
+	            strResponse =bb;
+	            SucursalHandler handlerS=new SucursalHandler();
+	            sAXParser.parse(new InputSource(new StringReader(strResponse)), handlerS);
+	            ArrayList<ResultadoConsultarSucursales> sucursaleses=handlerS.getResultadoSucursales();
+	            sucursal=handlerS.getResultadoSucursales();
+	            for (ResultadoConsultarSucursales versione : sucursaleses) {
+	            	numero=versione.getNumero();
+	                System.out.println("versione.getNumero:"+versione.getNumero());
+	                
+	            
+	            }
+	        }
         System.out.println("strResponse:"+convertiraISO(strResponse));
         return sucursal;
 

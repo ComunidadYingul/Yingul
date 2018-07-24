@@ -32,108 +32,125 @@ public class StoreController {
 	UserDao userDao;
 	@Autowired
 	StoreDao storeDao;
-	@Autowired 
+	@Autowired
 	CategoryDao categoryDao;
 	@Autowired
 	S3Services s3Services;
 	@Autowired
 	private StandardDao standardDao;
-	
+
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	@ResponseBody
-    public String createStorePost(@Valid @RequestBody Yng_Store store) throws MessagingException {	
+	public String createStorePost(@Valid @RequestBody Yng_Store store) throws MessagingException {
 		Yng_Store storeTemp = store;
-		//para el video de youtube
-		if(store.getVideo()!="" && store.getVideo()!=null) {
-		if(store.getVideo().contains("embed")){}
-		else {
-			//https://youtu.be/zabDFISMtJI
-			if(store.getVideo().contains("https://youtu.be/")) {
-				storeTemp.setVideo(store.getVideo().replace("https://youtu.be/", "https://www.youtube.com/embed/"));
-			}else {
-				storeTemp.setVideo("https://www.youtube.com/embed/"+store.getVideo().substring(store.getVideo().indexOf("=")+1));
+		// para el video de youtube
+		if (store.getVideo() != "" && store.getVideo() != null) {
+			if (store.getVideo().contains("youtu") && store.getVideo().contains("https://")) {
+				if (store.getVideo().contains("embed")) {
+				} else {
+					// https://youtu.be/zabDFISMtJI
+					if (store.getVideo().contains("https://youtu.be/")) {
+						storeTemp.setVideo(
+								store.getVideo().replace("https://youtu.be/", "https://www.youtube.com/embed/"));
+					} else {
+						storeTemp.setVideo("https://www.youtube.com/embed/"
+								+ store.getVideo().substring(store.getVideo().indexOf("=") + 1));
+					}
+				}
+			} else {
+				store.setVideo(null);
 			}
-		}}
-		//fin de video de youtube
+		}
+		// fin de video de youtube
 		storeTemp.setName(storeTemp.getName().replace(" ", ""));
-		Yng_User userTemp =userDao.findByUsername(storeTemp.getUser().getUsername());
+		Yng_User userTemp = userDao.findByUsername(storeTemp.getUser().getUsername());
 		storeTemp.setUser(userTemp);
-		if(storeDao.findByUser(userTemp)!=null) {
+		if (storeDao.findByUser(userTemp) != null) {
 			return "Ya tienes una tienda en Yingul Shop";
 		}
-		if(storeDao.findByName(storeTemp.getName())!=null) {
-			int aux=0;
-			while(storeDao.findByName(storeTemp.getName())!=null){
+		if (storeDao.findByName(storeTemp.getName()) != null) {
+			int aux = 0;
+			while (storeDao.findByName(storeTemp.getName()) != null) {
 				aux++;
-				storeTemp.setName(storeTemp.getName()+aux);
+				storeTemp.setName(storeTemp.getName() + aux);
 			}
 		}
-		if(storeTemp.getMainCategory()!=null) {
+		if (storeTemp.getMainCategory() != null) {
 			storeTemp.setMainCategory(categoryDao.findByCategoryId(storeTemp.getMainCategory().getCategoryId()));
-		}else {
+		} else {
 			storeTemp.setMainCategory(null);
 		}
-		//imagen principal
-		String image=storeTemp.getMainImage();
+		// imagen principal
+		String image = storeTemp.getMainImage();
 		storeTemp.setMainImage("");
-		String extension="";
-        String nombre="";
-        byte[] bI;
-		if(image.equals("sin")) {
+		String extension = "";
+		String nombre = "";
+		byte[] bI;
+		if (image.equals("sin")) {
 			storeTemp.setMainImage("nullMain.jpg");
-		}
-		else {
-			extension=image.substring(11,14);
-			if(image.charAt(13)=='e') {
-				extension="jpeg";
+		} else {
+			extension = image.substring(11, 14);
+			if (image.charAt(13) == 'e') {
+				extension = "jpeg";
 			}
-			nombre="main"+storeTemp.getName();
-			bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
-			s3Services.uploadFile("store/"+nombre,extension, bI);
-			nombre=nombre+"."+extension;   
+			nombre = "main" + storeTemp.getName();
+			bI = org.apache.commons.codec.binary.Base64
+					.decodeBase64((image.substring(image.indexOf(",") + 1)).getBytes());
+			s3Services.uploadFile("store/" + nombre, extension, bI);
+			nombre = nombre + "." + extension;
 			storeTemp.setMainImage(nombre);
 		}
-		//banner
-		image=storeTemp.getBannerImage();
+		// banner
+		image = storeTemp.getBannerImage();
 		storeTemp.setBannerImage("");
-		extension="";
-        nombre="";
-		if(image.equals("sin")) {
+		extension = "";
+		nombre = "";
+		if (image.equals("sin")) {
 			storeTemp.setBannerImage("nullBanner.jpg");
-		}
-		else {
-			extension=image.substring(11,14);
-			if(image.charAt(13)=='e') {
-				extension="jpeg";
+		} else {
+			extension = image.substring(11, 14);
+			if (image.charAt(13) == 'e') {
+				extension = "jpeg";
 			}
-			nombre="banner"+storeTemp.getName();
-			bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
-			s3Services.uploadFile("store/"+nombre,extension, bI);
-			nombre=nombre+"."+extension;   
+			nombre = "banner" + storeTemp.getName();
+			bI = org.apache.commons.codec.binary.Base64
+					.decodeBase64((image.substring(image.indexOf(",") + 1)).getBytes());
+			s3Services.uploadFile("store/" + nombre, extension, bI);
+			nombre = nombre + "." + extension;
 			storeTemp.setBannerImage(nombre);
 		}
 		storeDao.save(storeTemp);
 		try {
-			smtpMailSender.send(storeTemp.getUser().getEmail(), "Tienda registrada exitosamente", "Su tienda ya esta registrada compartela y encuentrala en: http://www.yingul.com/tiendaOficial/"+storeTemp.getName());
+			smtpMailSender.send(storeTemp.getUser().getEmail(), "Tienda registrada exitosamente",
+					"Su tienda ya esta registrada compartela y encuentrala en: http://www.yingul.com/tiendaOficial/"+ storeTemp.getName()+
+					"</br> Importante todos los productos que publicaste y publicaras desde ahora se encontraran en tu tienda.");
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        return "save";
-    }
-	
+		return "save";
+	}
+
 	@RequestMapping("/findByName/{nameStore}")
-    public Yng_Store getStoreByName(@PathVariable("nameStore") String nameStore) {
+	public Yng_Store getStoreByName(@PathVariable("nameStore") String nameStore) {
 		Yng_Store store = storeDao.findByName(nameStore);
-		return store;	
-    }
+		return store;
+	}
+
 	@RequestMapping("/all")
-    public List<Yng_Store> getAllStores(@RequestHeader("X-API-KEY") String XAPIKEY) {
-    	Yng_Standard api = standardDao.findByKey("BACKEND_API_KEY");
-    	if(XAPIKEY.equals(api.getValue())) {
-    		return storeDao.findAll();
-    	}else {
-    		return null;
-    	}
-    }
+	public List<Yng_Store> getAllStores(@RequestHeader("X-API-KEY") String XAPIKEY) {
+		Yng_Standard api = standardDao.findByKey("BACKEND_API_KEY");
+		if (XAPIKEY.equals(api.getValue())) {
+			return storeDao.findAll();
+		} else {
+			return null;
+		}
+	}
+
+	@RequestMapping("/findByUsername/{username}")
+	public Yng_Store getStoreByUsername(@PathVariable("username") String username) {
+		Yng_User user = userDao.findByUsername(username);
+		Yng_Store store = storeDao.findByUser(user);
+		return store;
+	}
 }

@@ -1,6 +1,7 @@
 package com.valework.yingul.service.UserServiceImpl;
 
 import java.io.ByteArrayInputStream;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -112,8 +113,6 @@ public class S3ServicesImpl implements S3Services {
         }
 		
 	}
-
-
 	@Override
 	public void deleteFile(String bucketName,String KeyName) {
 		// TODO Auto-generated method stub
@@ -140,6 +139,9 @@ public class S3ServicesImpl implements S3Services {
             logger.info("Error Message: " + ace.getMessage());
         }
 	}
+
+
+
 
 
 	@Override

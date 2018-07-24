@@ -25,8 +25,8 @@ public class SmtpMailSender {
 		//helper.setFrom("daniel@internetvale.com");
 		javaMailSender.send(message);
 
-		/*
-		System.out.println(to+"   subject:   "+subject+"  body: "+ body);
+		
+		/*System.out.println(to+"   subject:   "+subject+"  body: "+ body);
 		 MimeMessage message = javaMailSender.createMimeMessage();
 			MimeMessageHelper helper;
 			try {
