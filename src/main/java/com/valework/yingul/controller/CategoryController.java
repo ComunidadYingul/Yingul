@@ -70,21 +70,15 @@ public class CategoryController {
     }
     @RequestMapping("/bestMatch/{name}")
     public String findBestMatch(@PathVariable("name") String name) {
-    	List<Yng_Category> categoryList = categoryService.findByName(name);
-    	if(categoryList.isEmpty()) {
-    		List<Yng_Item> itemList = itemDao.findByOrderByItemIdAsc();
-    		for (Yng_Item yng_Item : itemList) {
-				if(yng_Item.getName().toLowerCase().replace(" ","").contains(name.toLowerCase().replace(" ",""))){
-					List<Yng_ItemCategory> itemCategoryList = itemController.findCategoriesByItem(yng_Item.getItemId());
-					return "/"+itemCategoryList.get(0).getCategory().getCategoryId();
-				}
+		List<Yng_Item> itemList = itemDao.findByOrderByItemIdAsc();
+		for (Yng_Item yng_Item : itemList) {
+			if(yng_Item.getName().toLowerCase().replace(" ","").contains(name.toLowerCase().replace(" ",""))){
+				List<Yng_ItemCategory> itemCategoryList = itemController.findCategoriesByItem(yng_Item.getItemId());
+				return "/"+itemCategoryList.get(0).getCategory().getCategoryId();
 			}
-    		return "/"+(int) (Math.random() * 5000);
-    	}else {
-    		System.out.println("/"+categoryList.get(0).getCategoryId());
-    		return "/"+categoryList.get(0).getCategoryId();
-        }
-
+		}
+		System.out.println("esta random");
+		return "/"+(int) (Math.random() * 5000);
     }
     @RequestMapping("/getCategory/{categoryId}")
     public Yng_Category findCategoryById(@PathVariable("categoryId") Long categoryId) {
