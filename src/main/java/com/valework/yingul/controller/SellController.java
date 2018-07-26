@@ -1333,4 +1333,11 @@ public class SellController {
 			}
 			return "save";
 		}
+	 @RequestMapping("/delete")
+	    public String  deleteImage() {
+		 String bucketName="jsa-s3-bucketimage/dev";
+		String KeyName="";
+		s3Services.deleteFile(bucketName, KeyName);
+		 return "delete";
+	 }
 }

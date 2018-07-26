@@ -81,7 +81,7 @@ public class LoginController {
         			"<br>" + 
         			"Su contraseña de Yingul ha cambiado recientemente.<br>" + 
         			"Si usted no solicitó el cambio de contraseña, póngase en contacto con el equipo de asistencia al cliente.<br>" + 
-        			"http://www.yingul.com/about/contactUs<br>" + 
+        			"bout/contactUs<br>" + 
         			"<br>" + 
         			"El equipo de Yingul<br>" + 
         			"<br>" + 

@@ -30,7 +30,8 @@ public class SucursalHandler extends DefaultHandler{
                 consultarSucursales.setDescripcion(buffer.toString());
                 break;
             case "Direccion":
-              consultarSucursales.setDireccion(convertiraISO(buffer.toString()));
+            	System.out.println("setDireccion"+buffer.toString());
+              consultarSucursales.setDireccion((buffer.toString()));
                 break;
             case "HoradeTrabajo":
                 consultarSucursales.setHoradeTrabajo(buffer.toString());

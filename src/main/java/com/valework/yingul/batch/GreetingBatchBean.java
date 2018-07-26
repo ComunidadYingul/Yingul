@@ -27,6 +27,7 @@ import com.valework.yingul.dao.PaymentDao;
 import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.TransactionDao;
 import com.valework.yingul.dao.TransactionDetailDao;
+import com.valework.yingul.logistic.GetStateSend;
 import com.valework.yingul.model.Yng_Account;
 import com.valework.yingul.model.Yng_Buy;
 import com.valework.yingul.model.Yng_Commission;
@@ -35,6 +36,7 @@ import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_Payment;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Standard;
+import com.valework.yingul.model.Yng_StateShipping;
 import com.valework.yingul.model.Yng_Transaction;
 import com.valework.yingul.model.Yng_TransactionDetail;
 import com.valework.yingul.service.MotorizedService;
@@ -396,7 +398,22 @@ public class GreetingBatchBean {
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("delivered");
 		for (Yng_Confirm s : listConfirm) {
 			Yng_Confirm confirmTemp=s;
-			String status="Envío no ingresado";
+			//codeConfirmAndreani
+	       	String confirmStateDao=standardDao.findByKey("codeConfirmAndreani").getValue();
+	       	//System.out.println("confirmTemp:"+confirmTemp.toString()+" value:"+);
+	       	Yng_StateShipping stateShipping=new Yng_StateShipping();
+	    	GetStateSend getState = new GetStateSend();
+	    	String confirmState=confirmTemp.getBuy().getShipping().getYng_Shipment().getShipmentCod();
+	    	String stateApi ="";
+	    	try {
+	    		stateShipping=getState.sendState(""+confirmState);
+	    		stateApi=stateShipping.getEstado();
+	    		System.out.println("state:"+stateApi+":"+confirmStateDao);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+			String status=stateApi;
 			Yng_Standard codeWhithdrawalConfirmAndreani = standardDao.findByKey("codeWhithdrawalConfirmAndreani");
 	    	if(status.equals(codeWhithdrawalConfirmAndreani.getValue())) {
 	        		confirmTemp.setBuyerConfirm(true);
