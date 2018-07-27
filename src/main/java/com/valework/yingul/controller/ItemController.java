@@ -1147,5 +1147,31 @@ public class ItemController {
 		System.out.println("peso final"+jpegData.length/1024);
 		return jpegData;
     }
+    @RequestMapping("/listItemByName/{name}/{start}/{end}")
+    public List<Yng_Item> listItemByName(@PathVariable("name") String name,@PathVariable("start") int start,@PathVariable("end") int end, @RequestHeader("X-API-KEY") String XAPIKEY) {
+    	Yng_Standard api = standardDao.findByKey("BACKEND_API_KEY");
+    	if(XAPIKEY.equals(api.getValue())) {
+    		List<Yng_Item> itemListForReturn = new ArrayList<Yng_Item>();
+    		List<Yng_Item> itemList = itemDao.findByOrderByItemIdDesc();
+    		for (Yng_Item yng_Item : itemList) {
+    			if(yng_Item.getName().toLowerCase().replace(" ","").contains(name.toLowerCase().replace(" ",""))){
+    				itemListForReturn.add(yng_Item);
+    			}
+    		}
+    		
+    		if(itemListForReturn.size()>=start) {
+    			System.out.println("si "+end+"es mayor que"+itemListForReturn.size());
+    			if(end>=itemListForReturn.size()) {
+    				itemListForReturn=itemListForReturn.subList(start, itemListForReturn.size());	
+    			}else{
+    				itemListForReturn=itemListForReturn.subList(start, end);	
+    			}
+    		}
+    		return itemListForReturn;	
+    	}else {
+    		return null;
+    	}
+        
+    }
     
 }
