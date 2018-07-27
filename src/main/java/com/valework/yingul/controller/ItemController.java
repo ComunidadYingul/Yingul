@@ -1174,4 +1174,23 @@ public class ItemController {
         
     }
     
+    @RequestMapping("/getQuantityItemByName/{name}")
+    public String getQuantityItemByName(@PathVariable("name") String name, @RequestHeader("X-API-KEY") String XAPIKEY) {
+    	Yng_Standard api = standardDao.findByKey("BACKEND_API_KEY");
+    	if(XAPIKEY.equals(api.getValue())) {
+    		List<Yng_Item> itemListForReturn = new ArrayList<Yng_Item>();
+    		List<Yng_Item> itemList = itemDao.findByOrderByItemIdDesc();
+    		for (Yng_Item yng_Item : itemList) {
+    			if(yng_Item.getName().toLowerCase().replace(" ","").contains(name.toLowerCase().replace(" ",""))){
+    				itemListForReturn.add(yng_Item);
+    			}
+    		}
+    		
+    		return itemListForReturn.size()+"";
+    	}else {
+    		return null;
+    	}
+        
+    }
+    
 }
