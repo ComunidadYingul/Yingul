@@ -8,8 +8,10 @@ import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -55,6 +57,7 @@ import com.valework.yingul.dao.MotorizedEquipmentDao;
 import com.valework.yingul.dao.MotorizedExteriorDao;
 import com.valework.yingul.dao.MotorizedSecurityDao;
 import com.valework.yingul.dao.MotorizedSoundDao;
+import com.valework.yingul.dao.OmittedWordDao;
 import com.valework.yingul.dao.ProductDao;
 import com.valework.yingul.dao.PropertyAmbientDao;
 import com.valework.yingul.dao.PropertyAmenitiesDao;
@@ -83,6 +86,7 @@ import com.valework.yingul.model.Yng_MotorizedEquipment;
 import com.valework.yingul.model.Yng_MotorizedExterior;
 import com.valework.yingul.model.Yng_MotorizedSecurity;
 import com.valework.yingul.model.Yng_MotorizedSound;
+import com.valework.yingul.model.Yng_OmittedWord;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Product;
 import com.valework.yingul.model.Yng_Property;
@@ -209,6 +213,8 @@ public class ItemController {
 	S3Services s3Services;
 	@Autowired 
 	ItemImageDao itemImageDao;
+	@Autowired
+	OmittedWordDao omittedWordDao;
 	
 	@Value("${jsa.s3.bucket}")
 	private String bucketName;
@@ -1151,16 +1157,37 @@ public class ItemController {
     public List<Yng_Item> listItemByName(@PathVariable("name") String name,@PathVariable("start") int start,@PathVariable("end") int end, @RequestHeader("X-API-KEY") String XAPIKEY) {
     	Yng_Standard api = standardDao.findByKey("BACKEND_API_KEY");
     	if(XAPIKEY.equals(api.getValue())) {
-    		List<Yng_Item> itemListForReturn = new ArrayList<Yng_Item>();
-    		List<Yng_Item> itemList = itemDao.findByOrderByItemIdDesc();
-    		for (Yng_Item yng_Item : itemList) {
-    			if(yng_Item.getName().toLowerCase().replace(" ","").contains(name.toLowerCase().replace(" ",""))){
-    				itemListForReturn.add(yng_Item);
-    			}
-    		}
-    		
+	    	String[] parts = name.split(" ");
+	    	List<String> wordList = new LinkedList<String>(Arrays.asList(parts));  
+	    	List<Yng_OmittedWord> omittedWords = omittedWordDao.findAll();
+	    	List<Yng_Item> itemListForReturn = new ArrayList<Yng_Item>();
+	    	List<Yng_Item> itemList = itemDao.findByOrderByItemIdDesc();
+	    	System.out.println(wordList.toString());
+	    	for (String string : wordList) {
+	    		for (Yng_OmittedWord yng_OmittedWord : omittedWords) {
+	    			if(string.equals(yng_OmittedWord.getWord())) {
+	    				System.out.println(string+" "+yng_OmittedWord.getWord());
+	    				wordList.remove(string);
+	    				//wordList =removeItemFromArray(wordList,string);
+	    			}
+		    	}
+	    	}
+	    	System.out.println(wordList.toString());
+	    	for (String string : wordList) {
+				for (Yng_Item yng_Item : itemList) {
+	    			if(string.charAt(string.length()-1)=='s'||string.charAt(string.length()-1)=='S') {
+	    				string=string.substring(0, string.length()-1);
+	    			}
+	    			if(yng_Item.getName().toLowerCase().contains(string.toLowerCase())){
+	    				if(itemListForReturn.contains(yng_Item)) {
+	    						
+	    				}else {
+	    					itemListForReturn.add(yng_Item);
+	    				}
+	    			}	
+	    		}	
+    		}   		
     		if(itemListForReturn.size()>=start) {
-    			System.out.println("si "+end+"es mayor que"+itemListForReturn.size());
     			if(end>=itemListForReturn.size()) {
     				itemListForReturn=itemListForReturn.subList(start, itemListForReturn.size());	
     			}else{
@@ -1178,14 +1205,36 @@ public class ItemController {
     public String getQuantityItemByName(@PathVariable("name") String name, @RequestHeader("X-API-KEY") String XAPIKEY) {
     	Yng_Standard api = standardDao.findByKey("BACKEND_API_KEY");
     	if(XAPIKEY.equals(api.getValue())) {
-    		List<Yng_Item> itemListForReturn = new ArrayList<Yng_Item>();
-    		List<Yng_Item> itemList = itemDao.findByOrderByItemIdDesc();
-    		for (Yng_Item yng_Item : itemList) {
-    			if(yng_Item.getName().toLowerCase().replace(" ","").contains(name.toLowerCase().replace(" ",""))){
-    				itemListForReturn.add(yng_Item);
-    			}
-    		}
-    		
+    		String[] parts = name.split(" ");
+	    	List<String> wordList = new LinkedList<String>(Arrays.asList(parts));  
+	    	List<Yng_OmittedWord> omittedWords = omittedWordDao.findAll();
+	    	List<Yng_Item> itemListForReturn = new ArrayList<Yng_Item>();
+	    	List<Yng_Item> itemList = itemDao.findByOrderByItemIdDesc();
+	    	System.out.println(wordList.toString());
+	    	for (String string : wordList) {
+	    		for (Yng_OmittedWord yng_OmittedWord : omittedWords) {
+	    			if(string.equals(yng_OmittedWord.getWord())) {
+	    				System.out.println(string+" "+yng_OmittedWord.getWord());
+	    				wordList.remove(string);
+	    				//wordList =removeItemFromArray(wordList,string);
+	    			}
+		    	}
+	    	}
+	    	System.out.println(wordList.toString());
+	    	for (String string : wordList) {
+				for (Yng_Item yng_Item : itemList) {
+	    			if(string.charAt(string.length()-1)=='s'||string.charAt(string.length()-1)=='S') {
+	    				string=string.substring(0, string.length()-1);
+	    			}
+	    			if(yng_Item.getName().toLowerCase().contains(string.toLowerCase())){
+	    				if(itemListForReturn.contains(yng_Item)) {
+	    						
+	    				}else {
+	    					itemListForReturn.add(yng_Item);
+	    				}
+	    			}	
+	    		}	
+    		} 
     		return itemListForReturn.size()+"";
     	}else {
     		return null;
