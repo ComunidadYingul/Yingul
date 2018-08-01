@@ -1162,6 +1162,11 @@ public class ItemController {
 	    	List<Yng_OmittedWord> omittedWords = omittedWordDao.findAll();
 	    	List<Yng_Item> itemListForReturn = new ArrayList<Yng_Item>();
 	    	List<Yng_Item> itemList = itemDao.findByOrderByItemIdDesc();
+	    	for (Yng_Item yng_Item : itemList) {
+    			if(yng_Item.getName().toLowerCase().replace(" ","").contains(name.toLowerCase().replace(" ",""))){
+    				itemListForReturn.add(yng_Item);
+    			}
+    		}
 	    	System.out.println(wordList.toString());
 	    	for (String string : wordList) {
 	    		for (Yng_OmittedWord yng_OmittedWord : omittedWords) {
@@ -1210,6 +1215,11 @@ public class ItemController {
 	    	List<Yng_OmittedWord> omittedWords = omittedWordDao.findAll();
 	    	List<Yng_Item> itemListForReturn = new ArrayList<Yng_Item>();
 	    	List<Yng_Item> itemList = itemDao.findByOrderByItemIdDesc();
+	    	for (Yng_Item yng_Item : itemList) {
+    			if(yng_Item.getName().toLowerCase().replace(" ","").contains(name.toLowerCase().replace(" ",""))){
+    				itemListForReturn.add(yng_Item);
+    			}
+    		}
 	    	System.out.println(wordList.toString());
 	    	for (String string : wordList) {
 	    		for (Yng_OmittedWord yng_OmittedWord : omittedWords) {
