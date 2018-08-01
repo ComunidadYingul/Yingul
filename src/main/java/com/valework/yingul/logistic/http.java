@@ -60,7 +60,7 @@ public class http {
 		while ((responseString = in.readLine()) != null) {
 			outputString = outputString + responseString;
 		}
-		System.out.println("outputStringfedex:"+outputString);
+		System.out.println("outputStrPinteres:"+outputString);
 		return ""+outputString;
 	}
 
