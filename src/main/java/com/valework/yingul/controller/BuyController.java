@@ -208,6 +208,9 @@ public class BuyController {
 		}
     	//para setear el item
     	Yng_Item itemTemp=itemDao.findByItemId(buy.getYng_item().getItemId());
+    	System.out.println(buy.getQuantity());
+    	System.out.println(itemTemp.getQuantity());
+    	//System.out.println(itemTemp.getQuantity());
     	if(itemTemp.getQuantity()<=0||!itemTemp.isEnabled()||itemTemp.getQuantity()<buy.getQuantity()) {
     		return "Sin stock";
     	}

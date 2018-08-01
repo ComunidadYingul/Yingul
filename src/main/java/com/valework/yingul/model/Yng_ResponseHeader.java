@@ -1,5 +1,6 @@
 package com.valework.yingul.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -14,7 +15,9 @@ public class Yng_ResponseHeader {
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long responseHeaderId;
+	@Column(columnDefinition = "text")
 	private java.lang.String name;
+	@Column(columnDefinition = "text")
 	private java.lang.String value;
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "response_id")
