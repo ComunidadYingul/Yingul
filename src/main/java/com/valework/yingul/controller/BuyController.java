@@ -159,7 +159,8 @@ public class BuyController {
 	StandardDao standardDao;
 	@Autowired
 	CashPaymentDao cashPaymentDao; 
-	
+	@Autowired
+	LogisticsController logisticsController;
 	@RequestMapping("/listCreditCard/all")
     public List<Yng_ListCreditCard> findProvinceList() {
         List<Yng_ListCreditCard> creditCardList = listCreditCardDao.findAll();
@@ -557,12 +558,13 @@ public class BuyController {
     			//ubicationTemp.setYng_Barrio(barrioDao.findByBarrioId(productTemp.getYng_Item().getYng_Ubication().getYng_Barrio().getBarrioId()));
     			System.out.println("Ubi:"+ubicationTemp.toString());
     			String codAndreani="";
-    			LogisticsController log=new LogisticsController();
+    			
     			Yng_BranchAndreani branchAndreani=new Yng_BranchAndreani();
     			try {
     				//codAndreani=log.andreaniSucursales(ubicationTemp.getPostalCode(), "", "");
     				//codAndreani=log.andreaniSucursalesObject(ubicationTemp.getPostalCode(), "", "").getCodAndreani();
-    				branchAndreani=log.andreaniSucursalesObject(ubicationTemp.getPostalCode(), "", "");
+    				branchAndreani=logisticsController.andreaniSucursalesObject(ubicationTemp.getPostalCode(), "", "");
+    				//branchAndreani=log.andreaniSucursalesObject(ubicationTemp.getPostalCode(), "", "");
     				codAndreani=branchAndreani.getCodAndreani();
     				branchAndreaniDao.save(branchAndreani);
     			} catch (Exception e1) {

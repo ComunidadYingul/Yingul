@@ -244,6 +244,9 @@ public class SellController {
 	BranchAndreaniDao branchAndreaniDao;
 	@Autowired
 	StandardDao standardDao;
+	
+	@Autowired	
+	LogisticsController logisticsController;
 	@RequestMapping(value = "/service", method = RequestMethod.POST)
 	@ResponseBody
 	public String sellServicePost(@Valid @RequestBody Yng_Service service) throws MessagingException, IOException {	
@@ -446,7 +449,7 @@ public class SellController {
 		LogisticsController log=new LogisticsController();
 		Yng_BranchAndreani branchAndreani=new Yng_BranchAndreani();
 		try {
-			branchAndreani=log.andreaniSucursales(ubicationTemp.getPostalCode(), "", "");
+			branchAndreani=logisticsController.andreaniSucursales(ubicationTemp.getPostalCode(), "", "");
 			codAndreani=branchAndreani.getCodAndreani();
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -1302,7 +1305,11 @@ public class SellController {
 			http h=new http();
 			PropertyObjectHttp objectHttp =new PropertyObjectHttp();
 			//String image_url="https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/image/principal2485.jpeg";
-			String board="734297982933088001";
+			Yng_Standard Pinterest_Board = standardDao.findByKey("Pinterest_Board");	    	
+			String board=Pinterest_Board.getValue();//"734297982933088001";
+			Yng_Standard Pinterest_Access_Token = standardDao.findByKey("Pinterest_Access_Token");	    	
+			String token=Pinterest_Access_Token.getValue();//"Adzz4jrNImxw1M6McRp724d7a2iPFTnoZ0xEdflFBKWK3qA40AAAAAA";
+			
 			String note="" +item.getName().toUpperCase()	    			
 	    			+ " "+currency+"  "+item.getPrice();
 			String image_url=""+p.getUrlImage()+item.getPrincipalImage();
@@ -1320,13 +1327,16 @@ public class SellController {
 			RequestPropertyHeders urlR=new RequestPropertyHeders();
 			urlR.setName("Content-Type");
 			urlR.setValue("application/x-www-form-urlencoded");
-			String url="https://api.pinterest.com/v1/pins/?access_token=Adzz4jrNImxw1M6McRp724d7a2iPFTnoZ0xEdflFBKWK3qA40AAAAAA&fields=id%2Clink%2Cnote%2Curl";
+			String url="https://api.pinterest.com/v1/pins/?access_token="
+					+ token//"Adzz4jrNImxw1M6McRp724d7a2iPFTnoZ0xEdflFBKWK3qA40AAAAAA"
+					+ "&fields=id%2Clink%2Cnote%2Curl";
 			objectHttp.setRequestMethod(objectHttp.POST);
 			objectHttp.setBody(body);
 			objectHttp.setRequestProperty(requestProperty);
 			objectHttp.setUrl(url);
 			try {
-				h.request(objectHttp);
+				String g=h.request(objectHttp);
+				System.out.println("pin:"+g);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

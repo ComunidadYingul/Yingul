@@ -39,6 +39,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -101,7 +102,7 @@ import com.valework.yingul.dao.EnvioDao;
 import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.logistic.*;
-
+@Component
 @RestController
 @RequestMapping("/logistics")
 public class LogisticsController {
@@ -521,6 +522,10 @@ public class LogisticsController {
      }
      
      public Yng_BranchAndreani andreaniSucursalesObject(String CodigoPostal,String Localidad,String Provincia) throws Exception{ 
+    	 standard= new Yng_Standard();
+     	standard=standardService.findByKey("Andreani_Branch_Url");
+   	    String urlBranch=standard.getValue();
+   	    System.out.println("urlBranch:"+urlBranch);
      	String body3="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
  				"<env:Envelope\r\n" + 
  				"    xmlns:env=\"http://www.w3.org/2003/05/soap-envelope\"\r\n" + 
@@ -574,7 +579,7 @@ public class LogisticsController {
      	 StringEntity stringEntity = new StringEntity(body3, "UTF-8");
  		
          stringEntity.setChunked(true);
-         HttpPost httpPost = new HttpPost(urlSuc);
+         HttpPost httpPost = new HttpPost(urlBranch);
          httpPost.setEntity(stringEntity);
          httpPost.addHeader("Content-Type", "text/xml");
          httpPost.addHeader("SOAPAction", "soapAction");
@@ -979,49 +984,13 @@ public class LogisticsController {
 				"        </ns1:ConsultarSucursales>\r\n" + 
 				"    </env:Body>\r\n" + 
 				"</env:Envelope>";
-		
-
-    	 
-    	 /*StringEntity stringEntity = new StringEntity(body3, "UTF-8");
-		
-        stringEntity.setChunked(true);
-        //***
-        standard= new Yng_Standard();
-  	  	standard=standardService.findByKey("Andreani_Branch_Url");
-   	  	String urlSuc=standard.getValue();
-   	  	//***
-        HttpPost httpPost = new HttpPost(urlSuc);
-        httpPost.setEntity(stringEntity);
-        httpPost.addHeader("Content-Type", "text/xml");
-        httpPost.addHeader("SOAPAction", "soapAction");
-        HttpClient httpClient = new DefaultHttpClient();
-        HttpResponse response = httpClient.execute(httpPost);
-        HttpEntity entity = response.getEntity();
-        SAXParserFactory saxParseFactory=SAXParserFactory.newInstance();
-        SAXParser sAXParser=saxParseFactory.newSAXParser();
-
-        String numero="";
-        String strResponse = null;
-     List<ResultadoConsultarSucursales> sucursal = null;
-        if (entity != null) {
-            strResponse = EntityUtils.toString(entity);
-            SucursalHandler handlerS=new SucursalHandler();
-            sAXParser.parse(new InputSource(new StringReader(strResponse)), handlerS);
-            ArrayList<ResultadoConsultarSucursales> sucursaleses=handlerS.getResultadoSucursales();
-            sucursal=handlerS.getResultadoSucursales();
-            for (ResultadoConsultarSucursales versione : sucursaleses) {
-            	numero=versione.getNumero();
-                System.out.println("versione.getNumero:"+versione.getNumero());
-                
-            
-            }
-        }
-        */
-        // List<ResultadoConsultarSucursales> sucursal
     	String strResponse = null;
     	PropertyObjectHttp objectHttp= new PropertyObjectHttp();
-		
-		String url="https://sucursales.andreani.com/ws?wsdl";
+    	standard= new Yng_Standard();
+    	standard=standardService.findByKey("Andreani_Branch_Url");
+  	    String urlBranch=standard.getValue();
+  	    System.out.println("urlBranch:"+urlBranch);
+		String url=urlBranch;
 		objectHttp.setUrl(url);
 		objectHttp.setRequestMethod(objectHttp.POST);
 		String body;
@@ -1145,6 +1114,8 @@ public class LogisticsController {
     	 cotizarTemp.setUsername(standard.getValue());
     	 standard=standardService.findByKey("Password");
     	 cotizarTemp.setPassword(standard.getValue());
+    	 standard=standardService.findByKey("Andreani_Sucursal_Url");
+    	 urlCotizar=standard.getValue();
     	 
 	 	String body2="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
 			"<env:Envelope\r\n" + 
