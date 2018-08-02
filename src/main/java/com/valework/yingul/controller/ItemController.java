@@ -1168,28 +1168,30 @@ public class ItemController {
     			}
     		}
 	    	System.out.println(wordList.toString());
-	    	for (String string : wordList) {
+	    	for (int i=0;i<wordList.size();i++) {
 	    		for (Yng_OmittedWord yng_OmittedWord : omittedWords) {
-	    			if(string.equals(yng_OmittedWord.getWord())) {
-	    				System.out.println(string+" "+yng_OmittedWord.getWord());
-	    				wordList.remove(string);
+	    			if(wordList.get(i).equals(yng_OmittedWord.getWord())) {
+	    				System.out.println(wordList.get(i)+" "+yng_OmittedWord.getWord());
+	    				wordList.set(i, " ");
 	    				//wordList =removeItemFromArray(wordList,string);
 	    			}
 		    	}
 	    	}
 	    	System.out.println(wordList.toString());
 	    	for (String string : wordList) {
-				for (Yng_Item yng_Item : itemList) {
-	    			if(string.charAt(string.length()-1)=='s'||string.charAt(string.length()-1)=='S') {
-	    				string=string.substring(0, string.length()-1);
-	    			}
-	    			if(yng_Item.getName().toLowerCase().contains(string.toLowerCase())){
-	    				if(itemListForReturn.contains(yng_Item)) {
-	    						
-	    				}else {
-	    					itemListForReturn.add(yng_Item);
-	    				}
-	    			}	
+	    		if(!string.equals(" ")) {
+	    			for (Yng_Item yng_Item : itemList) {
+		    			if(string.charAt(string.length()-1)=='s'||string.charAt(string.length()-1)=='S') {
+		    				string=string.substring(0, string.length()-1);
+		    			}
+		    			if(yng_Item.getName().toLowerCase().contains(string.toLowerCase())){
+		    				if(itemListForReturn.contains(yng_Item)) {
+		    						
+		    				}else {
+		    					itemListForReturn.add(yng_Item);
+		    				}
+		    			}	
+		    		}	
 	    		}	
     		}   		
     		if(itemListForReturn.size()>=start) {
@@ -1221,28 +1223,30 @@ public class ItemController {
     			}
     		}
 	    	System.out.println(wordList.toString());
-	    	for (String string : wordList) {
+	    	for (int i=0;i<wordList.size();i++) {
 	    		for (Yng_OmittedWord yng_OmittedWord : omittedWords) {
-	    			if(string.equals(yng_OmittedWord.getWord())) {
-	    				System.out.println(string+" "+yng_OmittedWord.getWord());
-	    				wordList.remove(string);
+	    			if(wordList.get(i).equals(yng_OmittedWord.getWord())) {
+	    				System.out.println(wordList.get(i)+" "+yng_OmittedWord.getWord());
+	    				wordList.set(i, " ");
 	    				//wordList =removeItemFromArray(wordList,string);
 	    			}
 		    	}
 	    	}
 	    	System.out.println(wordList.toString());
 	    	for (String string : wordList) {
-				for (Yng_Item yng_Item : itemList) {
-	    			if(string.charAt(string.length()-1)=='s'||string.charAt(string.length()-1)=='S') {
-	    				string=string.substring(0, string.length()-1);
-	    			}
-	    			if(yng_Item.getName().toLowerCase().contains(string.toLowerCase())){
-	    				if(itemListForReturn.contains(yng_Item)) {
-	    						
-	    				}else {
-	    					itemListForReturn.add(yng_Item);
-	    				}
-	    			}	
+	    		if(!string.equals(" ")) {
+	    			for (Yng_Item yng_Item : itemList) {
+		    			if(string.charAt(string.length()-1)=='s'||string.charAt(string.length()-1)=='S') {
+		    				string=string.substring(0, string.length()-1);
+		    			}
+		    			if(yng_Item.getName().toLowerCase().contains(string.toLowerCase())){
+		    				if(itemListForReturn.contains(yng_Item)) {
+		    						
+		    				}else {
+		    					itemListForReturn.add(yng_Item);
+		    				}
+		    			}	
+		    		}	
 	    		}	
     		} 
     		return itemListForReturn.size()+"";
