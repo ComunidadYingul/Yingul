@@ -29,6 +29,7 @@ public class Yng_Item {
 	private String description;
 	private String name;
 	private String horario;
+	private String time;
 
 	private java.lang.String principalImage;
 	private String video;
@@ -381,5 +382,14 @@ public class Yng_Item {
 
 	public void setUserAgent(String userAgent) {
 		this.userAgent = userAgent;
+	}
+
+	public String getTime() {
+		return time;
+	}
+
+	public void setTime(String time) {
+		this.time = time;
 	}	
+	
 }

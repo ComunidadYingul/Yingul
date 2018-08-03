@@ -23,10 +23,10 @@ public class RequestFilter implements Filter {
         //response.setHeader("Access-Control-Allow-Origin", "http://www.yingul.com");
         //response.setHeader("Access-Control-Allow-Origin", "http://192.168.100.51:4200");
         //response.setHeader("Access-Control-Allow-Origin", "http://192.168.100.42:4200");
-        response.setHeader("Access-Control-Allow-Origin", "http://www.yingul.com");
+        //response.setHeader("Access-Control-Allow-Origin", "http://www.yingul.com");
         //response.setHeader("Access-Control-Allow-Origin", "http://192.168.100.17:4200");        
         //response.setHeader("Access-Control-Allow-Origin", "http://192.168.100.16:4200");
-        //response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
         //response.setHeader("Access-Control-Allow-Origin", " https://30ff5eb3.ngrok.io");
 
         response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
