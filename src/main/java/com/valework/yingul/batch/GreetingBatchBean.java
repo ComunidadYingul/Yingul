@@ -381,8 +381,22 @@ public class GreetingBatchBean {
 		for (Yng_Confirm s : listConfirm) {
 			Yng_Confirm confirmTemp=s;
 	    	if(confirmTemp.getBuy().getShipping().getTypeShipping().equals("branch")) {
-	    		String status="Envío no ingresado";
-	    		Yng_Standard codeDeliveryConfirmAndreani = standardDao.findByKey("codeDeliveryConfirmAndreani");
+
+	    		String confirmStateDao=standardDao.findByKey("codeConfirmAndreani").getValue();
+	    		Yng_StateShipping stateShipping=new Yng_StateShipping();
+		    	GetStateSend getState = new GetStateSend();
+		    	String confirmState=confirmTemp.getBuy().getShipping().getYng_Shipment().getShipmentCod();
+		    	String stateApi ="";
+		    	try {
+		    		stateShipping=getState.sendState(""+confirmState);
+		    		stateApi=stateShipping.getEstado();
+		    		System.out.println("state:"+stateApi+":"+confirmStateDao);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	    		String status=stateApi;
+	    		Yng_Standard codeDeliveryConfirmAndreani = standardDao.findByKey("codeDeliveryConfirmAndreani");//entre ala sucurlas el envio ingresado 
 	    		if(status.equals(codeDeliveryConfirmAndreani.getValue())) {
 	    			confirmTemp.setBuyerConfirm(false);
 	        		confirmTemp.setSellerConfirm(true);
@@ -428,7 +442,7 @@ public class GreetingBatchBean {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
-			String status=stateApi;
+			String status=stateApi;//envio entregado al comprador
 			Yng_Standard codeWhithdrawalConfirmAndreani = standardDao.findByKey("codeWhithdrawalConfirmAndreani");
 	    	if(status.equals(codeWhithdrawalConfirmAndreani.getValue())) {
 	        		confirmTemp.setBuyerConfirm(true);
