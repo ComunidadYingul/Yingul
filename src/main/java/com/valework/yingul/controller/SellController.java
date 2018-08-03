@@ -278,6 +278,8 @@ public class SellController {
     	itemTemp.setDayPublication(Integer.parseInt(hourdateFormat.format(date)));
     	itemTemp.setMonthPublication(Integer.parseInt(hourdateFormat1.format(date)));
     	itemTemp.setYearPublication(Integer.parseInt(hourdateFormat2.format(date)));
+    	DateFormat hourdateFormat3 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    	itemTemp.setTime(hourdateFormat3.format(date));
 		//
 		//obtenemos la lista de las imagenes 
 		Set<Yng_ItemImage> itemImage=serviceTemp.getYng_Item().getItemImage();
@@ -420,6 +422,8 @@ public class SellController {
     	itemTemp.setDayPublication(Integer.parseInt(hourdateFormat.format(date)));
     	itemTemp.setMonthPublication(Integer.parseInt(hourdateFormat1.format(date)));
     	itemTemp.setYearPublication(Integer.parseInt(hourdateFormat2.format(date)));
+    	DateFormat hourdateFormat3 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    	itemTemp.setTime(hourdateFormat3.format(date));
 		   	//Yng_Service serviceTemp = service;
 			//Yng_Item itemTemp=serviceTemp.getYng_Item();
 		//obtenemos la lista de las imagenes 
@@ -590,6 +594,8 @@ public class SellController {
     	itemTemp.setDayPublication(Integer.parseInt(hourdateFormat.format(date)));
     	itemTemp.setMonthPublication(Integer.parseInt(hourdateFormat1.format(date)));
     	itemTemp.setYearPublication(Integer.parseInt(hourdateFormat2.format(date)));
+    	DateFormat hourdateFormat3 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    	itemTemp.setTime(hourdateFormat3.format(date));
 		   	//Yng_Service serviceTemp = service;
 			//Yng_Item itemTemp=serviceTemp.getYng_Item();
 		//obtenemos la lista de las imagenes 
@@ -770,6 +776,8 @@ public class SellController {
     	itemTemp.setDayPublication(Integer.parseInt(hourdateFormat.format(date)));
     	itemTemp.setMonthPublication(Integer.parseInt(hourdateFormat1.format(date)));
     	itemTemp.setYearPublication(Integer.parseInt(hourdateFormat2.format(date)));
+    	DateFormat hourdateFormat3 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    	itemTemp.setTime(hourdateFormat3.format(date));
 		   	//Yng_Service serviceTemp = service;
 			//Yng_Item itemTemp=serviceTemp.getYng_Item();
 		//obtenemos la lista de las imagenes 

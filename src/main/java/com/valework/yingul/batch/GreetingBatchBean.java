@@ -24,6 +24,7 @@ import com.valework.yingul.dao.CommissionDao;
 import com.valework.yingul.dao.ConfirmDao;
 import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.PaymentDao;
+import com.valework.yingul.dao.PersonDao;
 import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.TransactionDao;
 import com.valework.yingul.dao.TransactionDetailDao;
@@ -73,11 +74,20 @@ public class GreetingBatchBean {
 	ItemDao itemDao;
 	@Autowired
 	PayUFunds payUFunds;
-
+	@Autowired
+	PersonDao personDao;
 	
-	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
-	@Scheduled(cron = "0 0 6 * * *")//cada dia a las 6 de la mañana
+	@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
+	//@Scheduled(cron = "0 0 6 * * *")//cada dia a las 6 de la mañana
+	//@Scheduled(cron = "0 0/16 12 * * ?")//cada 8 minutos desde las 10:45
 	public void cronJob() throws ParseException {
+		try {
+			smtpMailSender.send("quenallataeddy@gmail.com", "inicio de los crons", "inicio de los crons");
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("primer cron");
 		Date date = new Date();
     	DateFormat hourdateFormat = new SimpleDateFormat("dd");
     	DateFormat hourdateFormat1 = new SimpleDateFormat("MM");
@@ -99,14 +109,14 @@ public class GreetingBatchBean {
     			str_date+="-0"+s.getMonthEndClaim();
     		}
     		str_date += "-"+s.getYearEndClaim();
-    		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");;
+    		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
     		Date endClaim= formatter.parse(str_date);
 			if(date.after(endClaim)) {
 				s.setStatus("closed");
 				Yng_Account accountTemp= accountDao.findByUser(s.getBuy().getYng_item().getUser());
 				//crear la transaccion con todo el costo del producto para luego descontar comisiones o costo de envio
 				Yng_Transaction transactionTemp = new Yng_Transaction();
-				transactionTemp.setAmount(s.getBuy().getYng_item().getPrice());
+				transactionTemp.setAmount(s.getBuy().getCost());
 				transactionTemp.setCity("Moreno");
 				transactionTemp.setCountry("Argentina");
 				transactionTemp.setCountryCode("AR");
@@ -157,9 +167,16 @@ public class GreetingBatchBean {
 				commissionTemp.setAYingulTransaction(true);
 				double costCommission=0;
 				Yng_TransactionDetail transactionDetail=new Yng_TransactionDetail();
+				System.out.println(s.getBuy().getYng_item().getUser().getUsername());
+				List<Yng_Person> personList= personDao.findAll();
+				Yng_Person person = new Yng_Person();
+				for (Yng_Person yng_Person : personList) {
+					if(yng_Person.getYng_User().getUsername().equals(s.getBuy().getYng_item().getUser().getUsername())) {
+						person = yng_Person;
+						System.out.println(person.getName()+" todo bien");
+					}
+				}
 				
-				List<Yng_Person> personList= personService.findByUser(s.getBuy().getYng_item().getUser());
-				Yng_Person person = personList.get(0);
 				Yng_Commission commission= new Yng_Commission();
 				Yng_Commission commissionPAYU= new Yng_Commission();
 				
@@ -304,7 +321,7 @@ public class GreetingBatchBean {
 						//
 					}
 				}
-				transactionDetail.setCostCommission(((s.getBuy().getYng_item().getPrice()*commission.getPercentage())/100)+commission.getFixedPrice());
+				transactionDetail.setCostCommission(((s.getBuy().getCost()*commission.getPercentage())/100)+commission.getFixedPrice());
 				transactionDetail.setCostPAYU(((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice());
 				costCommission=(transactionDetail.getCostCommission()+transactionDetail.getCostPAYU());
 				transactionDetail.setCostTotal(costCommission);
@@ -321,10 +338,12 @@ public class GreetingBatchBean {
 			}
     	}
 	}
+	
 	//@Scheduled(cron = "0,59 * * * * *")//para cada 30 segundos
-	@Scheduled(cron = "0 0 4 * * *")//cada dia a las 5 de la mañana
+	//@Scheduled(cron = "0 0 4 * * *")//cada dia a las 5 de la mañana
+	@Scheduled(cron = "0 4/16 12 * * ?")//cada 8 minutos desde las 10:45
 	public void cronJob1() throws ClientProtocolException, IOException, Exception {
-		System.out.println("inicio de verificacion de cashpaymetn");
+		System.out.println("segundo cron");
 		List<Yng_Payment> confirmCashPayment= paymentDao.findByTypeAndStatusAndBuyStatus("CASH","PENDING","PENDING");
 		for (Yng_Payment s : confirmCashPayment) {
 			Date fecha = new Date();
@@ -361,15 +380,32 @@ public class GreetingBatchBean {
 			
 		}
 	}
+	
 	//@Scheduled(cron = "0,59 * * * * *")//para cada 30 segundos
-	@Scheduled(cron = "0 0 5 * * *")//cada dia a las 6 de la mañana
+	//@Scheduled(cron = "0 0 5 * * *")//cada dia a las 6 de la mañana
+	@Scheduled(cron = "0 8/16 12 * * ?")//cada 8 minutos desde las 10:45
 	public void deliveryConfirmation() throws MessagingException{
+		System.out.println("tercer cron");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("pending");
 		for (Yng_Confirm s : listConfirm) {
 			Yng_Confirm confirmTemp=s;
 	    	if(confirmTemp.getBuy().getShipping().getTypeShipping().equals("branch")) {
-	    		String status="Envío no ingresado";
-	    		Yng_Standard codeDeliveryConfirmAndreani = standardDao.findByKey("codeDeliveryConfirmAndreani");
+
+	    		String confirmStateDao=standardDao.findByKey("codeConfirmAndreani").getValue();
+	    		Yng_StateShipping stateShipping=new Yng_StateShipping();
+		    	GetStateSend getState = new GetStateSend();
+		    	String confirmState=confirmTemp.getBuy().getShipping().getYng_Shipment().getShipmentCod();
+		    	String stateApi ="";
+		    	try {
+		    		stateShipping=getState.sendState(""+confirmState);
+		    		stateApi=stateShipping.getEstado();
+		    		System.out.println("state:"+stateApi+":"+confirmStateDao);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	    		String status=stateApi;
+	    		Yng_Standard codeDeliveryConfirmAndreani = standardDao.findByKey("codeDeliveryConfirmAndreani");//entre ala sucurlas el envio ingresado 
 	    		if(status.equals(codeDeliveryConfirmAndreani.getValue())) {
 	    			confirmTemp.setBuyerConfirm(false);
 	        		confirmTemp.setSellerConfirm(true);
@@ -393,8 +429,10 @@ public class GreetingBatchBean {
 		}
 	}
 	
-	@Scheduled(cron = "0 0 7 * * *")//cada dia a las 6 de la mañana
+	//@Scheduled(cron = "0 0 7 * * *")//cada dia a las 6 de la mañana
+	@Scheduled(cron = "0 12/16 12 * * ?")//cada 8 minutos desde las 10:51
 	public void whithdrawalConfirmation() throws MessagingException{
+		System.out.println("cuarto cron");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("delivered");
 		for (Yng_Confirm s : listConfirm) {
 			Yng_Confirm confirmTemp=s;
@@ -413,7 +451,7 @@ public class GreetingBatchBean {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
-			String status=stateApi;
+			String status=stateApi;//envio entregado al comprador
 			Yng_Standard codeWhithdrawalConfirmAndreani = standardDao.findByKey("codeWhithdrawalConfirmAndreani");
 	    	if(status.equals(codeWhithdrawalConfirmAndreani.getValue())) {
 	        		confirmTemp.setBuyerConfirm(true);

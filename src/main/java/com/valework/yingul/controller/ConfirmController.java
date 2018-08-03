@@ -110,7 +110,7 @@ public class ConfirmController {
 	@ResponseBody
     public String queryItemPost(@Valid @RequestBody Yng_Confirm confirm) throws MessagingException {
     	Yng_Confirm confirmTemp=confirmDao.findByConfirmId(confirm.getConfirmId());
-    	if(confirmTemp.getBuy().getShipping().getTypeShipping().equals("home")) {
+    	if(confirmTemp.getBuy().getShippingCost() == 0) {
     		if(confirmTemp.getCodeConfirm()==confirm.getCodeConfirm()) {
         		confirmTemp.setBuyerConfirm(true);
         		confirmTemp.setSellerConfirm(true);
