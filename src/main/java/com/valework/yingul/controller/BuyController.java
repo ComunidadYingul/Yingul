@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.valework.yingul.PayUFunds;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.BranchAndreaniDao;
 import com.valework.yingul.dao.BranchDao;
@@ -48,6 +51,7 @@ import com.valework.yingul.dao.ShippingDao;
 import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
+import com.valework.yingul.dao.YingulRequestDao;
 import com.valework.yingul.logistic.FedexResponce;
 import com.valework.yingul.logistic.FedexXML;
 import com.valework.yingul.logistic.GetStateSend;
@@ -73,6 +77,7 @@ import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_StateShipping;
 import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
+import com.valework.yingul.model.Yng_YingulRequest;
 import com.valework.yingul.service.CardService;
 import com.valework.yingul.service.ProductService;
 import com.valework.yingul.service.StandardService;
@@ -161,6 +166,9 @@ public class BuyController {
 	CashPaymentDao cashPaymentDao; 
 	@Autowired
 	LogisticsController logisticsController;
+	@Autowired
+	YingulRequestDao yingulRequestDao;
+	
 	@RequestMapping("/listCreditCard/all")
     public List<Yng_ListCreditCard> findProvinceList() {
         List<Yng_ListCreditCard> creditCardList = listCreditCardDao.findAll();
@@ -190,6 +198,22 @@ public class BuyController {
     @RequestMapping(value = "/createBuy", method = RequestMethod.POST)
     @ResponseBody
     public String createBuy(@Valid @RequestBody Yng_Buy buy) throws Exception {	
+    	//capturar objeto inicio
+    			ObjectMapper mapperRequest = new ObjectMapper();
+    			java.util.Date fecha = new Date();
+    			System.out.println (fecha);
+    			try {
+    				String jsonInString = mapperRequest.writeValueAsString(buy);
+    				System.out.println("jsonInString"+jsonInString);
+    				Yng_YingulRequest serviceJson=new Yng_YingulRequest();
+    				serviceJson.setJson(jsonInString);
+    				serviceJson.setDate(fecha);
+    				yingulRequestDao.save(serviceJson);
+    			} catch (JsonProcessingException e1) {
+    				
+    				e1.printStackTrace();
+    			}
+    	//capturar objeto fin	
     	//backup para pago en efectivo
     	JSONObject cashBuy=null;
     	String jsonInString = "";
@@ -627,7 +651,48 @@ public class BuyController {
     }
     
     
-    
+    @RequestMapping("/getTicket/{codnumber}")
+    public String getTicket(@PathVariable("codnumber") String codnumber) {
+    	//Yng_StateShipping stateShipping=new Yng_StateShipping();
+    	//GetStateSend getState = new GetStateSend();
+    	String link = null;
+    	try {
+    		//getStateBuy
+    		//stateShipping=getState.sendState(codnumber);
+    		link=logistic.andreaniPdfLink(codnumber +"");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	SAXParserFactory saxParseFactory=SAXParserFactory.newInstance();
+        SAXParser sAXParser = null;
+		try {
+			sAXParser = saxParseFactory.newSAXParser();
+		} catch (ParserConfigurationException | SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+       // Strin
+		 String pdf = null ;
+    	if (link != null) {
+            //strResponse = link;
+            com.valework.yingul.logistic.ImprimirConstanciaHandler handlerI=new com.valework.yingul.logistic.ImprimirConstanciaHandler();
+            try {
+				sAXParser.parse(new InputSource(new StringReader(link)), handlerI);
+			} catch (SAXException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            ArrayList<com.valework.yingul.logistic.ImprimirConstanciaResponse> impr=handlerI.getImprimirResponce();
+           
+            for (com.valework.yingul.logistic.ImprimirConstanciaResponse versione : impr) {
+            	   pdf = versione.getPdfLinkFile();
+                System.out.println("versione.getNumero2:"+versione.getPdfLinkFile());            
+            }
+        }
+    	    	
+        return pdf;
+    }
     
     
     

@@ -9,15 +9,26 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.valework.yingul.controller.LogisticsController;
+import com.valework.yingul.dao.RequestBodyDao;
+import com.valework.yingul.dao.RequestDao;
+import com.valework.yingul.dao.ResponseBodyDao;
+import com.valework.yingul.dao.ResponseDao;
+import com.valework.yingul.dao.ResponseHeaderDao;
 import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Product;
+import com.valework.yingul.model.Yng_Request;
+import com.valework.yingul.model.Yng_RequestBody;
+import com.valework.yingul.model.Yng_Response;
+import com.valework.yingul.model.Yng_ResponseBody;
+import com.valework.yingul.model.Yng_ResponseHeader;
 import com.valework.yingul.model.Yng_Shipping;
 import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_User;
@@ -28,9 +39,30 @@ public class Logistic {
 	StandardService standardService;
 	@Autowired 
 	StandardDao standardDao;
+	@Autowired 
+	RequestDao requestDao;
+	@Autowired 
+	RequestBodyDao requestBodyDao;
+	@Autowired 
+	ResponseDao responseDao;
+	@Autowired
+	ResponseHeaderDao responseHeaderDao;
+	@Autowired
+	ResponseBodyDao responseBodyDao;
 	//String 
  	public String andreaniHttpConection(AndreaniProperty andreaniProp) throws MalformedURLException, IOException {
 		//Code to make a webservice HTTP request
+ 		/*Yng_Request requestTemp = new Yng_Request(); 
+		requestTemp.setURI(andreaniProp.wsURL);
+		requestTemp.setInfo("wsURL Andreani");
+		requestTemp = requestDao.save(requestTemp);
+		//crear el response
+		Yng_RequestBody body= new Yng_RequestBody(); 
+	    body.setKey("body");
+	    body.setValue(andreaniProp.getXmlInput());
+	    body.setRequest(requestTemp);
+		requestBodyDao.save(body);*/
+		//
 		String responseString = "";
 		String outputString = "";
 		URL url = new URL(andreaniProp.getWsURL());
@@ -65,6 +97,20 @@ public class Logistic {
 		  isr = new InputStreamReader(httpConn.getErrorStream());
 		}
 
+		//
+		/*
+		Yng_Response responseTemp = new Yng_Response();//this.logResponse(response);
+		responseTemp.setMessage("");
+		//responseTemp.setResponseId(responseId);
+		//responseTemp.setResponseHeader(responseHeader);
+	    //Set<Yng_ResponseHeader> responseHeader=responseTemp.getResponseHeader();
+    	//Set<Yng_ResponseBody> responseBody=responseTemp.getResponseBody();
+    	responseTemp.setResponseHeader(null);
+    	responseTemp.setResponseBody(null);
+    	responseTemp=responseDao.save(responseTemp);
+    	requestTemp.setYng_Response(responseTemp);
+    	requestTemp=requestDao.save(requestTemp);*/
+		//
 		BufferedReader in = new BufferedReader(isr);
 
 		//Write the SOAP message response to a String.
