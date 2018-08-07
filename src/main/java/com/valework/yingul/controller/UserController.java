@@ -16,6 +16,7 @@ import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.BranchAndreaniDao;
 import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.dao.CountryDao;
+import com.valework.yingul.dao.PersonDao;
 import com.valework.yingul.dao.ProvinceDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
@@ -54,6 +55,8 @@ public class UserController {
 	BranchAndreaniDao branchAndreaniDao;
 	@Autowired
 	LogisticsController logisticsController;
+	@Autowired
+	PersonDao personDao;
 	@RequestMapping("/{username}")
     public Yng_User findByUsername(@PathVariable("username") String username) {
         return userDao.findByUsername(username);
@@ -61,10 +64,39 @@ public class UserController {
 	@RequestMapping("/person/{username}")
     public Yng_Person getPerson(@PathVariable("username") String username) {
 		Yng_User yng_User = userDao.findByUsername(username); 
-		List<Yng_Person> personList= personService.findByUser(yng_User);
-		Yng_Person person = personList.get(0);
-		return person;	
+		List<Yng_Person> personList= personDao.findAll();
+		Yng_Person person = new Yng_Person();
+		for (Yng_Person yng_Person : personList) {
+			if(yng_Person.getYng_User().getUsername().equals(yng_User.getUsername())) {
+				person = yng_Person;
+				return person;	
+			}
+		}
+		return null;
     }
+	@RequestMapping("/getPersonWithAuthorization/{username}")
+    public Yng_Person getPersonWithAuthorization(@PathVariable("username") String username,@RequestHeader("Authorization") String authorization) {
+		Yng_User user = userDao.findByUsername(username); 
+		String token =new String(org.apache.commons.codec.binary.Base64.decodeBase64(authorization));
+		String[] parts = token.split(":");
+		Yng_User yng_User= userDao.findByUsername(parts[0]);
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
+		if(user.getUsername().equals(yng_User.getUsername()) && yng_User.getUsername().equals(parts[0]) && encoder.matches(parts[1], yng_User.getPassword())){
+			List<Yng_Person> personList= personDao.findAll();
+			Yng_Person person = new Yng_Person();
+			for (Yng_Person yng_Person : personList) {
+				if(yng_Person.getYng_User().getUsername().equals(yng_User.getUsername())) {
+					person = yng_Person;
+					return person;	
+				}
+			}
+			return null;
+		}else {
+			return null;
+		}
+			
+    }
+	
 	@RequestMapping(value = "/updateUsername", method = RequestMethod.POST)
 	@ResponseBody
     public String updateUsernamePost(@Valid @RequestBody Yng_User user,@RequestHeader("Authorization") String authorization) throws MessagingException {

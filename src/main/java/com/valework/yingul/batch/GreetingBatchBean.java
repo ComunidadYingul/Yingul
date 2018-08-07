@@ -24,6 +24,7 @@ import com.valework.yingul.dao.CommissionDao;
 import com.valework.yingul.dao.ConfirmDao;
 import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.PaymentDao;
+import com.valework.yingul.dao.PersonDao;
 import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.TransactionDao;
 import com.valework.yingul.dao.TransactionDetailDao;
@@ -73,10 +74,12 @@ public class GreetingBatchBean {
 	ItemDao itemDao;
 	@Autowired
 	PayUFunds payUFunds;
-
+	@Autowired
+	PersonDao personDao;
 	
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 6 * * *")//cada dia a las 6 de la mañana
+	//@Scheduled(cron = "0 0/16 12 * * ?")//cada 8 minutos desde las 10:45
 	@Scheduled(cron = "0 30/16 17 * * ?")//cada 8 minutos desde las 10:45
 	public void cronJob() throws ParseException {
 		try {
@@ -107,14 +110,14 @@ public class GreetingBatchBean {
     			str_date+="-0"+s.getMonthEndClaim();
     		}
     		str_date += "-"+s.getYearEndClaim();
-    		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");;
+    		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
     		Date endClaim= formatter.parse(str_date);
 			if(date.after(endClaim)) {
 				s.setStatus("closed");
 				Yng_Account accountTemp= accountDao.findByUser(s.getBuy().getYng_item().getUser());
 				//crear la transaccion con todo el costo del producto para luego descontar comisiones o costo de envio
 				Yng_Transaction transactionTemp = new Yng_Transaction();
-				transactionTemp.setAmount(s.getBuy().getYng_item().getPrice());
+				transactionTemp.setAmount(s.getBuy().getCost());
 				transactionTemp.setCity("Moreno");
 				transactionTemp.setCountry("Argentina");
 				transactionTemp.setCountryCode("AR");
@@ -165,9 +168,16 @@ public class GreetingBatchBean {
 				commissionTemp.setAYingulTransaction(true);
 				double costCommission=0;
 				Yng_TransactionDetail transactionDetail=new Yng_TransactionDetail();
+				System.out.println(s.getBuy().getYng_item().getUser().getUsername());
+				List<Yng_Person> personList= personDao.findAll();
+				Yng_Person person = new Yng_Person();
+				for (Yng_Person yng_Person : personList) {
+					if(yng_Person.getYng_User().getUsername().equals(s.getBuy().getYng_item().getUser().getUsername())) {
+						person = yng_Person;
+						System.out.println(person.getName()+" todo bien");
+					}
+				}
 				
-				List<Yng_Person> personList= personService.findByUser(s.getBuy().getYng_item().getUser());
-				Yng_Person person = personList.get(0);
 				Yng_Commission commission= new Yng_Commission();
 				Yng_Commission commissionPAYU= new Yng_Commission();
 				
@@ -312,7 +322,7 @@ public class GreetingBatchBean {
 						//
 					}
 				}
-				transactionDetail.setCostCommission(((s.getBuy().getYng_item().getPrice()*commission.getPercentage())/100)+commission.getFixedPrice());
+				transactionDetail.setCostCommission(((s.getBuy().getCost()*commission.getPercentage())/100)+commission.getFixedPrice());
 				transactionDetail.setCostPAYU(((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice());
 				costCommission=(transactionDetail.getCostCommission()+transactionDetail.getCostPAYU());
 				transactionDetail.setCostTotal(costCommission);
@@ -380,43 +390,44 @@ public class GreetingBatchBean {
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("pending");
 		for (Yng_Confirm s : listConfirm) {
 			Yng_Confirm confirmTemp=s;
-	    	if(confirmTemp.getBuy().getShipping().getTypeShipping().equals("branch")) {
-
-	    		String confirmStateDao=standardDao.findByKey("codeConfirmAndreani").getValue();
-	    		Yng_StateShipping stateShipping=new Yng_StateShipping();
-		    	GetStateSend getState = new GetStateSend();
-		    	String confirmState=confirmTemp.getBuy().getShipping().getYng_Shipment().getShipmentCod();
-		    	String stateApi ="";
-		    	try {
-		    		stateShipping=getState.sendState(""+confirmState);
-		    		stateApi=stateShipping.getEstado();
-		    		System.out.println("state:"+stateApi+":"+confirmStateDao);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-	    		String status=stateApi;
-	    		Yng_Standard codeDeliveryConfirmAndreani = standardDao.findByKey("codeDeliveryConfirmAndreani");//entre ala sucurlas el envio ingresado 
-	    		if(status.equals(codeDeliveryConfirmAndreani.getValue())) {
-	    			confirmTemp.setBuyerConfirm(false);
-	        		confirmTemp.setSellerConfirm(true);
-	        		Date date = new Date();
-	            	DateFormat hourdateFormat = new SimpleDateFormat("dd");
-	            	DateFormat hourdateFormat1 = new SimpleDateFormat("MM");
-	            	DateFormat hourdateFormat2 = new SimpleDateFormat("yyyy");
-	            	DateTime now = new DateTime( date );
-	            	confirmTemp.setDaySellerConfirm(Integer.parseInt(hourdateFormat.format(date)));
-	            	confirmTemp.setMonthSellerConfirm(Integer.parseInt(hourdateFormat1.format(date)));
-	            	confirmTemp.setYearSellerConfirm(Integer.parseInt(hourdateFormat2.format(date)));
-	            	confirmTemp.setStatus("delivered");
-	            	confirmDao.save(confirmTemp);
-	            	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(), "CONFIRMACIÓN DE ENTREGA EXITOSA","Se realizo la confirmacion de la entrega del producto en una sucursal andreani:  "+confirmTemp.getBuy().getYng_item().getName() +"  Descripción : "+confirmTemp.getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +confirmTemp.getBuy().getYng_item().getPrice()
-	            			+ "<br/>--Despues de que tu comprador recoja el producto tendra 10 dias vigentes para realizar reclamos acerca del producto.");
-	            	DateTime endClaim = now.plusDays(4);
-	            	smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "CONFIRMACIÓN DE ENTREGA EXITOSA", "Tu vendedor realizo la entrega del producto : "+confirmTemp.getBuy().getQuantity()+" "+confirmTemp.getBuy().getYng_item().getName()+" a:"+confirmTemp.getBuy().getCost()+" en la sucursal andreani"
-	    					+ "<br/>--Puedes recoger el producto de la sucursal Andreani desde "+Integer.parseInt(hourdateFormat.format(endClaim.toDate()))+"/"+Integer.parseInt(hourdateFormat1.format(endClaim.toDate()))+"/"+Integer.parseInt(hourdateFormat2.format(endClaim.toDate())));
-	    		}		
-	    	}
+			if(confirmTemp.getBuy().getShipping()!=null) {
+		    	if(confirmTemp.getBuy().getShipping().getTypeShipping().equals("branch")) {
+		    		String confirmStateDao=standardDao.findByKey("codeConfirmAndreani").getValue();
+		    		Yng_StateShipping stateShipping=new Yng_StateShipping();
+			    	GetStateSend getState = new GetStateSend();
+			    	String confirmState=confirmTemp.getBuy().getShipping().getYng_Shipment().getShipmentCod();
+			    	String stateApi ="";
+			    	try {
+			    		stateShipping=getState.sendState(""+confirmState);
+			    		stateApi=stateShipping.getEstado();
+			    		System.out.println("state:"+stateApi+":"+confirmStateDao);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		    		String status=stateApi;
+		    		Yng_Standard codeDeliveryConfirmAndreani = standardDao.findByKey("codeDeliveryConfirmAndreani");//entre ala sucurlas el envio ingresado 
+		    		if(status.equals(codeDeliveryConfirmAndreani.getValue())) {
+		    			confirmTemp.setBuyerConfirm(false);
+		        		confirmTemp.setSellerConfirm(true);
+		        		Date date = new Date();
+		            	DateFormat hourdateFormat = new SimpleDateFormat("dd");
+		            	DateFormat hourdateFormat1 = new SimpleDateFormat("MM");
+		            	DateFormat hourdateFormat2 = new SimpleDateFormat("yyyy");
+		            	DateTime now = new DateTime( date );
+		            	confirmTemp.setDaySellerConfirm(Integer.parseInt(hourdateFormat.format(date)));
+		            	confirmTemp.setMonthSellerConfirm(Integer.parseInt(hourdateFormat1.format(date)));
+		            	confirmTemp.setYearSellerConfirm(Integer.parseInt(hourdateFormat2.format(date)));
+		            	confirmTemp.setStatus("delivered");
+		            	confirmDao.save(confirmTemp);
+		            	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(), "CONFIRMACIÓN DE ENTREGA EXITOSA","Se realizo la confirmacion de la entrega del producto en una sucursal andreani:  "+confirmTemp.getBuy().getYng_item().getName() +"  Descripción : "+confirmTemp.getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +confirmTemp.getBuy().getYng_item().getPrice()
+		            			+ "<br/>--Despues de que tu comprador recoja el producto tendra 10 dias vigentes para realizar reclamos acerca del producto.");
+		            	DateTime endClaim = now.plusDays(4);
+		            	smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "CONFIRMACIÓN DE ENTREGA EXITOSA", "Tu vendedor realizo la entrega del producto : "+confirmTemp.getBuy().getQuantity()+" "+confirmTemp.getBuy().getYng_item().getName()+" a:"+confirmTemp.getBuy().getCost()+" en la sucursal andreani"
+		    					+ "<br/>--Puedes recoger el producto de la sucursal Andreani desde "+Integer.parseInt(hourdateFormat.format(endClaim.toDate()))+"/"+Integer.parseInt(hourdateFormat1.format(endClaim.toDate()))+"/"+Integer.parseInt(hourdateFormat2.format(endClaim.toDate())));
+		    		}		
+		    	}
+			}
 		}
 	}
 	
