@@ -455,30 +455,97 @@ public class BuyController {
     	//modificar los correos para pagos no con tarjeta
 		
 		if(typeEnvio.equals("home")) {
-			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA"," Se realizo la venta del producto :  "+buy.getYng_item().getName()+ "  "+"  Precio:" +buy.getYng_item().getPrice()+ "  " +"    los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección:"+buy.getYng_item().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber()
+			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","<b>DETALLE DE LA VENTA:</b>"
+					+ "<table border=\"1\">\r\n"  
+					+ "  <tr>\r\n"
+					+ "    <th width=\"10%\">CANT.</th>\r\n" 
+					+ "    <th width=\"50%\">DESCRIPCIÓN</th>\r\n" 
+					+ "    <th width=\"20%\">PRECIO UNITARIO</th>\r\n"
+					+ "    <th width=\"20%\">IMPORTE</th>\r\n"
+					+ "  </tr>\r\n"
+					+ "  <tr>\r\n"
+					+ "    <td>"+buy.getQuantity()+"</td>\r\n" 
+					+ "    <td>"+buy.getYng_item().getName()+"</td>\r\n" 
+					+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+					+ "    <td>"+buy.getItemCost()+" ARS.</td>\r\n" 
+					+ "  </tr>\r\n"
+					+ "  <tr>\r\n" 
+					+ "    <th colspan=\"2\">TOTAL.</th>\r\n" 
+					+ "    <td>"+buy.getCost()+" ARS</td>\r\n"
+					+ "  </tr>\r\n"
+					+ "</table>"
+					+ "<br/> Los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección: "+userTemp.getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ userTemp.getYng_Ubication().getYng_City().getName()+" Calle: "+userTemp.getYng_Ubication().getStreet()+"  Numero: "+userTemp.getYng_Ubication().getNumber()
+					+ "<br/> Encuantrate con tu comprador para firmar la entrega del producto."
 					+ "<br/> - Al Momento de entregar el producto al comprador ingresa a: http://www.yingul.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones "
 					+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
 					+ "<br/> - No entregues el producto sin que tu y el vendedor firmen la entrega no aceptaremos reclamos si la confirmacion no esta firmada por ambas partes"
 					+ "<br/> - Por tu seguridad no entregues el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
-					+ "<br/> - Despues de entregar el producto tu comprador tiene 7 dias para observar sus condiciones posterior a eso te daremos mas instrucciones para recoger tu dinero");
+					+ "<br/> - Despues de entregar el producto tu comprador tiene 10 dias para observar sus condiciones posterior a eso te daremos mas instrucciones para recoger tu dinero"
+					);
 			if(buy.getYng_Payment().getType().equals("CASH")) {
-				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getCashPayment().getPaymentMethod()+" Cumpla las siguientes instrucciones:."
-						+ "<br/> - Al Momento de recibir el producto dile este codigo a tu vendedor: "+confirm.getCodeConfirm()+" si el producto esta en buenas condiciones "
-						+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
-						+ "<br/> - No recibas el producto ni des el código si no estas conforme con el producto no aceptaremos reclamos posteriores"
-						+ "<br/> - Por tu seguridad no recibas el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
-						+ "<br/> - Despues de recibir el producto tienes 10 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero");
+				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
+						+ "<table border=\"1\">\r\n"  
+						+ "  <tr>\r\n"
+						+ "    <th width=\"10%\">CANT.</th>\r\n" 
+						+ "    <th width=\"50%\">DESCRIPCIÓN</th>\r\n" 
+						+ "    <th width=\"20%\">PRECIO UNITARIO</th>\r\n"
+						+ "    <th width=\"20%\">IMPORTE</th>\r\n"
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n"
+						+ "    <td>"+buy.getQuantity()+"</td>\r\n" 
+						+ "    <td>"+buy.getYng_item().getName()+"</td>\r\n" 
+						+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+						+ "    <td>"+buy.getItemCost()+" ARS.</td>\r\n" 
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n" 
+						+ "    <th colspan=\"2\">TOTAL.</th>\r\n" 
+						+ "    <td>"+buy.getCost()+" ARS</td>\r\n"
+						+ "  </tr>\r\n"
+						+ "</table>"
+						+ "<br/> Pago realizado en EFECTIVO a través de: "+buy.getYng_Payment().getCashPayment().getPaymentMethod()+" Cumpla las siguientes instrucciones:."
+						+ "<br/> Los datos del vendedor son: "+"Email :"+buy.getYng_item().getUser().getEmail()+"  Teléfono : "+buy.getYng_item().getUser().getPhone()+"  Dirección:"+buy.getYng_item().getUser().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getUser().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getUser().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber()
+						+ "<br/> - Al Momento de recibir el producto dale este codigo a tu vendedor: "+confirm.getCodeConfirm()+" si el producto esta en buenas condiciones."
+						+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina."
+						+ "<br/> - No recibas el producto ni des el código si no estas conforme con el producto no aceptaremos reclamos posteriores."
+						+ "<br/> - Por tu seguridad no recibas el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día."
+						+ "<br/> - Despues de recibir el producto tienes 10 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero.");
 			}
 			if(buy.getYng_Payment().getType().equals("CARD")) {
-				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" Cumpla las siguientes instrucciones:."
+				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
+						+ "<table border=\"1\">\r\n"  
+						+ "  <tr>\r\n"
+						+ "    <th width=\"10%\">CANT.</th>\r\n" 
+						+ "    <th width=\"50%\">DESCRIPCIÓN</th>\r\n" 
+						+ "    <th width=\"20%\">PRECIO UNITARIO</th>\r\n"
+						+ "    <th width=\"20%\">IMPORTE</th>\r\n"
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n"
+						+ "    <td>"+buy.getQuantity()+"</td>\r\n" 
+						+ "    <td>"+buy.getYng_item().getName()+"</td>\r\n" 
+						+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+						+ "    <td>"+buy.getItemCost()+" ARS.</td>\r\n" 
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n" 
+						+ "    <th colspan=\"2\">TOTAL.</th>\r\n" 
+						+ "    <td>"+buy.getCost()+" ARS</td>\r\n"
+						+ "  </tr>\r\n"
+						+ "</table>"
+						+ "<br/> Pago realizado con TARJETA: "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" Cumpla las siguientes instrucciones:."
+						+ "<br/> Los datos del vendedor son: "+"Email :"+buy.getYng_item().getUser().getEmail()+"  Teléfono : "+buy.getYng_item().getUser().getPhone()+"  Dirección:"+buy.getYng_item().getUser().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getUser().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getUser().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber()
 						+ "<br/> - Al Momento de recibir el producto dile este codigo a tu vendedor: "+confirm.getCodeConfirm()+" si el producto esta en buenas condiciones "
-						+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
-						+ "<br/> - No recibas el producto ni des el código si no estas conforme con el producto no aceptaremos reclamos posteriores"
+						+ "<br/> - Espera el mensaje de confirmación exitosa de nuestra página."
+						+ "<br/> - No recibas el producto ni des el código si no estas conforme con el producto no aceptaremos reclamos posteriores."
 						+ "<br/> - Por tu seguridad no recibas el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
 						+ "<br/> - Despues de recibir el producto tienes 10 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero");
 			}	
 		}
 		else {
+			if(buy.getYng_item().getProductPagoEnvio().equals("gratis")) {
+				
+			}else {
+				
+			}
+			
 			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","Se realizo la venta del producto :  "+buy.getYng_item().getName() +"  Descripción : "+buy.getYng_item().getDescription()+ "  " +"  Precio: " +buy.getYng_item().getPrice()+"   Costo del envio : " +buy.getShipping().getYng_Quote().getRate()+  
 					"<br/>--Imprimir la etiqueta de Andreani."+
 					"<br/>--Preparar y embalar el paquete junto a la etiqueta." + 
@@ -486,12 +553,60 @@ public class BuyController {
 					"<br/>--Déjalo en la sucursal Andreani más cercana." + 
 					"<br/>"+buy.getShipping().getYng_Shipment().getTicket() +
 					"<br/>Despues de entregar el producto Andreani tiene 2 dias para entregarlo a tu comprador."+
-					"<br/>Cuando tu comprador recoja el producto tiene 10 dias para observar sus condiciones, posterior a eso te daremos mas instrucciones para recoger tu dinero");
+					"<br/>Cuando tu comprador recoja el producto tiene 10 dias para observar sus condiciones, posterior a eso te daremos mas instrucciones para recoger tu dinero"+
+					"<table border=\"1\">\r\n" + 
+					"  <tr>\r\n" + 
+					"    <th width=\"10%\">CANT.</th>\r\n" + 
+					"    <th width=\"70%\">DESCRIPCIÓN</th>\r\n" + 
+					"    <th width=\"20%\">VALOR</th>\r\n" + 
+					"  </tr>\r\n" + 
+					"  <tr>\r\n" + 
+					"    <td>1</td>\r\n" + 
+					"    <td>Producto</td>\r\n" + 
+					"    <td>100.00 ARS</td>\r\n" + 
+					"  </tr>\r\n" + 
+					"  <tr>\r\n" + 
+					"    <td colspan=\"2\">TOTAL.</td>\r\n" + 
+					"    <td>100.00 ARS</td>\r\n" + 
+					"  </tr>\r\n" + 
+					"</table>");
 			if(buy.getYng_Payment().getType().equals("CASH")) {
-				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getCashPayment().getPaymentMethod()+" nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani.");
+				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getCashPayment().getPaymentMethod()+" nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani."+
+					"<table border=\"1\">\r\n" + 
+					"  <tr>\r\n" + 
+					"    <th width=\"10%\">CANT.</th>\r\n" + 
+					"    <th width=\"70%\">DESCRIPCIÓN</th>\r\n" + 
+					"    <th width=\"20%\">VALOR</th>\r\n" + 
+					"  </tr>\r\n" + 
+					"  <tr>\r\n" + 
+					"    <td>1</td>\r\n" + 
+					"    <td>Producto</td>\r\n" + 
+					"    <td>100.00 ARS</td>\r\n" + 
+					"  </tr>\r\n" + 
+					"  <tr>\r\n" + 
+					"    <td colspan=\"2\">TOTAL.</td>\r\n" + 
+					"    <td>100.00 ARS</td>\r\n" + 
+					"  </tr>\r\n" + 
+					"</table>");
 			}
 			if(buy.getYng_Payment().getType().equals("CARD")) {
-				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani.");
+				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani."+
+				"<table border=\"1\">\r\n" + 
+				"  <tr>\r\n" + 
+				"    <th width=\"10%\">CANT.</th>\r\n" + 
+				"    <th width=\"60%\">DESCRIPCIÓN</th>\r\n" + 
+				"    <th width=\"30%\">VALOR</th>\r\n" + 
+				"  </tr>\r\n" + 
+				"  <tr>\r\n" + 
+				"    <td>1</td>\r\n" + 
+				"    <td>Producto</td>\r\n" + 
+				"    <td>100.00 ARS</td>\r\n" + 
+				"  </tr>\r\n" + 
+				"  <tr>\r\n" + 
+				"    <td colspan=\"2\">TOTAL.</td>\r\n" + 
+				"    <td>100.00 ARS</td>\r\n" + 
+				"  </tr>\r\n" + 
+				"</table>");
 			}
 		}
     	return "save";
