@@ -24,6 +24,7 @@ import com.valework.yingul.dao.CommissionDao;
 import com.valework.yingul.dao.ConfirmDao;
 import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.PaymentDao;
+import com.valework.yingul.dao.PersonDao;
 import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.TransactionDao;
 import com.valework.yingul.dao.TransactionDetailDao;
@@ -73,10 +74,12 @@ public class GreetingBatchBean {
 	ItemDao itemDao;
 	@Autowired
 	PayUFunds payUFunds;
-
+	@Autowired
+	PersonDao personDao;
 	
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 6 * * *")//cada dia a las 6 de la mañana
+	//@Scheduled(cron = "0 0/16 12 * * ?")//cada 8 minutos desde las 10:45
 	@Scheduled(cron = "0 30/16 17 * * ?")//cada 8 minutos desde las 10:45
 	public void cronJob() throws ParseException {
 		try {
@@ -107,14 +110,14 @@ public class GreetingBatchBean {
     			str_date+="-0"+s.getMonthEndClaim();
     		}
     		str_date += "-"+s.getYearEndClaim();
-    		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");;
+    		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
     		Date endClaim= formatter.parse(str_date);
 			if(date.after(endClaim)) {
 				s.setStatus("closed");
 				Yng_Account accountTemp= accountDao.findByUser(s.getBuy().getYng_item().getUser());
 				//crear la transaccion con todo el costo del producto para luego descontar comisiones o costo de envio
 				Yng_Transaction transactionTemp = new Yng_Transaction();
-				transactionTemp.setAmount(s.getBuy().getYng_item().getPrice());
+				transactionTemp.setAmount(s.getBuy().getCost());
 				transactionTemp.setCity("Moreno");
 				transactionTemp.setCountry("Argentina");
 				transactionTemp.setCountryCode("AR");
@@ -165,9 +168,16 @@ public class GreetingBatchBean {
 				commissionTemp.setAYingulTransaction(true);
 				double costCommission=0;
 				Yng_TransactionDetail transactionDetail=new Yng_TransactionDetail();
+				System.out.println(s.getBuy().getYng_item().getUser().getUsername());
+				List<Yng_Person> personList= personDao.findAll();
+				Yng_Person person = new Yng_Person();
+				for (Yng_Person yng_Person : personList) {
+					if(yng_Person.getYng_User().getUsername().equals(s.getBuy().getYng_item().getUser().getUsername())) {
+						person = yng_Person;
+						System.out.println(person.getName()+" todo bien");
+					}
+				}
 				
-				List<Yng_Person> personList= personService.findByUser(s.getBuy().getYng_item().getUser());
-				Yng_Person person = personList.get(0);
 				Yng_Commission commission= new Yng_Commission();
 				Yng_Commission commissionPAYU= new Yng_Commission();
 				
@@ -312,7 +322,7 @@ public class GreetingBatchBean {
 						//
 					}
 				}
-				transactionDetail.setCostCommission(((s.getBuy().getYng_item().getPrice()*commission.getPercentage())/100)+commission.getFixedPrice());
+				transactionDetail.setCostCommission(((s.getBuy().getCost()*commission.getPercentage())/100)+commission.getFixedPrice());
 				transactionDetail.setCostPAYU(((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice());
 				costCommission=(transactionDetail.getCostCommission()+transactionDetail.getCostPAYU());
 				transactionDetail.setCostTotal(costCommission);

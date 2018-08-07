@@ -52,6 +52,8 @@ public class UserController {
 	private UbicationDao ubicationDao;
 	@Autowired
 	BranchAndreaniDao branchAndreaniDao;
+	@Autowired
+	LogisticsController logisticsController;
 	@RequestMapping("/{username}")
     public Yng_User findByUsername(@PathVariable("username") String username) {
         return userDao.findByUsername(username);
@@ -394,7 +396,7 @@ public class UserController {
 	    			try {
 	    				//codAndreani=log.andreaniSucursales(ubicationTemp.getPostalCode(), "", "");
 	    				//codAndreani=log.andreaniSucursalesObject(ubicationTemp.getPostalCode(), "", "").getCodAndreani();
-	    				branchAndreani=log.andreaniSucursalesObject(ubicationTemp.getPostalCode(), "", "");
+	    				branchAndreani=logisticsController.andreaniSucursalesObject(ubicationTemp.getPostalCode(), "", "");
 	    				codAndreani=branchAndreani.getCodAndreani();
 	    				branchAndreaniDao.save(branchAndreani);
 	    			} catch (Exception e1) {
