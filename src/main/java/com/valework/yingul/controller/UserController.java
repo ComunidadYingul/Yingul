@@ -63,6 +63,23 @@ public class UserController {
 		Yng_Person person = personList.get(0);
 		return person;	
     }
+	@RequestMapping("/getPersonWithAuthorization/{username}")
+    public Yng_Person getPersonWithAuthorization(@PathVariable("username") String username,@RequestHeader("Authorization") String authorization) {
+		Yng_User user = userDao.findByUsername(username); 
+		String token =new String(org.apache.commons.codec.binary.Base64.decodeBase64(authorization));
+		String[] parts = token.split(":");
+		Yng_User yng_User= userDao.findByUsername(parts[0]);
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
+		if(user.getUsername().equals(yng_User.getUsername()) && yng_User.getUsername().equals(parts[0]) && encoder.matches(parts[1], yng_User.getPassword())){
+			List<Yng_Person> personList= personService.findByUser(yng_User);
+			Yng_Person person = personList.get(0);
+			return person;
+		}else {
+			return null;
+		}
+			
+    }
+	
 	@RequestMapping(value = "/updateUsername", method = RequestMethod.POST)
 	@ResponseBody
     public String updateUsernamePost(@Valid @RequestBody Yng_User user,@RequestHeader("Authorization") String authorization) throws MessagingException {

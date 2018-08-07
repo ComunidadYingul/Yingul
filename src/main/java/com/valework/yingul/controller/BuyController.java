@@ -456,7 +456,7 @@ public class BuyController {
 		
 		if(typeEnvio.equals("home")) {
 			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA"," Se realizo la venta del producto :  "+buy.getYng_item().getName()+ "  "+"  Precio:" +buy.getYng_item().getPrice()+ "  " +"    los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección:"+buy.getYng_item().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber()
-					+ "<br/> - Al Momento de entregar el producto al comprador ingresa a: http://www.yingul.com//"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones "
+					+ "<br/> - Al Momento de entregar el producto al comprador ingresa a: http://www.yingul.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones "
 					+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
 					+ "<br/> - No entregues el producto sin que tu y el vendedor firmen la entrega no aceptaremos reclamos si la confirmacion no esta firmada por ambas partes"
 					+ "<br/> - Por tu seguridad no entregues el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
