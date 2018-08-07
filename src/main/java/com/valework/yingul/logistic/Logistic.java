@@ -298,8 +298,8 @@ public class Logistic {
     
 	public String andreaniRemitenteWSDL(String a) throws Exception{
 		   AndreaniProperty andr=new AndreaniProperty();
-		   andr.setHost("integraciones.andreani.com:5000");
-		   andr.setSOAPAction("http://tempuri.org/IDatosImpresion/GenerarEnvioConDatosDeImpresionYRemitente");
+		   //andr.setHost("integraciones.andreani.com:5000");
+		   //andr.setSOAPAction("http://tempuri.org/IDatosImpresion/GenerarEnvioConDatosDeImpresionYRemitente");
 		   andr.setWsURL("https://integraciones.andreani.com:5000/DatosImpresion");
 		   andr.setXmlInput(a);			  
 		   return andreaniHttpConection(andr);
@@ -307,8 +307,8 @@ public class Logistic {
     public String andreaniPdfLink(String numberAndreani) throws Exception{
     	System.out.println("numeroAndre: "+numberAndreani);
  	   AndreaniProperty andr=new AndreaniProperty();
- 	   andr.setHost("integraciones.andreani.com:5000");
- 	   andr.setSOAPAction("http://www.andreani.com.ar/IImprimirConstancia/ImprimirConstancia");
+ 	   //andr.setHost("integraciones.andreani.com:5000");
+ 	   //andr.setSOAPAction("http://www.andreani.com.ar/IImprimirConstancia/ImprimirConstancia");
  	   andr.setWsURL("https://integraciones.andreani.com:5000/E-ImposicionRemota");
  	   andr.setXmlInput(andreaniPrintTicketData(numberAndreani));
  	   return andreaniHttpConection(andr);
