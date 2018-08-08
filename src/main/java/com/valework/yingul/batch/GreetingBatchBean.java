@@ -82,12 +82,6 @@ public class GreetingBatchBean {
 	//@Scheduled(cron = "0 0/16 12 * * ?")//cada 8 minutos desde las 10:45
 	@Scheduled(cron = "0 30/16 17 * * ?")//cada 8 minutos desde las 10:45
 	public void cronJob() throws ParseException {
-		try {
-			smtpMailSender.send("quenallataeddy@gmail.com", "inicio de los crons", "inicio de los crons");
-		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		System.out.println("primer cron");
 		Date date = new Date();
     	DateFormat hourdateFormat = new SimpleDateFormat("dd");
@@ -112,6 +106,9 @@ public class GreetingBatchBean {
     		str_date += "-"+s.getYearEndClaim();
     		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
     		Date endClaim= formatter.parse(str_date);
+    		DateTime dateTime = new DateTime(endClaim);
+    		dateTime = dateTime.plus(1);
+    		endClaim = dateTime.toDate();
 			if(date.after(endClaim)) {
 				s.setStatus("closed");
 				Yng_Account accountTemp= accountDao.findByUser(s.getBuy().getYng_item().getUser());

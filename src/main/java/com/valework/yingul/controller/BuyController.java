@@ -541,72 +541,173 @@ public class BuyController {
 		}
 		else {
 			if(buy.getYng_item().getProductPagoEnvio().equals("gratis")) {
-				
+				smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","<b>DETALLE DE LA VENTA:</b>"
+						+ "<table border=\"1\">\r\n"  
+						+ "  <tr>\r\n"
+						+ "    <th width=\"10%\">CANT.</th>\r\n" 
+						+ "    <th width=\"50%\">DESCRIPCIÓN</th>\r\n" 
+						+ "    <th width=\"20%\">PRECIO UNITARIO</th>\r\n"
+						+ "    <th width=\"20%\">IMPORTE</th>\r\n"
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n"
+						+ "    <td>"+buy.getQuantity()+"</td>\r\n" 
+						+ "    <td>"+buy.getYng_item().getName()+"</td>\r\n" 
+						+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+						+ "    <td>"+buy.getItemCost()+" ARS.</td>\r\n" 
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n" 
+						+ "    <th colspan=\"2\">TOTAL.</th>\r\n" 
+						+ "    <td>"+buy.getCost()+" ARS</td>\r\n"
+						+ "  </tr>\r\n"
+						+ "</table>"
+						+ "<br/> Costo del envio : " +buy.getShipping().getYng_Quote().getRate()+" ARS. El costo de envio se descontara posteriormente de tu saldo en YingulPay."  
+						+ "<br/>--Imprimir la etiqueta de Andreani."
+						+ "<br/>--Preparar y embalar el paquete junto a la etiqueta." 
+						+ "<br/>--Déjalo en la sucursal Andreani más cercana." 
+						+ "<br/>"+buy.getShipping().getYng_Shipment().getTicket()
+						+ "<br/>Nos pondremos en contacto con tigo cuando tu comprador recoja el producto de Andreani.");
+				if(buy.getYng_Payment().getType().equals("CASH")) {
+					smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
+						+ "<table border=\"1\">\r\n"  
+						+ "  <tr>\r\n"
+						+ "    <th width=\"10%\">CANT.</th>\r\n" 
+						+ "    <th width=\"50%\">DESCRIPCIÓN</th>\r\n" 
+						+ "    <th width=\"20%\">PRECIO UNITARIO</th>\r\n"
+						+ "    <th width=\"20%\">IMPORTE</th>\r\n"
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n"
+						+ "    <td>"+buy.getQuantity()+"</td>\r\n" 
+						+ "    <td>"+buy.getYng_item().getName()+"</td>\r\n" 
+						+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+						+ "    <td>"+buy.getItemCost()+" ARS.</td>\r\n" 
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n"
+						+ "    <td>1</td>\r\n" 
+						+ "    <td>Envio</td>\r\n" 
+						+ "    <td>-</td>\r\n" 
+						+ "    <td>GRATIS</td>\r\n" 
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n" 
+						+ "    <th colspan=\"2\">TOTAL.</th>\r\n" 
+						+ "    <td>"+buy.getCost()+" ARS</td>\r\n"
+						+ "  </tr>\r\n"
+						+ "</table>"
+						+ "<br/> Pago realizado en EFECTIVO a través de: "+buy.getYng_Payment().getCashPayment().getPaymentMethod()+"."	
+						+ "<br/> Nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani.");
+				}
+				if(buy.getYng_Payment().getType().equals("CARD")) {
+					smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
+						+ "<table border=\"1\">\r\n"  
+						+ "  <tr>\r\n"
+						+ "    <th width=\"10%\">CANT.</th>\r\n" 
+						+ "    <th width=\"50%\">DESCRIPCIÓN</th>\r\n" 
+						+ "    <th width=\"20%\">PRECIO UNITARIO</th>\r\n"
+						+ "    <th width=\"20%\">IMPORTE</th>\r\n"
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n"
+						+ "    <td>"+buy.getQuantity()+"</td>\r\n" 
+						+ "    <td>"+buy.getYng_item().getName()+"</td>\r\n" 
+						+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+						+ "    <td>"+buy.getItemCost()+" ARS.</td>\r\n" 
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n"
+						+ "    <td>1</td>\r\n" 
+						+ "    <td>Envio</td>\r\n" 
+						+ "    <td>-</td>\r\n" 
+						+ "    <td>GRATIS</td>\r\n" 
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n" 
+						+ "    <th colspan=\"2\">TOTAL.</th>\r\n" 
+						+ "    <td>"+buy.getCost()+" ARS</td>\r\n"
+						+ "  </tr>\r\n"
+						+ "</table>"
+						+ "<br/> Pago realizado con TARJETA: "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+"."	
+						+ "<br/> Nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani.");
+				}
 			}else {
-				
-			}
-			
-			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","Se realizo la venta del producto :  "+buy.getYng_item().getName() +"  Descripción : "+buy.getYng_item().getDescription()+ "  " +"  Precio: " +buy.getYng_item().getPrice()+"   Costo del envio : " +buy.getShipping().getYng_Quote().getRate()+  
-					"<br/>--Imprimir la etiqueta de Andreani."+
-					"<br/>--Preparar y embalar el paquete junto a la etiqueta." + 
-					"<br/>--Preparar y embalar el paquete junto a la etiqueta." + 
-					"<br/>--Déjalo en la sucursal Andreani más cercana." + 
-					"<br/>"+buy.getShipping().getYng_Shipment().getTicket() +
-					"<br/>Despues de entregar el producto Andreani tiene 2 dias para entregarlo a tu comprador."+
-					"<br/>Cuando tu comprador recoja el producto tiene 10 dias para observar sus condiciones, posterior a eso te daremos mas instrucciones para recoger tu dinero"+
-					"<table border=\"1\">\r\n" + 
-					"  <tr>\r\n" + 
-					"    <th width=\"10%\">CANT.</th>\r\n" + 
-					"    <th width=\"70%\">DESCRIPCIÓN</th>\r\n" + 
-					"    <th width=\"20%\">VALOR</th>\r\n" + 
-					"  </tr>\r\n" + 
-					"  <tr>\r\n" + 
-					"    <td>1</td>\r\n" + 
-					"    <td>Producto</td>\r\n" + 
-					"    <td>100.00 ARS</td>\r\n" + 
-					"  </tr>\r\n" + 
-					"  <tr>\r\n" + 
-					"    <td colspan=\"2\">TOTAL.</td>\r\n" + 
-					"    <td>100.00 ARS</td>\r\n" + 
-					"  </tr>\r\n" + 
-					"</table>");
-			if(buy.getYng_Payment().getType().equals("CASH")) {
-				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getCashPayment().getPaymentMethod()+" nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani."+
-					"<table border=\"1\">\r\n" + 
-					"  <tr>\r\n" + 
-					"    <th width=\"10%\">CANT.</th>\r\n" + 
-					"    <th width=\"70%\">DESCRIPCIÓN</th>\r\n" + 
-					"    <th width=\"20%\">VALOR</th>\r\n" + 
-					"  </tr>\r\n" + 
-					"  <tr>\r\n" + 
-					"    <td>1</td>\r\n" + 
-					"    <td>Producto</td>\r\n" + 
-					"    <td>100.00 ARS</td>\r\n" + 
-					"  </tr>\r\n" + 
-					"  <tr>\r\n" + 
-					"    <td colspan=\"2\">TOTAL.</td>\r\n" + 
-					"    <td>100.00 ARS</td>\r\n" + 
-					"  </tr>\r\n" + 
-					"</table>");
-			}
-			if(buy.getYng_Payment().getType().equals("CARD")) {
-				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani."+
-				"<table border=\"1\">\r\n" + 
-				"  <tr>\r\n" + 
-				"    <th width=\"10%\">CANT.</th>\r\n" + 
-				"    <th width=\"60%\">DESCRIPCIÓN</th>\r\n" + 
-				"    <th width=\"30%\">VALOR</th>\r\n" + 
-				"  </tr>\r\n" + 
-				"  <tr>\r\n" + 
-				"    <td>1</td>\r\n" + 
-				"    <td>Producto</td>\r\n" + 
-				"    <td>100.00 ARS</td>\r\n" + 
-				"  </tr>\r\n" + 
-				"  <tr>\r\n" + 
-				"    <td colspan=\"2\">TOTAL.</td>\r\n" + 
-				"    <td>100.00 ARS</td>\r\n" + 
-				"  </tr>\r\n" + 
-				"</table>");
+				smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","<b>DETALLE DE LA VENTA:</b>"
+						+ "<table border=\"1\">\r\n"  
+						+ "  <tr>\r\n"
+						+ "    <th width=\"10%\">CANT.</th>\r\n" 
+						+ "    <th width=\"50%\">DESCRIPCIÓN</th>\r\n" 
+						+ "    <th width=\"20%\">PRECIO UNITARIO</th>\r\n"
+						+ "    <th width=\"20%\">IMPORTE</th>\r\n"
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n"
+						+ "    <td>"+buy.getQuantity()+"</td>\r\n" 
+						+ "    <td>"+buy.getYng_item().getName()+"</td>\r\n" 
+						+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+						+ "    <td>"+buy.getItemCost()+" ARS.</td>\r\n" 
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n" 
+						+ "    <th colspan=\"2\">TOTAL.</th>\r\n" 
+						+ "    <td>"+buy.getCost()+" ARS</td>\r\n"
+						+ "  </tr>\r\n"
+						+ "</table>"
+						+"<br/>--Imprimir la etiqueta de Andreani."
+						+"<br/>--Preparar y embalar el paquete junto a la etiqueta." 
+						+"<br/>--Preparar y embalar el paquete junto a la etiqueta." 
+						+"<br/>--Déjalo en la sucursal Andreani más cercana."
+						+"<br/>"+buy.getShipping().getYng_Shipment().getTicket()
+						+"<br/>Nos pondremos en contacto con tigo cuando tu comprador recoja el producto de Andreani.");
+				if(buy.getYng_Payment().getType().equals("CASH")) {
+					smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
+						+ "<table border=\"1\">\r\n"  
+						+ "  <tr>\r\n"
+						+ "    <th width=\"10%\">CANT.</th>\r\n" 
+						+ "    <th width=\"50%\">DESCRIPCIÓN</th>\r\n" 
+						+ "    <th width=\"20%\">PRECIO UNITARIO</th>\r\n"
+						+ "    <th width=\"20%\">IMPORTE</th>\r\n"
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n"
+						+ "    <td>"+buy.getQuantity()+"</td>\r\n" 
+						+ "    <td>"+buy.getYng_item().getName()+"</td>\r\n" 
+						+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+						+ "    <td>"+buy.getItemCost()+" ARS.</td>\r\n" 
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n"
+						+ "    <td>1</td>\r\n" 
+						+ "    <td>Envio</td>\r\n" 
+						+ "    <td>-</td>\r\n" 
+						+ "    <td>"+buy.getShipping().getYng_Quote().getRate()+" ARS.</td>\r\n" 
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n" 
+						+ "    <th colspan=\"2\">TOTAL.</th>\r\n" 
+						+ "    <td>"+buy.getCost()+" ARS</td>\r\n"
+						+ "  </tr>\r\n"
+						+ "</table>"
+						+ "<br/> Pago realizado en EFECTIVO a través de: "+buy.getYng_Payment().getCashPayment().getPaymentMethod()+"."	
+						+ "<br/> Nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani.");
+				}
+				if(buy.getYng_Payment().getType().equals("CARD")) {
+					smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
+						+ "<table border=\"1\">\r\n"  
+						+ "  <tr>\r\n"
+						+ "    <th width=\"10%\">CANT.</th>\r\n" 
+						+ "    <th width=\"50%\">DESCRIPCIÓN</th>\r\n" 
+						+ "    <th width=\"20%\">PRECIO UNITARIO</th>\r\n"
+						+ "    <th width=\"20%\">IMPORTE</th>\r\n"
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n"
+						+ "    <td>"+buy.getQuantity()+"</td>\r\n" 
+						+ "    <td>"+buy.getYng_item().getName()+"</td>\r\n" 
+						+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+						+ "    <td>"+buy.getItemCost()+" ARS.</td>\r\n" 
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n"
+						+ "    <td>1</td>\r\n" 
+						+ "    <td>Envio</td>\r\n" 
+						+ "    <td>-</td>\r\n" 
+						+ "    <td>"+buy.getShipping().getYng_Quote().getRate()+" ARS.</td>\r\n" 
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n" 
+						+ "    <th colspan=\"2\">TOTAL.</th>\r\n" 
+						+ "    <td>"+buy.getCost()+" ARS</td>\r\n"
+						+ "  </tr>\r\n"
+						+ "</table>"
+						+ "<br/> Pago realizado con TARJETA: "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+"."	
+						+ "<br/> Nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani.");
+				}
 			}
 		}
     	return "save";

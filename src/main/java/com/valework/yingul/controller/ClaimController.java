@@ -51,15 +51,15 @@ public class ClaimController {
     	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(), "RECLAMO URGENTE","Tu comprador hizo un reclamo respecto a :  "+confirmTemp.getBuy().getYng_item().getName()
     			+ "<br/> La acreditacion de Yingul a tu cuenta se encuentra temporalmente congelada "
     			+ "<br/> Tu comprador argumento: "+ claim.getClaimText()
-    			+ "<br/> Encuentrate con tu comprador e ingresa a: http://www.yingul.com/agreement/"+claim.getClaimId()+" donde ambos podran firmar un acuerdo y podamos acreditar tu dinero a tu cuenta.");
-		smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "RECLAMO REALIZADO EXITOSAMENTE", "Se hizo el reclamo respecto a :  "+confirmTemp.getBuy().getYng_item().getName() +"  Descripción : "+confirmTemp.getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +confirmTemp.getBuy().getYng_item().getPrice() 
+    			+ "<br/> Nos pondremos en contacto contigo lo mas pronto posible o puedes escribirnos a yingulcompany@internetvale.com codigo de seguimiento:"+confirmTemp.getConfirmId());
+		smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "RECLAMO REALIZADO EXITOSAMENTE", "Se hizo el reclamo respecto a :  "+confirmTemp.getBuy().getYng_item().getName() 
     			+ "<br/> Tu argumento es : "+ claim.getClaimText()
-    			+ "<br/> Encuentrate con tu vendedor e ingresa a: http://www.yingul.com/agreement/"+claim.getClaimId()+" donde ambos podran firmar un acuerdo que los beneficie."
-    			+ "<br/> No devuelvas el poducto al vendedor hasta que ambos hasta que te llegue un email indicando que lo puedes hacer si no no podremos devolverte tu dinero");
-		smtpMailSender.send("yingulcompany@internetvale.com", "RECLAMO EN www.yingul.com", "Se hizo el reclamo respecto a :  "+confirmTemp.getBuy().getYng_item().getName() +"  Descripción : "+confirmTemp.getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +confirmTemp.getBuy().getYng_item().getPrice() 
-    			+ "<br/> Tu argumento es : "+ claim.getClaimText()
-    			+ "<br/> Encuentrate con tu vendedor e ingresa a: http://www.yingul.com/agreement/"+claim.getClaimId()+" donde ambos podran firmar un acuerdo que los beneficie."
-    			+ "<br/> No devuelvas el poducto al vendedor hasta que ambos hasta que te llegue un email indicando que lo puedes hacer si no no podremos devolverte tu dinero");
+    			+ "<br/> Nos pondremos en contacto contigo lo mas pronto posible o puedes escribirnos a yingulcompany@internetvale.com codigo de seguimiento:"+confirmTemp.getConfirmId());
+    			/*+ "<br/> Encuentrate con tu vendedor e ingresa a: http://www.yingul.com/agreement/"+claim.getClaimId()+" donde ambos podran firmar un acuerdo que los beneficie."
+    			+ "<br/> No devuelvas el poducto al vendedor hasta que ambos hasta que te llegue un email indicando que lo puedes hacer si no no podremos devolverte tu dinero");*/
+		smtpMailSender.send("yingulcompany@internetvale.com", "RECLAMO EN www.yingul.com", "Se hizo el reclamo respecto a :  "+confirmTemp.getBuy().getYng_item().getName() 
+    			+ "<br/> El argumento del comprador es : "+ claim.getClaimText()
+    			+ "<br/> Código de seguimiento:"+confirmTemp.getConfirmId());
     	return "save";
     }
 	
