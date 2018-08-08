@@ -21,6 +21,8 @@ import com.valework.yingul.dao.ResponseBodyDao;
 import com.valework.yingul.dao.ResponseDao;
 import com.valework.yingul.dao.ResponseHeaderDao;
 import com.valework.yingul.dao.StandardDao;
+import com.valework.yingul.model.Yng_BranchAndreani;
+import com.valework.yingul.model.Yng_Buy;
 import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Product;
@@ -52,7 +54,7 @@ public class Logistic {
 	//String 
  	public String andreaniHttpConection(AndreaniProperty andreaniProp) throws MalformedURLException, IOException {
 		//Code to make a webservice HTTP request
- 		/*Yng_Request requestTemp = new Yng_Request(); 
+ 		Yng_Request requestTemp = new Yng_Request(); 
 		requestTemp.setURI(andreaniProp.wsURL);
 		requestTemp.setInfo("wsURL Andreani");
 		requestTemp = requestDao.save(requestTemp);
@@ -61,7 +63,7 @@ public class Logistic {
 	    body.setKey("body");
 	    body.setValue(andreaniProp.getXmlInput());
 	    body.setRequest(requestTemp);
-		requestBodyDao.save(body);*/
+	    Yng_RequestBody temr=requestBodyDao.save(body);
 		//
 		String responseString = "";
 		String outputString = "";
@@ -121,10 +123,22 @@ public class Logistic {
 			}	a++;	
 		System.out.println("outputString:"+responseString);
 		}
+		//Code to make a webservice HTTP request
+ 		Yng_Request requestTemp2 = new Yng_Request(); 
+		requestTemp2.setURI(andreaniProp.wsURL);
+		requestTemp2.setInfo("wsURL Andreani Respuesta ");
+		requestTemp2 = requestDao.save(requestTemp);
+		//crear el response
+		Yng_RequestBody body2= new Yng_RequestBody(); 
+	    body2.setKey(""+temr.getRequestBodyId());
+	    body2.setValue(outputString);
+	    body2.setRequest(requestTemp);
+		requestBodyDao.save(body2);
+		//
 		System.out.println("outputString1 :"+outputString);
 		return ""+outputString;
 		}
-	public String andreaniStringRe(Yng_Person per,Yng_Shipping shi,Yng_Person perItem,Yng_Product pro) {
+	public String andreaniStringRe(Yng_Person per,Yng_Shipping shi,Yng_Person perItem,Yng_Product pro,Yng_BranchAndreani branchAndreaniC,Yng_BranchAndreani branchAndreaniV,Yng_Buy buy) {
 		Yng_Standard Username = standardDao.findByKey("Username");
 		System.out.println("Username:"+Username.getValue());
 		Yng_Standard Password = standardDao.findByKey("Password");
@@ -134,7 +148,8 @@ public class Logistic {
 		System.out.println("Cliente:"+Cliente);
 		Yng_Standard Contrato = standardDao.findByKey("Contrato");
 		System.out.println("Contrato:"+Contrato);
-		
+		String postalCode=per.getYng_User().getYng_Ubication().getPostalCode();
+		System.out.println("postalCode:----"+postalCode);
 		//LogisticsController  logisticsController=new LogisticsController();
 		//Yng_Product prod = logisticsController.getProductByIdItem(shi.getYng_Quote().getYng_Item().getItemId());
 		   String confirmarcompra="<soapenv:Envelope \r\n" + 
@@ -168,7 +183,7 @@ public class Logistic {
 		   		+ "</ecom:contrato>\r\n" + 
 		   		"<ecom:destinatario>\r\n" + 
 			   		"<and:apellido>"
-			   			+ per.getLastname()
+			   			+ buy.getShipping().getLastName()
 			   		+ "</and:apellido>\r\n" + 
 			   		"<!--Optional:-->\r\n" + 
 			   		"<and:apellidoAlternativo>"
@@ -179,7 +194,7 @@ public class Logistic {
 			   		+ "</and:email>\r\n" + 
 			   		"<!--Optional:-->\r\n" + 
 			   		"<and:nombre>"
-			   			+ per.getName()
+			   			+ buy.getShipping().getNameContact()
 			   		+ "</and:nombre>\r\n" + 
 			   		"<!--Optional:-->\r\n" + 
 			   		"<and:nombreAlternativo>"
@@ -226,7 +241,7 @@ public class Logistic {
 			   			+ per.getYng_User().getYng_Ubication().getStreet()
 			   		+ "</and:calle>\r\n" + 
 			   		"<and:codigoPostal>"
-			   			+ per.getYng_User().getYng_Ubication().getPostalCode()
+			   			+ buy.getShipping().getYng_Shipment().getYng_User().getYng_Ubication().getPostalCode()
 			   		+ "</and:codigoPostal>\r\n" + 
 			   		"<!--Optional:-->\r\n" + 
 			   		"<and:departamento></and:departamento>\r\n" + 
@@ -318,11 +333,11 @@ public class Logistic {
 			   		+ "</and:tipoDeDocumento>\r\n" + 
 		   		"</ecom:remitente>\r\n" + 
 		   		"<ecom:sucursalDeImposicion>"
-		   			+ "17"
+		   			+ branchAndreaniV.getSucursal()//"17"
 		   		+ "</ecom:sucursalDeImposicion>\r\n" + 
 		   		"<!--Optional:-->\r\n" + 
 		   		"<ecom:sucursalDeRetiro>"
-		   			+ "17"
+		   			+ branchAndreaniC.getSucursal()
 		   		+ "</ecom:sucursalDeRetiro>\r\n" + 
 		   		"<!--Optional:-->\r\n" + 
 		   		"<ecom:tarifa>"

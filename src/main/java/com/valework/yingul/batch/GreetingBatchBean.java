@@ -481,7 +481,7 @@ public class GreetingBatchBean {
 	    	}
 		}
 	}
-	@Scheduled(cron = "0 46/16 17 * * ?")//cada 8 minutos desde las 10:51
+	//@Scheduled(cron = "0 46/16 17 * * ?")//cada 8 minutos desde las 10:51
 	public void labelQuery() throws MessagingException{
 		System.out.println("quinto cron");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("pending");

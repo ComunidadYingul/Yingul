@@ -371,18 +371,39 @@ public class BuyController {
 				SAXParserFactory saxParseFactory=SAXParserFactory.newInstance();
 		        SAXParser sAXParser=saxParseFactory.newSAXParser();
 		        Yng_Person per=new Yng_Person(); //personDao..findByYng_User(buy.getUser().getUserId());
-		        List<Yng_Person> personList=personService.findByUser(buy.getUser());
+		        List<Yng_Person> personList=personService.findByUser(buy.getSeller());
 		        for (Yng_Person yng_Person : personList) {
-					System.out.println(""+yng_Person.toString());
+					System.out.println("per:--"+yng_Person.toString());				
 					per=yng_Person;
+					//System.out.println("numC:-----"+" pos:"+per.getYng_User().getYng_Ubication().toString());
 				}
 		        Yng_Person perItem=new Yng_Person(); //personDao..findByYng_User(buy.getUser().getUserId());
 		        List<Yng_Person> personListItem=personService.findByUser(buy.getUser());
 		        for (Yng_Person yng_Person : personListItem) {
-					System.out.println("perItem"+yng_Person.toString());
-					perItem=yng_Person;
+					System.out.println("perItem:--"+yng_Person.toString());
+					perItem=yng_Person; 
+					// System.out.println("numV:-----"+" pos:"+perItem.getYng_User().getYng_Ubication().toString());
 				}
-				String xml=logistic.andreaniRemitenteWSDL(this.logistic.andreaniStringRe(per,tempShipping,perItem,getProductByIdItem));
+		        //per.getYng_User().getYng_Ubication().setPostalCode(buy.getShipping().getYng_Shipment().getYng_User().getYng_Ubication().getPostalCode());
+		        //per.setName(buy.getShipping().getNameContact());
+		       // per.setLastname(buy.getShipping().getLastName());
+		        Yng_BranchAndreani branchAndreaniC=new Yng_BranchAndreani();
+		        Yng_BranchAndreani branchAndreaniV=new Yng_BranchAndreani();
+		       
+		        
+		        String numV="";
+		        String numC="";
+    			try {
+    				branchAndreaniV=logisticsController.andreaniSucursalesObject(perItem.getYng_User().getYng_Ubication().getPostalCode(), "", "");
+    				numV=branchAndreaniV.getCodAndreani();
+    				System.out.println("numV:-----"+numV+" pos:"+perItem.getYng_User().getYng_Ubication().getPostalCode());
+    				branchAndreaniC=logisticsController.andreaniSucursalesObject(buy.getShipping().getYng_Shipment().getYng_User().getYng_Ubication().getPostalCode(), "", "");
+    				numC=branchAndreaniC.getCodAndreani();
+    				System.out.println("numC:-----"+numC+" pos:"+buy.getShipping().getYng_Shipment().getYng_User().getYng_Ubication().getPostalCode());
+    			} catch (Exception e1) {
+    				e1.printStackTrace();
+    			}
+				String xml=logistic.andreaniRemitenteWSDL(this.logistic.andreaniStringRe(per,tempShipping,perItem,getProductByIdItem,branchAndreaniC,branchAndreaniV,buy));
 		        com.valework.yingul.logistic.EnvioHandler handlerS=new com.valework.yingul.logistic.EnvioHandler();
 		        
 		        sAXParser.parse(new InputSource(new StringReader(xml)), handlerS);
@@ -1097,7 +1118,7 @@ Yng_Shipment yng_Shipment=new Yng_Shipment();
 						System.out.println("perItem"+yng_Person.toString());
 						perItem=yng_Person;
 					}
-					String xml=logistic.andreaniRemitenteWSDL(logistic.andreaniStringRe(per,tempShipping,perItem,getProductByIdItem));
+					String xml=logistic.andreaniRemitenteWSDL(logistic.andreaniStringRe(per,tempShipping,perItem,getProductByIdItem,null,null,null));
 			        com.valework.yingul.logistic.EnvioHandler handlerS=new com.valework.yingul.logistic.EnvioHandler();
 			        
 			        sAXParser.parse(new InputSource(new StringReader(xml)), handlerS);
