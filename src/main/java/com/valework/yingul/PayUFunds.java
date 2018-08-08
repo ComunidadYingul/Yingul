@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.MessageDigest;
 import java.text.DateFormat;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -143,7 +144,7 @@ public class PayUFunds {
 	    		"         },\r\n" + 
 	    		"         \"buyer\": {\r\n" + 
 	    		"            \"merchantBuyerId\": \""+buy.getUser().getUserId()+"\",\r\n" + 
-	    		"            \"fullName\": \""+person.getName()+" "+person.getLastname()+"\",\r\n" + 
+	    		"            \"fullName\": \""+cleanString(person.getName()).toUpperCase()+" "+cleanString(person.getLastname()).toUpperCase()+"\",\r\n" + 
 	    		"            \"emailAddress\": \""+buy.getUser().getEmail()+"\",\r\n" + 
 	    		"            \"contactPhone\": \""+buy.getUser().getPhone()+"\",\r\n" + 
 	    		"            \"dniNumber\": \"5415668464654\",\r\n" + 
@@ -169,7 +170,7 @@ public class PayUFunds {
 	    		"      },\r\n" + 
 	    		"      \"payer\": {\r\n" + 
 	    		"         \"merchantPayerId\": \""+buy.getUser().getUserId()+"\",\r\n" + 
-	    		"         \"fullName\": \""+person.getName()+" "+person.getLastname()+"\",\r\n" + 
+	    		"         \"fullName\": \""+cleanString(person.getName()).toUpperCase()+" "+cleanString(person.getLastname()).toUpperCase()+"\",\r\n" + 
 	    		"         \"emailAddress\": \""+buy.getUser().getEmail()+"\",\r\n" + 
 	    		"         \"contactPhone\": \""+buy.getUser().getPhone()+"\",\r\n" + 
 	    		"         \"dniNumber\": \"5415668464654\",\r\n" + 
@@ -606,6 +607,13 @@ public class PayUFunds {
 				
 		return cal.getTime();
 	}
+	
+	public static String cleanString(String texto) {
+        texto = texto.trim().replace(" ","%20");
+        texto = Normalizer.normalize(texto, Normalizer.Form.NFD);
+        texto = texto.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+        return texto;
+    }
 
 	
 	

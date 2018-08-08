@@ -1,6 +1,7 @@
 package com.valework.yingul.controller;
 
 import java.security.Principal;
+import java.text.Normalizer;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -76,7 +77,7 @@ public class HomeController {
 		user.setYng_Ubication(null);
 		user.setPassword(user.getPassword().trim());
 		String password= user.getPassword().trim();
-		user.setUsername((person.getName()+person.getLastname()).replace(" ",""));
+		user.setUsername((cleanString(person.getName())+cleanString(person.getLastname())).replace(" ",""));
 		LOG.info(user.getUsername());
 		if(userService.checkUsernameExists(user.getUsername())) {
 			LOG.info("existe"+user.getUsername());
@@ -205,6 +206,12 @@ public class HomeController {
 			return null;
 		}
 		
+    }
+	public static String cleanString(String texto) {
+        texto = texto.trim().replace(" ","%20");
+        texto = Normalizer.normalize(texto, Normalizer.Form.NFD);
+        texto = texto.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+        return texto;
     }
 	
 }
