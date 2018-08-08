@@ -10,6 +10,7 @@ import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
@@ -19,8 +20,8 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
-
-
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import javax.mail.MessagingException;
 import javax.net.ssl.HttpsURLConnection;
@@ -56,6 +57,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -74,6 +76,7 @@ import com.valework.yingul.model.Yng_AndreaniCotizacion;
 import com.valework.yingul.model.Yng_AndreaniSucursal;
 import com.valework.yingul.model.Yng_Branch;
 import com.valework.yingul.model.Yng_BranchAndreani;
+import com.valework.yingul.model.Yng_Confirm;
 import com.valework.yingul.model.Yng_Cotizacion;
 import com.valework.yingul.model.Yng_Cotizar;
 import com.valework.yingul.model.Yng_Envio;
@@ -84,6 +87,7 @@ import com.valework.yingul.model.Yng_Property;
 import com.valework.yingul.model.Yng_Quote;
 import com.valework.yingul.model.Yng_Service;
 import com.valework.yingul.model.Yng_Standard;
+import com.valework.yingul.model.Yng_StateShipping;
 import com.valework.yingul.model.Yng_Token;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.MotorizedService;
@@ -97,6 +101,7 @@ import andreaniapis.*;
 import ch.qos.logback.core.net.SyslogOutputStream;
 
 import com.valework.yingul.dao.BranchAndreaniDao;
+import com.valework.yingul.dao.ConfirmDao;
 import com.valework.yingul.dao.CotizacionDao;
 import com.valework.yingul.dao.EnvioDao;
 import com.valework.yingul.dao.ItemDao;
@@ -1825,5 +1830,83 @@ public class LogisticsController {
 	   	  //fedex fin
 	   	 // quotesList.add(quoteFedex);//se comento solo para pruebas
   		return quoteFedex;
+  	}
+  	int a=1;
+  	@Autowired
+  	Logistic logistic;
+  	@Autowired
+	ConfirmDao confirmDao;
+  	@RequestMapping("/token3")
+    private String token3() {
+  		a++;
+  		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("pending");
+  		for (Yng_Confirm s : listConfirm) {
+			Yng_Confirm confirmTemp=s;
+	    	if(confirmTemp.getBuy().getShipping().getTypeShipping().equals("branch")) {
+
+	    		//String confirmStateDao=standardDao.findByKey("codeConfirmAndreani").getValue();
+	    		Yng_StateShipping stateShipping=new Yng_StateShipping();
+		    	GetStateSend getState = new GetStateSend();
+		    	String getTicket=confirmTemp.getBuy().getShipping().getYng_Shipment().getTicket();
+		    	String numberAndreani=confirmTemp.getBuy().getShipping().getYng_Shipment().getShipmentCod();
+		    	if(getTicket.equals(""))
+		    	{/*
+		    		
+		    		try {
+						link=logistic.andreaniPdfLink(numberAndreani +"");
+						System.out.println("link: "+link);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		    		if (link != null) {
+			            //strResponse = link;
+			            com.valework.yingul.logistic.ImprimirConstanciaHandler handlerI=new com.valework.yingul.logistic.ImprimirConstanciaHandler();
+			            sAXParser.parse(new InputSource(new StringReader(link)), handlerI);
+			            ArrayList<com.valework.yingul.logistic.ImprimirConstanciaResponse> impr=handlerI.getImprimirResponce();
+			            for (com.valework.yingul.logistic.ImprimirConstanciaResponse versione : impr) {
+			            	pdf=versione.getPdfLinkFile();
+			                System.out.println("versione.getNumero2:"+versione.getPdfLinkFile());            
+			            }
+			        }
+			
+			        System.out.println("link pdf : "+pdf);*/
+		    	}
+		    	System.out.println("getTicket: "+getTicket);
+		    	
+		    	/*String stateApi ="";
+		    	try {
+		    		stateShipping=getState.sendState(""+confirmState);
+		    		stateApi=stateShipping.getEstado();
+		    		System.out.println("state:"+stateApi+":"+confirmStateDao);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	    		String status=stateApi;
+	    		Yng_Standard codeDeliveryConfirmAndreani = standardDao.findByKey("codeDeliveryConfirmAndreani");//entre ala sucurlas el envio ingresado 
+	    		if(status.equals(codeDeliveryConfirmAndreani.getValue())) {
+	    			confirmTemp.setBuyerConfirm(false);
+	        		confirmTemp.setSellerConfirm(true);
+	        		Date date = new Date();
+	            	DateFormat hourdateFormat = new SimpleDateFormat("dd");
+	            	DateFormat hourdateFormat1 = new SimpleDateFormat("MM");
+	            	DateFormat hourdateFormat2 = new SimpleDateFormat("yyyy");
+	            	DateTime now = new DateTime( date );
+	            	confirmTemp.setDaySellerConfirm(Integer.parseInt(hourdateFormat.format(date)));
+	            	confirmTemp.setMonthSellerConfirm(Integer.parseInt(hourdateFormat1.format(date)));
+	            	confirmTemp.setYearSellerConfirm(Integer.parseInt(hourdateFormat2.format(date)));
+	            	confirmTemp.setStatus("delivered");
+	            	confirmDao.save(confirmTemp);
+	            	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(), "CONFIRMACIÓN DE ENTREGA EXITOSA","Se realizo la confirmacion de la entrega del producto en una sucursal andreani:  "+confirmTemp.getBuy().getYng_item().getName() +"  Descripción : "+confirmTemp.getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +confirmTemp.getBuy().getYng_item().getPrice()
+	            			+ "<br/>--Despues de que tu comprador recoja el producto tendra 10 dias vigentes para realizar reclamos acerca del producto.");
+	            	DateTime endClaim = now.plusDays(4);
+	            	smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "CONFIRMACIÓN DE ENTREGA EXITOSA", "Tu vendedor realizo la entrega del producto : "+confirmTemp.getBuy().getQuantity()+" "+confirmTemp.getBuy().getYng_item().getName()+" a:"+confirmTemp.getBuy().getCost()+" en la sucursal andreani"
+	    					+ "<br/>--Puedes recoger el producto de la sucursal Andreani desde "+Integer.parseInt(hourdateFormat.format(endClaim.toDate()))+"/"+Integer.parseInt(hourdateFormat1.format(endClaim.toDate()))+"/"+Integer.parseInt(hourdateFormat2.format(endClaim.toDate())));
+	    		}	*/	
+	    	}
+		}
+  		System.out.println("a:"+a);
+  		return "daniel";
   	}
 }
