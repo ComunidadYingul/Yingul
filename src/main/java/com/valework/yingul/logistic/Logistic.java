@@ -54,7 +54,7 @@ public class Logistic {
 	//String 
  	public String andreaniHttpConection(AndreaniProperty andreaniProp) throws MalformedURLException, IOException {
 		//Code to make a webservice HTTP request
- 		Yng_Request requestTemp = new Yng_Request(); 
+ 		/*Yng_Request requestTemp = new Yng_Request(); 
 		requestTemp.setURI(andreaniProp.wsURL);
 		requestTemp.setInfo("wsURL Andreani");
 		//requestTemp = requestDao.save(requestTemp);
@@ -63,7 +63,7 @@ public class Logistic {
 	    body.setKey("body");
 	    body.setValue(andreaniProp.getXmlInput());
 	    body.setRequest(requestTemp);
-	    //Yng_RequestBody temr=requestBodyDao.save(body);
+	    Yng_RequestBody temr=requestBodyDao.save(body);*/
 		//
 		String responseString = "";
 		String outputString = "";
@@ -133,8 +133,7 @@ public class Logistic {
 	    body2.setKey(""+temr.getRequestBodyId());
 	    body2.setValue(outputString);
 	    body2.setRequest(requestTemp);
-		*/
-	    //requestBodyDao.save(body2);
+		requestBodyDao.save(body2);*/
 		//
 		System.out.println("outputString1 :"+outputString);
 		return ""+outputString;
@@ -289,7 +288,7 @@ public class Logistic {
 		   		"</ecom:origen>\r\n" + 
 		   		"<!--Optional:-->\r\n" + 
 		   		"<ecom:pesoNetoDelEnvioEnGr>"
-		   			+ pro.getProductWeight()
+		   			+ (pro.getProductWeight()*buy.getShipping().getYng_Quote().getQuantity())
 		   		+ "</ecom:pesoNetoDelEnvioEnGr>\r\n" + 
 		   		"<ecom:remitente>\r\n" + 
 			   		"<and:apellido>"
@@ -349,7 +348,7 @@ public class Logistic {
 		   		+ "</ecom:valorDeclaradoConIva>\r\n" + 
 		   		"<!--Optional:-->\r\n" + 
 		   		"<ecom:volumenDelEnvioEnCm3>"
-		   			+ pro.getProducVolumen()
+		   			+ (pro.getProductHeight()*pro.getProductLength()*pro.getProductWidth()*buy.getShipping().getYng_Quote().getQuantity())
 		   		+ "</ecom:volumenDelEnvioEnCm3>\r\n" + 
 		   		"</tem:parametros>\r\n" + 
 		   		"</tem:GenerarEnvioConDatosDeImpresionYRemitente>\r\n" + 

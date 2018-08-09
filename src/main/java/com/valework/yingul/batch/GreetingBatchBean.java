@@ -80,8 +80,9 @@ public class GreetingBatchBean {
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 6 * * *")//cada dia a las 6 de la mañana
 	//@Scheduled(cron = "0 0/16 12 * * ?")//cada 8 minutos desde las 10:45
-	@Scheduled(cron = "0 30/16 17 * * ?")//cada 8 minutos desde las 10:45
-	public void cronJob() throws ParseException {
+	@Scheduled(cron = "0 0/16 13 * * ?")//cada 8 minutos desde las 10:45
+	public void cronJob() throws ParseException, MessagingException {
+		smtpMailSender.send("yingulargentina@gmail.com", "INICIO DE LOS CRONS", "CRONS");
 		System.out.println("primer cron");
 		Date date = new Date();
     	DateFormat hourdateFormat = new SimpleDateFormat("dd");
@@ -339,7 +340,7 @@ public class GreetingBatchBean {
 	
 	//@Scheduled(cron = "0,59 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 4 * * *")//cada dia a las 5 de la mañana
-	@Scheduled(cron = "0 34/16 17 * * ?")//cada 8 minutos desde las 10:45
+	@Scheduled(cron = "0 4/16 13 * * ?")//cada 8 minutos desde las 10:45
 	public void cronJob1() throws ClientProtocolException, IOException, Exception {
 		System.out.println("segundo cron");
 		List<Yng_Payment> confirmCashPayment= paymentDao.findByTypeAndStatusAndBuyStatus("CASH","PENDING","PENDING");
@@ -381,7 +382,7 @@ public class GreetingBatchBean {
 	
 	//@Scheduled(cron = "0,59 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 5 * * *")//cada dia a las 6 de la mañana
-	@Scheduled(cron = "0 38/16 17 * * ?")//cada 8 minutos desde las 10:45
+	@Scheduled(cron = "0 8/16 13 * * ?")//cada 8 minutos desde las 10:45
 	public void deliveryConfirmation() throws MessagingException{
 		System.out.println("tercer cron");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("pending");
@@ -429,7 +430,7 @@ public class GreetingBatchBean {
 	}
 	
 	//@Scheduled(cron = "0 0 7 * * *")//cada dia a las 6 de la mañana
-	@Scheduled(cron = "0 42/16 17 * * ?")//cada 8 minutos desde las 10:51
+	@Scheduled(cron = "0 12/16 13 * * ?")//cada 8 minutos desde las 10:51
 	public void whithdrawalConfirmation() throws MessagingException{
 		System.out.println("cuarto cron");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("delivered");

@@ -360,7 +360,7 @@ public class BuyController {
 		tempShipping.setYng_Quote(quote);
 		//branchAndreaniDao.findByCodAndreani();
 			
-			Logistic logistic=new Logistic();
+			//Logistic logistic=new Logistic();
 			String link="";
 			String pdf="";
 			String numberAndreani="";
