@@ -312,6 +312,8 @@ public class BuyController {
 		////////////////////////////////////////////////////////////
 		System.out.println("shippingdaniel :"+ buy.getShipping().toString());
 		String typeEnvio=buy.getShipping().getTypeShipping();
+		Yng_BranchAndreani branchAndreaniC=new Yng_BranchAndreani();
+        Yng_BranchAndreani branchAndreaniV=new Yng_BranchAndreani();
 		if(buy.getShipping().getTypeShipping().equals("home")) {		
 			Yng_Shipping shipping=null;
 			buy.setShipping(shipping);		
@@ -359,6 +361,7 @@ public class BuyController {
 		tempShipping.setLastName(buy.getShipping().getLastName());
 		tempShipping.setYng_Quote(quote);
 		//branchAndreaniDao.findByCodAndreani();
+		
 			
 			Logistic logistic=new Logistic();
 			String link="";
@@ -387,8 +390,6 @@ public class BuyController {
 		        //per.getYng_User().getYng_Ubication().setPostalCode(buy.getShipping().getYng_Shipment().getYng_User().getYng_Ubication().getPostalCode());
 		        //per.setName(buy.getShipping().getNameContact());
 		       // per.setLastname(buy.getShipping().getLastName());
-		        Yng_BranchAndreani branchAndreaniC=new Yng_BranchAndreani();
-		        Yng_BranchAndreani branchAndreaniV=new Yng_BranchAndreani();
 		       
 		        
 		        String numV="";
@@ -608,9 +609,9 @@ public class BuyController {
 						+ "<br/> Costo del envio : " +buy.getShipping().getYng_Quote().getRate()+" ARS. El costo de envio se descontara posteriormente de tu saldo en YingulPay."  
 						+ "<br/>--Imprimir la etiqueta de Andreani."
 						+ "<br/>--Preparar y embalar el paquete junto a la etiqueta." 
-						+ "<br/>--Déjalo en la sucursal Andreani más cercana." 
+						+ "<br/>--Déjalo en la sucursal Andreani: "+branchAndreaniV.getLocation()+" "+branchAndreaniV.getSchedules()+" Fono: "+branchAndreaniV.getPhones()
 						+ "<br/>"+buy.getShipping().getYng_Shipment().getTicket()
-						+ "<br/>Nos pondremos en contacto con tigo cuando tu comprador recoja el producto de Andreani.");
+						+ "<br/>Nos pondremos en contacto con usted cuando tu comprador recoja el producto de Andreani.");
 				if(buy.getYng_Payment().getType().equals("CASH")) {
 					smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
 						+ "<table border=\"1\">\r\n"  
@@ -638,7 +639,8 @@ public class BuyController {
 						+ "  </tr>\r\n"
 						+ "</table>"
 						+ "<br/> Pago realizado en EFECTIVO a través de: "+buy.getYng_Payment().getCashPayment().getPaymentMethod()+"."	
-						+ "<br/> Nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani.");
+						+ "<br/> Nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani:"
+						+ "<br/>Sucursal: "+branchAndreaniC.getLocation()+" "+branchAndreaniC.getSchedules()+" Fono: "+branchAndreaniC.getPhones());
 				}
 				if(buy.getYng_Payment().getType().equals("CARD")) {
 					smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
@@ -667,7 +669,8 @@ public class BuyController {
 						+ "  </tr>\r\n"
 						+ "</table>"
 						+ "<br/> Pago realizado con TARJETA: "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+"."	
-						+ "<br/> Nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani.");
+						+ "<br/> Nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani."
+						+ "<br/> Sucursal: "+branchAndreaniC.getLocation()+" "+branchAndreaniC.getSchedules()+" Fono: "+branchAndreaniC.getPhones());
 				}
 			}else {
 				smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","<b>DETALLE DE LA VENTA:</b>"
@@ -692,7 +695,7 @@ public class BuyController {
 						+"<br/>--Imprimir la etiqueta de Andreani."
 						+"<br/>--Preparar y embalar el paquete junto a la etiqueta." 
 						+"<br/>--Preparar y embalar el paquete junto a la etiqueta." 
-						+"<br/>--Déjalo en la sucursal Andreani más cercana."
+						+"<br/>--Déjalo en la sucursal Andreani: "+branchAndreaniV.getLocation()+" "+branchAndreaniV.getSchedules()+" Fono: "+branchAndreaniV.getPhones()
 						+"<br/>"+buy.getShipping().getYng_Shipment().getTicket()
 						+"<br/>Nos pondremos en contacto con tigo cuando tu comprador recoja el producto de Andreani.");
 				if(buy.getYng_Payment().getType().equals("CASH")) {
@@ -722,7 +725,8 @@ public class BuyController {
 						+ "  </tr>\r\n"
 						+ "</table>"
 						+ "<br/> Pago realizado en EFECTIVO a través de: "+buy.getYng_Payment().getCashPayment().getPaymentMethod()+"."	
-						+ "<br/> Nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani.");
+						+ "<br/> Nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani."
+						+ "<br/> Sucursal: "+branchAndreaniC.getLocation()+" "+branchAndreaniC.getSchedules()+" Fono: "+branchAndreaniC.getPhones());
 				}
 				if(buy.getYng_Payment().getType().equals("CARD")) {
 					smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
@@ -751,7 +755,8 @@ public class BuyController {
 						+ "  </tr>\r\n"
 						+ "</table>"
 						+ "<br/> Pago realizado con TARJETA: "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+"."	
-						+ "<br/> Nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani.");
+						+ "<br/> Nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani."
+						+ "<br/> Sucursal: "+branchAndreaniC.getLocation()+" "+branchAndreaniC.getSchedules()+" Fono: "+branchAndreaniC.getPhones());
 				}
 			}
 		}

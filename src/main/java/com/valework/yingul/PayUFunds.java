@@ -175,10 +175,10 @@ public class PayUFunds {
 	    		"         \"contactPhone\": \""+buy.getUser().getPhone()+"\",\r\n" + 
 	    		"         \"dniNumber\": \"5415668464654\",\r\n" + 
 	    		"         \"billingAddress\": {\r\n" + 
-	    		"            \"street1\": \""+buy.getUser().getYng_Ubication().getStreet()+"\",\r\n" + 
+	    		"            \"street1\": \""+cleanString(buy.getUser().getYng_Ubication().getStreet()).toUpperCase()+"\",\r\n" + 
 	    		"            \"street2\": \""+buy.getUser().getYng_Ubication().getNumber()+"\",\r\n" + 
-	    		"            \"city\": \""+buy.getUser().getYng_Ubication().getYng_City().getName()+"\",\r\n" + 
-	    		"            \"state\": \""+buy.getUser().getYng_Ubication().getYng_Province().getName()+"\",\r\n" + 
+	    		"            \"city\": \""+cleanString(buy.getUser().getYng_Ubication().getYng_City().getName()).toUpperCase()+"\",\r\n" + 
+	    		"            \"state\": \""+cleanString(buy.getUser().getYng_Ubication().getYng_Province().getName()).toUpperCase()+"\",\r\n" + 
 	    		"            \"country\": \"AR\",\r\n" + 
 	    		"            \"postalCode\": \""+buy.getUser().getYng_Ubication().getUbicationId()+"\",\r\n" + 
 	    		"            \"phone\": \""+buy.getUser().getPhone()+"\"\r\n" + 
