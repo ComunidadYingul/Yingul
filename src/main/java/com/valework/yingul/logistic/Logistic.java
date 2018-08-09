@@ -54,7 +54,7 @@ public class Logistic {
 	//String 
  	public String andreaniHttpConection(AndreaniProperty andreaniProp) throws MalformedURLException, IOException {
 		//Code to make a webservice HTTP request
- 		Yng_Request requestTemp = new Yng_Request(); 
+ 		/*Yng_Request requestTemp = new Yng_Request(); 
 		requestTemp.setURI(andreaniProp.wsURL);
 		requestTemp.setInfo("wsURL Andreani");
 		requestTemp = requestDao.save(requestTemp);
@@ -63,7 +63,7 @@ public class Logistic {
 	    body.setKey("body");
 	    body.setValue(andreaniProp.getXmlInput());
 	    body.setRequest(requestTemp);
-	    Yng_RequestBody temr=requestBodyDao.save(body);
+	    Yng_RequestBody temr=requestBodyDao.save(body);*/
 		//
 		String responseString = "";
 		String outputString = "";
@@ -124,7 +124,7 @@ public class Logistic {
 		System.out.println("outputString:"+responseString);
 		}
 		//Code to make a webservice HTTP request
- 		Yng_Request requestTemp2 = new Yng_Request(); 
+ 		/*Yng_Request requestTemp2 = new Yng_Request(); 
 		requestTemp2.setURI(andreaniProp.wsURL);
 		requestTemp2.setInfo("wsURL Andreani Respuesta ");
 		requestTemp2 = requestDao.save(requestTemp);
@@ -133,7 +133,7 @@ public class Logistic {
 	    body2.setKey(""+temr.getRequestBodyId());
 	    body2.setValue(outputString);
 	    body2.setRequest(requestTemp);
-		requestBodyDao.save(body2);
+		requestBodyDao.save(body2);*/
 		//
 		System.out.println("outputString1 :"+outputString);
 		return ""+outputString;
