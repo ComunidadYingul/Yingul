@@ -1593,7 +1593,7 @@ public class LogisticsController {
 			    	  peso=getProductByIdItem.getProductWeight();
 			    	 // peso=Integer.parseInt(getProductByIdItem.getProductPeso());
 			    	  cotizarAndreani.setPeso(""+(peso*quo.getQuantity()));
-			    	  cotizarAndreani.setValorDeclarado(""+quote.getYng_Item().getPrice());
+			    	  cotizarAndreani.setValorDeclarado(""+(quote.getYng_Item().getPrice()*quo.getQuantity()));
 			    	  
 			    	  int volumen=0;
 			    	  volumen=getProductByIdItem.getProductHeight()*getProductByIdItem.getProductLength()*getProductByIdItem.getProductWidth();

@@ -57,7 +57,7 @@ public class Logistic {
  		/*Yng_Request requestTemp = new Yng_Request(); 
 		requestTemp.setURI(andreaniProp.wsURL);
 		requestTemp.setInfo("wsURL Andreani");
-		requestTemp = requestDao.save(requestTemp);
+		//requestTemp = requestDao.save(requestTemp);
 		//crear el response
 		Yng_RequestBody body= new Yng_RequestBody(); 
 	    body.setKey("body");
@@ -288,7 +288,7 @@ public class Logistic {
 		   		"</ecom:origen>\r\n" + 
 		   		"<!--Optional:-->\r\n" + 
 		   		"<ecom:pesoNetoDelEnvioEnGr>"
-		   			+ pro.getProductWeight()
+		   			+ (pro.getProductWeight()*buy.getShipping().getYng_Quote().getQuantity())
 		   		+ "</ecom:pesoNetoDelEnvioEnGr>\r\n" + 
 		   		"<ecom:remitente>\r\n" + 
 			   		"<and:apellido>"
@@ -348,7 +348,7 @@ public class Logistic {
 		   		+ "</ecom:valorDeclaradoConIva>\r\n" + 
 		   		"<!--Optional:-->\r\n" + 
 		   		"<ecom:volumenDelEnvioEnCm3>"
-		   			+ pro.getProducVolumen()
+		   			+ (pro.getProductHeight()*pro.getProductLength()*pro.getProductWidth()*buy.getShipping().getYng_Quote().getQuantity())
 		   		+ "</ecom:volumenDelEnvioEnCm3>\r\n" + 
 		   		"</tem:parametros>\r\n" + 
 		   		"</tem:GenerarEnvioConDatosDeImpresionYRemitente>\r\n" + 

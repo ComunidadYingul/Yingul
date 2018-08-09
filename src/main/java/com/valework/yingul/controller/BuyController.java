@@ -363,7 +363,7 @@ public class BuyController {
 		//branchAndreaniDao.findByCodAndreani();
 		
 			
-			Logistic logistic=new Logistic();
+			//Logistic logistic=new Logistic();
 			String link="";
 			String pdf="";
 			String numberAndreani="";
@@ -610,7 +610,6 @@ public class BuyController {
 						+ "<br/>--Imprimir la etiqueta de Andreani."
 						+ "<br/>--Preparar y embalar el paquete junto a la etiqueta." 
 						+ "<br/>--Déjalo en la sucursal Andreani: "+branchAndreaniV.getLocation()+" "+branchAndreaniV.getSchedules()+" Fono: "+branchAndreaniV.getPhones()
-						+ "<br/>"+buy.getShipping().getYng_Shipment().getTicket()
 						+ "<br/>Nos pondremos en contacto con usted cuando tu comprador recoja el producto de Andreani.");
 				if(buy.getYng_Payment().getType().equals("CASH")) {
 					smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
@@ -685,18 +684,16 @@ public class BuyController {
 						+ "    <td>"+buy.getQuantity()+"</td>\r\n" 
 						+ "    <td>"+buy.getYng_item().getName()+"</td>\r\n" 
 						+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
-						+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+						+ "    <td>"+buy.getItemCost()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
 						+ "  </tr>\r\n"
 						+ "  <tr>\r\n" 
 						+ "    <th colspan=\"3\">TOTAL.</th>\r\n" 
-						+ "    <th>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</th>\r\n"
+						+ "    <th>"+buy.getCost()+" "+buy.getYng_item().getMoney()+"</th>\r\n"
 						+ "  </tr>\r\n"
 						+ "</table>"
 						+"<br/>--Imprimir la etiqueta de Andreani."
 						+"<br/>--Preparar y embalar el paquete junto a la etiqueta." 
-						+"<br/>--Preparar y embalar el paquete junto a la etiqueta." 
 						+"<br/>--Déjalo en la sucursal Andreani: "+branchAndreaniV.getLocation()+" "+branchAndreaniV.getSchedules()+" Fono: "+branchAndreaniV.getPhones()
-						+"<br/>"+buy.getShipping().getYng_Shipment().getTicket()
 						+"<br/>Nos pondremos en contacto con tigo cuando tu comprador recoja el producto de Andreani.");
 				if(buy.getYng_Payment().getType().equals("CASH")) {
 					smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
