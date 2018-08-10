@@ -80,9 +80,9 @@ public class GreetingBatchBean {
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 6 * * *")//cada dia a las 6 de la mañana
 	//@Scheduled(cron = "0 0/16 12 * * ?")//cada 8 minutos desde las 10:45
-	@Scheduled(cron = "0 30/16 23 * * ?")//cada 8 minutos desde las 10:45
+	@Scheduled(cron = "0 0/16 15 * * ?")//cada 8 minutos desde las 10:45
 	public void cronJob() throws ParseException, MessagingException {
-		smtpMailSender.send("yingulargentina@gmail.com", "INICIO DE LOS CRONS", "CRONS");
+		smtpMailSender.send("quenallataeddy@gmail.com", "INICIO DE LOS CRONS", "CRONS");
 		System.out.println("primer cron");
 		Date date = new Date();
     	DateFormat hourdateFormat = new SimpleDateFormat("dd");
@@ -115,7 +115,7 @@ public class GreetingBatchBean {
 				Yng_Account accountTemp= accountDao.findByUser(s.getBuy().getYng_item().getUser());
 				//crear la transaccion con todo el costo del producto para luego descontar comisiones o costo de envio
 				Yng_Transaction transactionTemp = new Yng_Transaction();
-				transactionTemp.setAmount(s.getBuy().getCost());
+				transactionTemp.setAmount((double)Math.round(s.getBuy().getItemCost() * 100d) / 100d);
 				transactionTemp.setCity("Moreno");
 				transactionTemp.setCountry("Argentina");
 				transactionTemp.setCountryCode("AR");
@@ -216,9 +216,10 @@ public class GreetingBatchBean {
 						commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
 						break;
 					}
+					transactionDetail.setCostCommission((double)Math.round((((s.getBuy().getCost()*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
 					//
 				}else {
-					if(s.getBuy().getYng_item().getProductPagoEnvio().equals("gratis")) {
+					if(s.getBuy().getCost()==s.getBuy().getItemCost()) {
 						//cobro de comisiones
 						Yng_Transaction payShipping = new Yng_Transaction();
 						payShipping.setCity("Moreno");
@@ -282,6 +283,7 @@ public class GreetingBatchBean {
 							break;
 						}
 						//
+						transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getCost()-s.getBuy().getShippingCost())*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
 					}else {
 						//cobro de comisiones
 						switch(s.getBuy().getYng_item().getType()) {
@@ -318,16 +320,19 @@ public class GreetingBatchBean {
 							break;
 						}
 						//
+						transactionDetail.setCostCommission((double)Math.round((((s.getBuy().getCost()*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
 					}
 				}
-				transactionDetail.setCostCommission(((s.getBuy().getCost()*commission.getPercentage())/100)+commission.getFixedPrice());
-				transactionDetail.setCostPAYU(((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice());
-				costCommission=(transactionDetail.getCostCommission()+transactionDetail.getCostPAYU());
+				//corregir para envios gratis
+				
+				
+				transactionDetail.setCostPAYU((double)Math.round((((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice()) * 100d) / 100d);
+				costCommission=((double)Math.round((transactionDetail.getCostCommission()+transactionDetail.getCostPAYU()) * 100d) / 100d);
 				transactionDetail.setCostTotal(costCommission);
 				
 				commissionTemp.setAmount(costCommission);
 				saldo=accountTemp.getAvailableMoney();
-				accountTemp.setAvailableMoney(saldo-commissionTemp.getAmount());
+				accountTemp.setAvailableMoney((double)Math.round((saldo-commissionTemp.getAmount()) * 100d) / 100d);
 				accountTemp=accountDao.save(accountTemp);
 				commissionTemp.setAccount(accountTemp);
 				transactionDetail.setTransaction(transactionDao.save(commissionTemp));
@@ -340,7 +345,7 @@ public class GreetingBatchBean {
 	
 	//@Scheduled(cron = "0,59 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 4 * * *")//cada dia a las 5 de la mañana
-	@Scheduled(cron = "0 34/16 23 * * ?")//cada 8 minutos desde las 10:45
+	@Scheduled(cron = "0 4/16 15 * * ?")//cada 8 minutos desde las 10:45
 	public void cronJob1() throws ClientProtocolException, IOException, Exception {
 		System.out.println("segundo cron");
 		List<Yng_Payment> confirmCashPayment= paymentDao.findByTypeAndStatusAndBuyStatus("CASH","PENDING","PENDING");
@@ -382,7 +387,7 @@ public class GreetingBatchBean {
 	
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 5 * * *")//cada dia a las 6 de la mañana
-	@Scheduled(cron = "0 38/16 23 * * ?")//cada 8 minutos desde las 10:45
+	@Scheduled(cron = "0 8/16 15 * * ?")//cada 8 minutos desde las 10:45
 	public void deliveryConfirmation() throws MessagingException{
 		System.out.println("tercer cron");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("pending");
@@ -433,7 +438,7 @@ public class GreetingBatchBean {
 	
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 7 * * *")//cada dia a las 6 de la mañana
-	@Scheduled(cron = "0 42/16 23 * * ?")//cada 8 minutos desde las 10:51
+	@Scheduled(cron = "0 12/16 15 * * ?")//cada 8 minutos desde las 10:51
 	public void whithdrawalConfirmation() throws MessagingException{
 		System.out.println("cuarto cron");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("delivered");
