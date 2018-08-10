@@ -320,7 +320,7 @@ public class GreetingBatchBean {
 							break;
 						}
 						//
-						transactionDetail.setCostCommission((double)Math.round((((s.getBuy().getCost()*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
+						transactionDetail.setCostCommission((double)Math.round((((s.getBuy().getItemCost()*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
 					}
 				}
 				//corregir para envios gratis
@@ -370,7 +370,7 @@ public class GreetingBatchBean {
 					e.printStackTrace();
 				}
 				Yng_Item itemTemp= itemDao.findByItemId(buyTemp.getYng_item().getItemId());
-				itemTemp.setQuantity(itemTemp.getQuantity()+1);
+				itemTemp.setQuantity(itemTemp.getQuantity()+buyTemp.getQuantity());
 				itemTemp.setEnabled(true);
 				itemTemp=itemDao.save(itemTemp);
 			}else {
