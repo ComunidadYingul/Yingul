@@ -161,6 +161,7 @@ public class BuyController {
 	
 	@Autowired
 	BranchAndreaniDao branchAndreaniDao;
+	@Autowired
 	StandardDao standardDao;
 	@Autowired
 	CashPaymentDao cashPaymentDao; 
@@ -254,8 +255,8 @@ public class BuyController {
     	if(buy.getYng_Payment().getType().equals("CASH")) {
     		if(buy.getYng_Payment().getPaymentId()!=null) {
     			Yng_Payment paymentSw= paymentDao.findByPaymentId(buy.getYng_Payment().getPaymentId());
-    			Yng_Standard confirmCode = standardDao.findByKey("PAYU_cashConfirm");
-    			if(paymentSw.getStatus().equals(confirmCode.getValue())) {
+    			Yng_Standard cashConfirm = standardDao.findByKey("PAYU_cash_confirm");
+    			if(paymentSw.getStatus().equals(cashConfirm.getValue())) {
     				buy.setYng_Payment(paymentDao.save(paymentSw));
     			}else {
     				return "internError";
@@ -520,6 +521,7 @@ public class BuyController {
 					+ "    <th>"+buy.getCost()+" ARS</th>\r\n"
 					+ "  </tr>\r\n"
 					+ "</table>"
+					+ "<br/> Este importe esta sujeto al cobro de comisiones Yingul por venta."
 					+ "<br/> Los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección: "+userTemp.getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ userTemp.getYng_Ubication().getYng_City().getName()+" Calle: "+userTemp.getYng_Ubication().getStreet()+"  Numero: "+userTemp.getYng_Ubication().getNumber()
 					+ "<br/> Encuantrate con tu comprador para firmar la entrega del producto."
 					+ "<br/> - Al Momento de entregar el producto al comprador ingresa a: http://www.yingul.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones "
@@ -606,8 +608,9 @@ public class BuyController {
 						+ "    <th>"+buy.getCost()+" ARS</th>\r\n"
 						+ "  </tr>\r\n"
 						+ "</table>"
+						+ "<br/> Este importe esta sujeto al cobro de comisiones Yingul por venta."
 						+ "<br/> Costo del envio : " +buy.getShipping().getYng_Quote().getRate()+" ARS. El costo de envio se descontara posteriormente de tu saldo en YingulPay."  
-						+ "<br/>--Imprimir la etiqueta de Andreani."
+						+ "<br/>--Imprimir la etiqueta de Andreani. (<a href=\"http://www.yingul.com/userFront/sales\" target=\"_blank\">Descargar etiqueta de envío</a>)"
 						+ "<br/>--Preparar y embalar el paquete junto a la etiqueta." 
 						+ "<br/>--Déjalo en la sucursal Andreani: "+branchAndreaniV.getLocation()+" "+branchAndreaniV.getSchedules()+" Fono: "+branchAndreaniV.getPhones()
 						+ "<br/>Nos pondremos en contacto con usted cuando tu comprador recoja el producto de Andreani.");
@@ -688,13 +691,14 @@ public class BuyController {
 						+ "  </tr>\r\n"
 						+ "  <tr>\r\n" 
 						+ "    <th colspan=\"3\">TOTAL.</th>\r\n" 
-						+ "    <th>"+buy.getCost()+" "+buy.getYng_item().getMoney()+"</th>\r\n"
+						+ "    <th>"+buy.getItemCost()+" "+buy.getYng_item().getMoney()+"</th>\r\n"
 						+ "  </tr>\r\n"
 						+ "</table>"
-						+"<br/>--Imprimir la etiqueta de Andreani."
-						+"<br/>--Preparar y embalar el paquete junto a la etiqueta." 
-						+"<br/>--Déjalo en la sucursal Andreani: "+branchAndreaniV.getLocation()+" "+branchAndreaniV.getSchedules()+" Fono: "+branchAndreaniV.getPhones()
-						+"<br/>Nos pondremos en contacto con tigo cuando tu comprador recoja el producto de Andreani.");
+						+ "<br/> Este importe esta sujeto al cobro de comisiones Yingul por venta."
+						+ "<br/>--Imprimir la etiqueta de Andreani. (<a href=\"http://www.yingul.com/userFront/sales\" target=\"_blank\">Descargar etiqueta de envío</a>)"
+						+ "<br/>--Preparar y embalar el paquete junto a la etiqueta." 
+						+ "<br/>--Déjalo en la sucursal Andreani: "+branchAndreaniV.getLocation()+" "+branchAndreaniV.getSchedules()+" Fono: "+branchAndreaniV.getPhones()
+						+ "<br/>Nos pondremos en contacto con usted cuando tu comprador recoja el producto de Andreani.");
 				if(buy.getYng_Payment().getType().equals("CASH")) {
 					smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
 						+ "<table border=\"1\">\r\n"  

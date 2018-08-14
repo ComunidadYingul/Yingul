@@ -59,8 +59,9 @@ public class WireTransferController {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
 		if(yng_User.getUsername().equals(parts[0]) && encoder.matches(parts[1], yng_User.getPassword())){
 			Yng_Commission commission=commissionDao.findByConditionAndWhy("All","WireTransfer");
-			Double commissionCost=(commission.getPercentage()*wireTransfer.getAmount()/100)+commission.getFixedPrice();
-			if((wireTransfer.getAmount()+commissionCost)<=account.getAvailableMoney()) {
+			Double commissionCost=(double)Math.round(((commission.getPercentage()*wireTransfer.getAmount()/100)+commission.getFixedPrice()) * 100d) / 100d;
+			wireTransfer.setAmount((double)Math.round(wireTransfer.getAmount() * 100d) / 100d);
+			if(((double)Math.round((wireTransfer.getAmount()+commissionCost)* 100d) / 100d)<=account.getAvailableMoney()) {
 				Yng_Transaction transactionTemp = wireTransfer.getTransaction();
 				transactionTemp.setAccount(account);
 				Date date = new Date();
@@ -81,7 +82,7 @@ public class WireTransferController {
 				transactionTemp.setAYingulTransaction(false);
 				transactionTemp.setAWireTransfer(true);
 				double saldo=account.getAvailableMoney();
-				account.setAvailableMoney(saldo-transactionTemp.getAmount());
+				account.setAvailableMoney((double)Math.round((saldo-transactionTemp.getAmount()) * 100d) / 100d);
 				wireTransfer.setBank(bankDao.findByBankId(wireTransfer.getBank().getBankId()));
 				wireTransfer.setTransaction(transactionDao.save(transactionTemp));
 				wireTransfer.setStatus("toDo");
@@ -112,7 +113,7 @@ public class WireTransferController {
 					transactionTemp1.setAWireTransfer(false);
 					transactionTemp1.setAYingulTransaction(true);
 					saldo=account.getAvailableMoney();
-					account.setAvailableMoney(saldo-transactionTemp1.getAmount());
+					account.setAvailableMoney((double)Math.round((saldo-transactionTemp1.getAmount()) * 100d) / 100d);
 					account=accountDao.save(account);
 					transactionDao.save(transactionTemp1);
 				}

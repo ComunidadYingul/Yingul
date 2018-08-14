@@ -581,7 +581,7 @@ public class PayUFunds {
             System.out.println(jObject.getJSONObject("result").getJSONObject("payload").getJSONArray("transactions").getJSONObject(0).getJSONObject("transactionResponse").getString("state"));
             payment.setStatus(jObject.getJSONObject("result").getJSONObject("payload").getJSONArray("transactions").getJSONObject(0).getJSONObject("transactionResponse").getString("state"));
             payment = paymentDao.save(payment);
-            Yng_Standard cashConfirm = standardDao.findByKey("PAYU_cashConfirm");
+            Yng_Standard cashConfirm = standardDao.findByKey("PAYU_cash_confirm");
             if(cashConfirm.getValue().equals(payment.getStatus())) {
             	ObjectMapper mapper2 = new ObjectMapper();
             	Yng_Buy buy = mapper2.readValue(payment.getCashPayment().getBuyJson(), Yng_Buy.class);
