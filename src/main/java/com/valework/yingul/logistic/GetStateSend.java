@@ -22,13 +22,13 @@ import com.valework.yingul.model.Yng_StateShipping;
 
 public class GetStateSend {
 	
-	public Yng_StateShipping sendState(String number) throws Exception {
+	public Yng_StateShipping sendState(String number,String Cliente) throws Exception {
 		Yng_StateShipping shStateShipping=new Yng_StateShipping();
 		AndreaniProperty an =new AndreaniProperty();
-		shStateShipping=this.parserString(seg(an,number));
+		shStateShipping=this.parserString(seg(an,number,Cliente));
 		return shStateShipping;
 	   }
-	 public String seg( AndreaniProperty an,String numberAndreani) throws Exception{
+	 public String seg( AndreaniProperty an,String numberAndreani,String Cliente) throws Exception{
 		   AndreaniProperty andr=new AndreaniProperty();
 		   andr.setHost("www.e-andreani.com");
 		   andr.setWsURL("https://www.e-andreani.com/eAndreaniWS/Service.svc/soap12");
@@ -37,12 +37,12 @@ public class GetStateSend {
 		   //he.setName("");
 		   //he.setValue("");
 		  // Li
-		   andr.setXmlInput(andreaniXmlSeguimiento(numberAndreani));
+		   andr.setXmlInput(andreaniXmlSeguimiento(numberAndreani,Cliente));
 		   //aniem();
 		   
 		   return someMethod2(andr);
 	   }
-	   public String andreaniXmlSeguimiento(String numA) {
+	   public String andreaniXmlSeguimiento(String numA,String cliente) {
 		   String s="<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\" "
 		   		+ "xmlns:and=\"http://www.andreani.com.ar\" "
 		   		+ "xmlns:req=\"http://www.andreani.com.ar/req\">\r\n" + 
@@ -55,13 +55,41 @@ public class GetStateSend {
 		   		"            <req:NroAndreani>"
 		   		+ numA
 		   		+ "</req:NroAndreani>\r\n" + 
-		   		"            <req:CodigoCliente>CL0003750</req:CodigoCliente>\r\n" + 
+		   		"            <req:CodigoCliente>"
+		   		+ ""+cliente
+		   		+ "</req:CodigoCliente>\r\n" + 
 		   		"         </and:Pieza>\r\n" + 
 		   		"      </and:ObtenerTrazabilidad>\r\n" + 
 		   		"   </soap:Body>\r\n" + 
 		   		"</soap:Envelope>";
 		   	   return ""+s;
 		      }
+	   public String andreaniStateShip(String CodigoCliente,String NumeroAndreani) {
+		   return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
+		   		"<env:Envelope\r\n" + 
+		   		"    xmlns:env=\"http://www.w3.org/2003/05/soap-envelope\"\r\n" + 
+		   		"    xmlns:ns1=\"http://www.andreani.com.ar/req\"\r\n" + 
+		   		"    xmlns:ns2=\"http://schemas.datacontract.org/2004/07/EAndreaniWS\"\r\n" + 
+		   		"    xmlns:ns3=\"http://www.andreani.com.ar\">\r\n" + 
+		   		"    <env:Body>\r\n" + 
+		   		"        <ns3:ObtenerEstadoDistribucionCodificado>\r\n" + 
+		   		"            <ns3:EnviosConsultas>\r\n" + 
+		   		"                <ns1:CodigoCliente>"
+		   		+ ""+CodigoCliente
+		   		+ "</ns1:CodigoCliente>\r\n" + 
+		   		"                <ns1:Envios>\r\n" + 
+		   		"                    <ns2:Envio>\r\n" + 
+		   		"                        <ns2:IdentificadorCliente></ns2:IdentificadorCliente>\r\n" + 
+		   		"                        <ns2:NumeroAndreani>"
+		   		+ ""+NumeroAndreani
+		   		+ "</ns2:NumeroAndreani>\r\n" + 
+		   		"                    </ns2:Envio>\r\n" + 
+		   		"                </ns1:Envios>\r\n" + 
+		   		"            </ns3:EnviosConsultas>\r\n" + 
+		   		"        </ns3:ObtenerEstadoDistribucionCodificado>\r\n" + 
+		   		"    </env:Body>\r\n" + 
+		   		"</env:Envelope>";
+	   }
 	   public String someMethod2(AndreaniProperty andreaniProp) throws MalformedURLException, IOException {
 			//Code to make a webservice HTTP request
 			System.out.println("andreaniProp:"+andreaniProp.toString());

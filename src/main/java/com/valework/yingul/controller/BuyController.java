@@ -881,10 +881,11 @@ public class BuyController {
     }
     @RequestMapping("/getStateBuy/{codnumber}")
     public Yng_StateShipping getCodState(@PathVariable("codnumber") String codnumber) {
+    	Yng_Standard clienteStandard = standardDao.findByKey("Cliente");
     	Yng_StateShipping stateShipping=new Yng_StateShipping();
     	GetStateSend getState = new GetStateSend();
     	try {
-    		stateShipping=getState.sendState(codnumber);
+    		stateShipping=getState.sendState(codnumber,clienteStandard.getValue());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
