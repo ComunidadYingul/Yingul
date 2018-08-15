@@ -188,8 +188,9 @@ public class ConfirmController {
     	GetStateSend getState = new GetStateSend();
     	String confirmState=confirmTemp.getBuy().getShipping().getYng_Shipment().getShipmentCod();
     	String stateApi ="";
+    	Yng_Standard clienteStandard = standardDao.findByKey("Cliente");
     	try {
-    		stateShipping=getState.sendState(""+confirmState);
+    		stateShipping=getState.sendState(""+confirmState,clienteStandard.getValue());
     		stateApi=stateShipping.getEstado();
     		System.out.println("state:"+stateApi+":"+confirmStateDao);
 		} catch (Exception e) {

@@ -400,8 +400,9 @@ public class GreetingBatchBean {
 			    	GetStateSend getState = new GetStateSend();
 			    	String confirmState=confirmTemp.getBuy().getShipping().getYng_Shipment().getShipmentCod();
 			    	String stateApi ="";
+			    	Yng_Standard clienteStandard = standardDao.findByKey("Cliente");
 			    	try {
-			    		stateShipping=getState.sendState(""+confirmState);
+			    		stateShipping=getState.sendState(""+confirmState,clienteStandard.getValue());
 			    		stateApi=stateShipping.getEstado();
 			    		System.out.println("state:"+stateApi+":"+confirmStateDao);
 					} catch (Exception e) {
@@ -447,12 +448,13 @@ public class GreetingBatchBean {
 			//codeConfirmAndreani
 	       	String confirmStateDao=standardDao.findByKey("codeConfirmAndreani").getValue();
 	       	//System.out.println("confirmTemp:"+confirmTemp.toString()+" value:"+);
+	       	String cliente=standardDao.findByKey("Cliente").getValue();
 	       	Yng_StateShipping stateShipping=new Yng_StateShipping();
 	    	GetStateSend getState = new GetStateSend();
 	    	String confirmState=confirmTemp.getBuy().getShipping().getYng_Shipment().getShipmentCod();
 	    	String stateApi ="";
 	    	try {
-	    		stateShipping=getState.sendState(""+confirmState);
+	    		stateShipping=getState.sendState(""+confirmState,cliente);
 	    		stateApi=stateShipping.getEstado();
 	    		System.out.println("state:"+stateApi+":"+confirmStateDao);
 			} catch (Exception e) {
@@ -499,12 +501,13 @@ public class GreetingBatchBean {
 	    	if(confirmTemp.getBuy().getShipping().getTypeShipping().equals("branch")) {
 
 	    		String confirmStateDao=standardDao.findByKey("codeConfirmAndreani").getValue();
+	    		String cliente=standardDao.findByKey("Cliente").getValue();
 	    		Yng_StateShipping stateShipping=new Yng_StateShipping();
 		    	GetStateSend getState = new GetStateSend();
 		    	String confirmState=confirmTemp.getBuy().getShipping().getYng_Shipment().getShipmentCod();
 		    	String stateApi ="";
 		    	try {
-		    		stateShipping=getState.sendState(""+confirmState);
+		    		stateShipping=getState.sendState(""+confirmState,cliente);
 		    		stateApi=stateShipping.getEstado();
 		    		System.out.println("state:"+stateApi+":"+confirmStateDao);
 				} catch (Exception e) {
