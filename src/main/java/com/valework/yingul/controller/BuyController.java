@@ -39,6 +39,8 @@ import com.valework.yingul.dao.EnvioDao;
 import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.ListCreditCardDao;
 import com.valework.yingul.dao.PaymentDao;
+import com.valework.yingul.dao.PersonDao;
+import com.valework.yingul.dao.ProductDao;
 import com.valework.yingul.dao.ProvinceDao;
 import com.valework.yingul.dao.QuoteDao;
 import com.valework.yingul.dao.RequestBodyDao;
@@ -169,6 +171,10 @@ public class BuyController {
 	LogisticsController logisticsController;
 	@Autowired
 	YingulRequestDao yingulRequestDao;
+	@Autowired
+	ProductDao productDao;
+	@Autowired
+	PersonDao personDao;
 	
 	@RequestMapping("/listCreditCard/all")
     public List<Yng_ListCreditCard> findProvinceList() {
@@ -317,7 +323,7 @@ public class BuyController {
         Yng_BranchAndreani branchAndreaniV=new Yng_BranchAndreani();
 		if(buy.getShipping().getTypeShipping().equals("home")) {		
 			Yng_Shipping shipping=null;
-			buy.setShipping(shipping);		
+			buy.setShipping(shipping);
 		}
 		else {
 		
@@ -330,7 +336,6 @@ public class BuyController {
 		String nameMail=ship.getYng_Quote().getYng_Branch().getNameMail();
 		String typeMail;
 		boolean andreani=false,dhl=false,fedex=false;
-		
 		switch (nameMail.toLowerCase()) {
 		    case "andreani":  andreani = true;typeMail="andreani";
 		             break;
@@ -347,7 +352,6 @@ public class BuyController {
 		tempShipping.setAndreani(andreani);
 		tempShipping.setDhl(dhl);
 		tempShipping.setFedex(fedex);
-		
 		tempShipping.setShippingStatus("imprecionTicket");
 		Yng_Branch branchTemp=branchDao.save(buy.getShipping().getYng_Quote().getYng_Branch());
 		Yng_Quote quote=new Yng_Quote();
@@ -355,7 +359,6 @@ public class BuyController {
 		quote.setYng_Item(buy.getYng_item());
 		quote.setYng_User(buy.getUser());
 		quote.setYng_Branch(branchTemp);
-		
 		quote=quoteDao.save(buy.getShipping().getYng_Quote());
 		tempShipping.setNameContact(buy.getShipping().getNameContact());
 		tempShipping.setPhoneContact(buy.getShipping().getPhoneContact());
@@ -370,33 +373,34 @@ public class BuyController {
 			String numberAndreani="";
 			try {
 				 Yng_Product getProductByIdItem=new Yng_Product();
-		   	  getProductByIdItem=getProductByIdItem(quote.getYng_Item().getItemId());
-				
+				 List<Yng_Product> productList= productDao.findAll();
+			  		for (Yng_Product yng_Product : productList) {
+						if(yng_Product.getYng_Item().getItemId()==quote.getYng_Item().getItemId()) {
+							getProductByIdItem = yng_Product;
+						}
+				}
 				SAXParserFactory saxParseFactory=SAXParserFactory.newInstance();
 		        SAXParser sAXParser=saxParseFactory.newSAXParser();
 		        Yng_Person per=new Yng_Person(); //personDao..findByYng_User(buy.getUser().getUserId());
-		        List<Yng_Person> personList=personService.findByUser(buy.getSeller());
-		        for (Yng_Person yng_Person : personList) {
-					System.out.println("per:--"+yng_Person.toString());				
-					per=yng_Person;
-					//System.out.println("numC:-----"+" pos:"+per.getYng_User().getYng_Ubication().toString());
+		        List<Yng_Person> personListItem=personDao.findAll();
+		        for (Yng_Person yng_Person : personListItem) {
+					if(yng_Person.getYng_User().getUsername().equals(buy.getUser().getUsername())) {
+						per = yng_Person;
+					}
 				}
 		        Yng_Person perItem=new Yng_Person(); //personDao..findByYng_User(buy.getUser().getUserId());
-		        List<Yng_Person> personListItem=personService.findByUser(buy.getUser());
 		        for (Yng_Person yng_Person : personListItem) {
-					System.out.println("perItem:--"+yng_Person.toString());
-					perItem=yng_Person; 
-					// System.out.println("numV:-----"+" pos:"+perItem.getYng_User().getYng_Ubication().toString());
+					if(yng_Person.getYng_User().getUsername().equals(buy.getSeller().getUsername())) {
+						perItem = yng_Person;
+					}
 				}
 		        //per.getYng_User().getYng_Ubication().setPostalCode(buy.getShipping().getYng_Shipment().getYng_User().getYng_Ubication().getPostalCode());
 		        //per.setName(buy.getShipping().getNameContact());
 		       // per.setLastname(buy.getShipping().getLastName());
-		       
-		        
 		        String numV="";
 		        String numC="";
     			try {
-    				branchAndreaniV=logisticsController.andreaniSucursalesObject(perItem.getYng_User().getYng_Ubication().getPostalCode(), "", "");
+    				branchAndreaniV=logisticsController.andreaniSucursalesObject(buy.getShipping().getYng_Quote().getYng_Item().getYng_Ubication().getPostalCode(), "", "");
     				numV=branchAndreaniV.getCodAndreani();
     				System.out.println("numV:-----"+numV+" pos:"+perItem.getYng_User().getYng_Ubication().getPostalCode());
     				branchAndreaniC=logisticsController.andreaniSucursalesObject(buy.getShipping().getYng_Shipment().getYng_User().getYng_Ubication().getPostalCode(), "", "");
@@ -406,7 +410,7 @@ public class BuyController {
     				e1.printStackTrace();
     			}
 				String xml=logistic.andreaniRemitenteWSDL(this.logistic.andreaniStringRe(per,tempShipping,perItem,getProductByIdItem,branchAndreaniC,branchAndreaniV,buy));
-		        com.valework.yingul.logistic.EnvioHandler handlerS=new com.valework.yingul.logistic.EnvioHandler();
+				com.valework.yingul.logistic.EnvioHandler handlerS=new com.valework.yingul.logistic.EnvioHandler();
 		        
 		        sAXParser.parse(new InputSource(new StringReader(xml)), handlerS);
 		        ArrayList<com.valework.yingul.logistic.EnvioResponce> envios=handlerS.getEnvioResponse();
@@ -423,7 +427,6 @@ public class BuyController {
 				System.out.println(":"+numberAndreani+":");
 		        
 		        
-				
 				link=logistic.andreaniPdfLink(numberAndreani +"");
 		        while (link.equals(logistic.errorPDF())) {          //Condición trivial: siempre cierta
 		            i++;
@@ -442,13 +445,11 @@ public class BuyController {
 		                System.out.println("versione.getNumero2:"+versione.getPdfLinkFile());            
 		            }
 		        }
-		
 		        System.out.println("link pdf : "+pdf);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
 			
 			yng_Shipment.setShipmentCod(numberAndreani);
 			yng_Shipment.setTicket(pdf);
@@ -468,10 +469,8 @@ public class BuyController {
 		tempShipping.setPhoneContact(buy.getShipping().getPhoneContact());
 		System.out.println("tempShipping:"+tempShipping.toString());
 		tempShipping=shippingDao.save(tempShipping);
-		
 		//shi
 		buy.setShipping(tempShipping);
-		
 		
 		buy.setShipping(shippingDao.save(buy.getShipping()));
 		}
@@ -798,11 +797,14 @@ public class BuyController {
 
     public Yng_Product getProductByIdItem(Long itemId) {
     	System.out.println(itemId);
-    	Yng_Item yng_Item = itemDao.findByItemId(itemId);
-  		List<Yng_Product> productList= productService.findByItem(yng_Item);
-  		Yng_Product product = productList.get(0);
-  		//System.out.println("pro: "+product);
-  		return product;	
+    	//Yng_Item yng_Item = itemDao.findByItemId(itemId);
+  		List<Yng_Product> productList= productDao.findAll();
+  		for (Yng_Product yng_Product : productList) {
+			if(yng_Product.getYng_Item().getItemId()==itemId) {
+				return yng_Product;
+			}
+		}
+  		return null;
       }
     @RequestMapping(value = "/updateUserUbication", method = RequestMethod.POST)
     @ResponseBody

@@ -584,7 +584,7 @@ public class PayUFunds {
             Yng_Standard cashConfirm = standardDao.findByKey("PAYU_cash_confirm");
             if(cashConfirm.getValue().equals(payment.getStatus())) {
             	ObjectMapper mapper2 = new ObjectMapper();
-            	Yng_Buy buy = mapper2.readValue(payment.getCashPayment().getBuyJson(), Yng_Buy.class);
+            	Yng_Buy buy = mapper2.readValue(payment.getCashPayment().getBuyJson(), Yng_Buy.class);  	
             	if(buyController.createBuy(buy).equals("save")){
             		return "save";
             	}
