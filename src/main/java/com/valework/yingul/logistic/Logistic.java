@@ -214,7 +214,7 @@ public class Logistic {
 					   		"</and:numero>\r\n" + 
 					   		"<!--Optional:-->\r\n" + 
 					   		"<and:tipo>"
-					   			+ "movil"+
+					   			+ "casa"+
 					   		"</and:tipo>\r\n" + 
 				   		"</and:Telefono>\r\n" +
 					   		
@@ -225,7 +225,7 @@ public class Logistic {
 					   		"</and:numero>\r\n" + 
 					   		"<!--Optional:-->\r\n" + 
 					   		"<and:tipo>"
-					   			+ "movil"+
+					   			+ "casa"+
 					   		"</and:tipo>\r\n" + 
 				   		"</and:Telefono>\r\n" +
 			   		"</and:telefonos>\r\n" + 
@@ -246,7 +246,9 @@ public class Logistic {
 			   		"<!--Optional:-->\r\n" + 
 			   		"<and:departamento></and:departamento>\r\n" + 
 			   		"<!--Optional:-->\r\n" + 
-			   		"<and:localidad></and:localidad>\r\n" + 
+			   		"<and:localidad>"
+			   		+ ""+buy.getShipping().getYng_Quote().getYng_Branch().getLocation()
+			   		+ "</and:localidad>\r\n" + 
 			   		"<!--Optional:-->\r\n" + 
 			   		"<and:pais>"
 			   			+ ""
@@ -296,7 +298,7 @@ public class Logistic {
 			   		+ "</and:apellido>\r\n" + 
 			   		"<!--Optional:-->\r\n" + 
 			   		"<and:apellidoAlternativo>"
-			   			+ ""+shi.getLastName()
+			   			+ ""
 			   		+ "</and:apellidoAlternativo>\r\n" + 
 			   		"<and:email>"
 			   			+ perItem.getYng_User().getEmail()
@@ -307,7 +309,7 @@ public class Logistic {
 			   		+ "</and:nombre>\r\n" + 
 			   		"<!--Optional:-->\r\n" + 
 			   		"<and:nombreAlternativo>"
-			   			+ ""+shi.getNameContact()
+			   			+ ""
 			   		+ "</and:nombreAlternativo>\r\n" + 
 			   		"<!--Optional:-->\r\n" + 
 			   		"<and:numeroDeDocumento>"
@@ -323,7 +325,7 @@ public class Logistic {
 			   		+ "</and:numero>\r\n" + 
 			   		"<!--Optional:-->\r\n" + 
 			   		"<and:tipo>"
-			   		+ "movil"
+			   		+ "casa"
 			   		+ "</and:tipo>\r\n" + 
 			   		"</and:Telefono>\r\n" + 
 			   		"</and:telefonos>\r\n" + 
@@ -354,6 +356,7 @@ public class Logistic {
 		   		"</tem:GenerarEnvioConDatosDeImpresionYRemitente>\r\n" + 
 		   		"</soapenv:Body>\r\n" + 
 		   		"</soapenv:Envelope>";
+		   System.out.println("confirmarcompra:-----------"+confirmarcompra);
 		   return ""+confirmarcompra;
 	}
     
