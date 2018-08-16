@@ -80,7 +80,7 @@ public class GreetingBatchBean {
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 6 * * *")//cada dia a las 6 de la mañana
 	//@Scheduled(cron = "0 0/16 12 * * ?")//cada 8 minutos desde las 10:45
-	@Scheduled(cron = "0 30/16 22 * * ?")//cada 8 minutos desde las 10:45
+	@Scheduled(cron = "0 30/16 13 * * ?")//cada 8 minutos desde las 10:45
 	public void cronJob() throws ParseException, MessagingException {
 		smtpMailSender.send("quenallataeddy@gmail.com", "INICIO DE LOS CRONS", "CRONS");
 		System.out.println("primer cron");
@@ -343,9 +343,9 @@ public class GreetingBatchBean {
     	}
 	}
 	
-	@Scheduled(cron = "0,59 * * * * *")//para cada 30 segundos
+	//@Scheduled(cron = "0,59 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 4 * * *")//cada dia a las 5 de la mañana
-	//@Scheduled(cron = "0 54/5 10 * * ?")//cada 5 minutos desde las 10:45
+	@Scheduled(cron = "0 34/5 13 * * ?")//cada 5 minutos desde las 10:45
 	public void cronJob1() throws ClientProtocolException, IOException, Exception {
 		System.out.println("segundo cron");
 		List<Yng_Payment> confirmCashPayment= paymentDao.findByTypeAndStatusAndBuyStatus("CASH","PENDING","PENDING");
