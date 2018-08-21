@@ -173,7 +173,7 @@ public class PayUFunds {
 	    		"         \"fullName\": \""+cleanString(person.getName()).toUpperCase()+" "+cleanString(person.getLastname()).toUpperCase()+"\",\r\n" + 
 	    		"         \"emailAddress\": \""+buy.getUser().getEmail()+"\",\r\n" + 
 	    		"         \"contactPhone\": \""+buy.getUser().getPhone()+"\",\r\n" + 
-	    		"         \"dniNumber\": \"5415668464654\",\r\n" + 
+	    		"         \"dniNumber\": \""+buy.getUser().getDocumentNumber()+"\",\r\n" + 
 	    		"         \"billingAddress\": {\r\n" + 
 	    		"            \"street1\": \""+cleanString(buy.getUser().getYng_Ubication().getStreet()).toUpperCase()+"\",\r\n" + 
 	    		"            \"street2\": \""+buy.getUser().getYng_Ubication().getNumber()+"\",\r\n" + 
@@ -267,15 +267,18 @@ public class PayUFunds {
 	                    		//para ver si la tarjeta existe 
 	                    		if (null == cardDao.findByNumberAndUser(cardTemp.getNumber(),buy.getUser())) {
 	                    			paymentTemp.setYng_Card(cardDao.save(cardTemp)); 
-	                    			System.out.println("entro a donde no debia");
 	                            }
 	                    		else {
-	                    			
 	                    			paymentTemp.setYng_Card(cardDao.findByNumberAndUser(cardTemp.getNumber(),buy.getUser()));
-	                    			System.out.println("entro a donde si debia");
 	                    		}
 	                    		paymentTemp.setYng_Request(requestTemp);
-	                    		
+	                    		paymentTemp.setCurrency("ARS");//setear la moneda del pais
+	                    		paymentTemp.setBuyStatus("bought");
+	                    		paymentTemp.setOrderId(jObject.optLong("orderId"));
+	                    		paymentTemp.setReferenceCode(referenceCode);
+	                    		paymentTemp.setStatus(jObject.optString("state"));
+	                    		paymentTemp.setTransactionId(jObject.optString("transactionId"));
+	                    		paymentTemp.setValue(buy.getCost());
 	                    		return paymentTemp;
 	                    		
 	                    	}
@@ -585,7 +588,7 @@ public class PayUFunds {
             if(cashConfirm.getValue().equals(payment.getStatus())) {
             	ObjectMapper mapper2 = new ObjectMapper();
             	Yng_Buy buy = mapper2.readValue(payment.getCashPayment().getBuyJson(), Yng_Buy.class);  	
-            	if(buyController.createBuy(buy).equals("save")){
+            	if(buyController.createBuyCash(buy).equals("save")){
             		return "save";
             	}
             }
@@ -615,6 +618,49 @@ public class PayUFunds {
         return texto;
     }
 
-	
+	public String getStatusPayment(Yng_Payment payment) throws Exception, ClientProtocolException, IOException{
+		Yng_Standard test = standardDao.findByKey("PAYU_test_p");
+		Yng_Standard apikey = standardDao.findByKey("PAYU_apiKey_p");
+		Yng_Standard apiLogin = standardDao.findByKey("PAYU_apiLogin_p");
+		CloseableHttpClient client = HttpClients.createDefault();
+	    HttpPost httpPost = new HttpPost("https://api.payulatam.com/reports-api/4.0/service.cgi");
+	    String json = "{\r\n" + 
+	    		"   \"test\": "+test.getValue()+",\r\n" + 
+	    		"   \"language\": \"en\",\r\n" + 
+	    		"   \"command\": \"ORDER_DETAIL\",\r\n" + 
+	    		"   \"merchant\": {\r\n" + 
+	    		"      \"apiLogin\": \""+apiLogin.getValue()+"\",\r\n" + 
+	    		"      \"apiKey\": \""+apikey.getValue()+"\"\r\n" + 
+	    		"   },\r\n" + 
+	    		"   \"details\": {\r\n" + 
+	    		"      \"orderId\": "+payment.getOrderId()+"\r\n" + 
+	    		"   }\r\n" + 
+	    		"}";
+	    StringEntity entity = new StringEntity(json);
+	    httpPost.setEntity(entity);
+	    httpPost.setHeader("Accept", "application/json");
+	    httpPost.setHeader("Content-type", "application/json");
+	    CloseableHttpResponse response = client.execute(httpPost);
+	    BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+        StringBuffer result = new StringBuffer();
+        String line;
+        while ((line = rd.readLine()) != null) {
+            result.append(line);
+        }
+	    if(!StringUtils.isEmpty(result.toString())) {
+            ObjectMapper mapper = getObjectMapperInstance();
+            Object tree;
+            tree = mapper.readValue(result.toString(), Object.class);
+            //logger.info("ResponseBody: " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(tree));
+            String s = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(tree);
+            JSONObject  jObject = new JSONObject(s);
+            System.out.println(jObject.toString());
+            System.out.println(jObject.getJSONObject("result").getJSONObject("payload").getJSONArray("transactions").getJSONObject(0).getJSONObject("transactionResponse").getString("state"));
+            return jObject.getJSONObject("result").getJSONObject("payload").getJSONArray("transactions").getJSONObject(0).getJSONObject("transactionResponse").getString("state");    
+	    }
+        response.close();
+	    client.close();
+    	return "notFound";
+	}
 	
 }

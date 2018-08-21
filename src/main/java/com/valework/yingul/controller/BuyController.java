@@ -13,8 +13,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -206,8 +208,575 @@ public class BuyController {
     
     @RequestMapping(value = "/createBuy", method = RequestMethod.POST)
     @ResponseBody
-    public String createBuy(@Valid @RequestBody Yng_Buy buy) throws Exception {	
-    	//capturar objeto inicio
+    public String createBuy(@Valid @RequestBody Yng_Buy buy,@RequestHeader("Authorization") String authorization) throws Exception {	
+    	//capturar objeto inicio 	
+    	String token =new String(org.apache.commons.codec.binary.Base64.decodeBase64(authorization));
+		String[] parts = token.split(":");
+		Yng_User authorized= userDao.findByUsername(parts[0]);
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
+		if(authorized.getUsername().equals(parts[0]) && authorized.getUsername().equals(buy.getUser().getUsername()) && encoder.matches(parts[1], authorized.getPassword())){
+	    			ObjectMapper mapperRequest = new ObjectMapper();
+	    			java.util.Date fecha = new Date();
+	    			System.out.println (fecha);
+	    			try {
+	    				String jsonInString = mapperRequest.writeValueAsString(buy);
+	    				System.out.println("jsonInString"+jsonInString);
+	    				Yng_YingulRequest serviceJson=new Yng_YingulRequest();
+	    				serviceJson.setJson(jsonInString);
+	    				serviceJson.setDate(fecha);
+	    				yingulRequestDao.save(serviceJson);
+	    			} catch (JsonProcessingException e1) {
+	    				
+	    				e1.printStackTrace();
+	    			}
+	    	//capturar objeto fin	
+	    	//backup para pago en efectivo
+	    	JSONObject cashBuy=null;
+	    	String jsonInString = "";
+	    	ObjectMapper mapper = new ObjectMapper();
+			try {
+				jsonInString = mapper.writeValueAsString(buy);
+				System.out.println(jsonInString);
+				jsonInString = jsonInString.replace(",\"credentialsNonExpired\":true", "");
+				jsonInString = jsonInString.replace(",\"accountNonExpired\":true", "");
+				jsonInString = jsonInString.replace(",\"accountNonLocked\":true", "");
+				System.out.println(jsonInString);
+		    	cashBuy = new JSONObject(jsonInString);
+			} catch (JsonProcessingException e1) {
+				
+				e1.printStackTrace();
+			}
+	    	//para setear el item
+	    	Yng_Item itemTemp=itemDao.findByItemId(buy.getYng_item().getItemId());
+	    	System.out.println(buy.getQuantity());
+	    	System.out.println(itemTemp.getQuantity());
+	    	//System.out.println(itemTemp.getQuantity());
+	    	if(itemTemp.getQuantity()<=0||!itemTemp.isEnabled()||itemTemp.getQuantity()<buy.getQuantity()) {
+	    		return "Sin stock";
+	    	}
+	    	buy.setYng_item(itemTemp);
+	    	//fin setear el item
+	    	//para setear el usuario y el vendedor 
+	    	Yng_User userTemp= userDao.findByUsername(buy.getUser().getUsername());
+	    	Yng_Country countrySw=countryDao.findByCountryId(userTemp.getYng_Ubication().getYng_Country().getCountryId());
+			if(!countrySw.isToBuy()) {
+				return "Tu país todavia no esta habilitado para comprar en Yingul estamos trabajando en ello";
+			}
+	    	buy.setUser(userTemp);
+	    	Yng_User sellerTemp = userDao.findByUsername(itemTemp.getUser().getUsername());
+	    	buy.setSeller(sellerTemp);
+	    	//hasta aqui para el usuario
+	    	//pagos en efectivo 
+	    	if(buy.getYng_Payment().getType().equals("CASH")) {
+	    		if(buy.getYng_Payment().getPaymentId()!=null) {
+	    			Yng_Payment paymentSw= paymentDao.findByPaymentId(buy.getYng_Payment().getPaymentId());
+	    			Yng_Standard cashConfirm = standardDao.findByKey("PAYU_cash_confirm");
+	    			if(paymentSw.getStatus().equals(cashConfirm.getValue())) {
+	    				buy.setYng_Payment(paymentDao.save(paymentSw));
+	    			}else {
+	    				return "internError";
+	    			}
+	    		}else {
+	    			//Autorización de la tarjeta
+			    	Yng_Payment autorized =  payUFunds.authorizeCash(buy,userTemp);
+			    	//
+			    	if(autorized==null) {
+			    		return "problemCash";
+			    	}else {	
+			    		autorized.setUser(null);
+			    		try {
+			    			jsonInString = mapper.writeValueAsString(autorized);
+			    		} catch (JsonProcessingException e1) {
+			    			
+			    			e1.printStackTrace();
+			    		}
+			    		
+			    		cashBuy.put("yng_Payment", new JSONObject(jsonInString));
+	
+			    		Yng_CashPayment cashTemp = cashPaymentDao.findByCashPaymentId(autorized.getCashPayment().getCashPaymentId());
+			    		cashTemp.setBuyJson(cashBuy.toString());
+	            		cashPaymentDao.save(cashTemp);
+	
+			    		Yng_Item itemTempE=itemDao.findByItemId(buy.getYng_item().getItemId());
+			    		if(!itemTempE.getType().equals("Service")) {
+			    			itemTempE.setQuantity(itemTempE.getQuantity()-buy.getQuantity());
+			    		}
+			    		if(itemTempE.getQuantity()<=0) {
+			    			itemTempE.setEnabled(false);
+			    		}
+			    		itemTempE=itemDao.save(itemTempE);
+			    		
+			    		return "cash:"+autorized.getPaymentId();
+			    	}
+	    		}
+	    	}
+	    	if(buy.getYng_Payment().getType().equals("CARD")) {
+	    		//Autorización de la tarjeta
+		    	Yng_Payment autorized =  payUFunds.authorizeCard(buy,userTemp);
+		    	//
+		    	if(autorized==null) {
+		    		return "problemCard";
+		    	}else {
+		    		autorized.setCashPayment(null);
+		    		buy.setYng_Payment(paymentDao.save(autorized));
+		    	}
+	    	}
+	    	//fin del metodo de pago
+	    	Date time = new Date();
+	    	DateFormat hourdateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+	    	buy.setTime(hourdateFormat.format(time));
+			////////////////////////////////////////////////////////////
+			System.out.println("shippingdaniel :"+ buy.getShipping().toString());
+			String typeEnvio=buy.getShipping().getTypeShipping();
+			Yng_BranchAndreani branchAndreaniC=new Yng_BranchAndreani();
+	        Yng_BranchAndreani branchAndreaniV=new Yng_BranchAndreani();
+			if(buy.getShipping().getTypeShipping().equals("home")) {		
+				Yng_Shipping shipping=null;
+				buy.setShipping(shipping);
+			}
+			else {
+			
+			///*nuevo codigo
+				
+			Yng_Shipping tempShipping =new Yng_Shipping();
+			Yng_Shipping ship =new Yng_Shipping();
+			Yng_BranchAndreani branchAndreani=new Yng_BranchAndreani();
+			ship=buy.getShipping();
+			String nameMail=ship.getYng_Quote().getYng_Branch().getNameMail();
+			String typeMail;
+			boolean andreani=false,dhl=false,fedex=false;
+			switch (nameMail.toLowerCase()) {
+			    case "andreani":  andreani = true;typeMail="andreani";
+			             break;
+			    case "dhl":  dhl = true;typeMail="dhl";
+			             break;
+			    case "fedex":  fedex = true;typeMail="fedex";
+			             break;
+			    default: typeMail = "Invalid Mail";
+			             break;
+			             }
+			Yng_Shipment yng_Shipment=new Yng_Shipment();
+			System.out.println(nameMail.toLowerCase());
+			if(typeMail.equals("andreani")) {
+			tempShipping.setAndreani(andreani);
+			tempShipping.setDhl(dhl);
+			tempShipping.setFedex(fedex);
+			tempShipping.setShippingStatus("imprecionTicket");
+			Yng_Branch branchTemp=branchDao.save(buy.getShipping().getYng_Quote().getYng_Branch());
+			Yng_Quote quote=new Yng_Quote();
+			quote=buy.getShipping().getYng_Quote();
+			quote.setYng_Item(buy.getYng_item());
+			quote.setYng_User(buy.getUser());
+			quote.setYng_Branch(branchTemp);
+			quote=quoteDao.save(buy.getShipping().getYng_Quote());
+			tempShipping.setNameContact(buy.getShipping().getNameContact());
+			tempShipping.setPhoneContact(buy.getShipping().getPhoneContact());
+			tempShipping.setLastName(buy.getShipping().getLastName());
+			tempShipping.setYng_Quote(quote);
+			//branchAndreaniDao.findByCodAndreani();
+			
+				
+				//Logistic logistic=new Logistic();
+				String link="";
+				String pdf="";
+				String numberAndreani="";
+				try {
+					 Yng_Product getProductByIdItem=new Yng_Product();
+					 List<Yng_Product> productList= productDao.findAll();
+				  		for (Yng_Product yng_Product : productList) {
+							if(yng_Product.getYng_Item().getItemId()==quote.getYng_Item().getItemId()) {
+								getProductByIdItem = yng_Product;
+							}
+					}
+					SAXParserFactory saxParseFactory=SAXParserFactory.newInstance();
+			        SAXParser sAXParser=saxParseFactory.newSAXParser();
+			        Yng_Person per=new Yng_Person(); //personDao..findByYng_User(buy.getUser().getUserId());
+			        List<Yng_Person> personListItem=personDao.findAll();
+			        for (Yng_Person yng_Person : personListItem) {
+						if(yng_Person.getYng_User().getUsername().equals(buy.getUser().getUsername())) {
+							per = yng_Person;
+						}
+					}
+			        Yng_Person perItem=new Yng_Person(); //personDao..findByYng_User(buy.getUser().getUserId());
+			        for (Yng_Person yng_Person : personListItem) {
+						if(yng_Person.getYng_User().getUsername().equals(buy.getSeller().getUsername())) {
+							perItem = yng_Person;
+						}
+					}
+			        //per.getYng_User().getYng_Ubication().setPostalCode(buy.getShipping().getYng_Shipment().getYng_User().getYng_Ubication().getPostalCode());
+			        //per.setName(buy.getShipping().getNameContact());
+			       // per.setLastname(buy.getShipping().getLastName());
+			        String numV="";
+			        String numC="";
+	    			try {
+	    				branchAndreaniV=logisticsController.andreaniSucursalesObject(buy.getShipping().getYng_Quote().getYng_Item().getYng_Ubication().getPostalCode(), "", "");
+	    				numV=branchAndreaniV.getCodAndreani();
+	    				System.out.println("numV:-----"+numV+" pos:"+perItem.getYng_User().getYng_Ubication().getPostalCode());
+	    				branchAndreaniC=logisticsController.andreaniSucursalesObject(buy.getShipping().getYng_Shipment().getYng_User().getYng_Ubication().getPostalCode(), "", "");
+	    				numC=branchAndreaniC.getCodAndreani();
+	    				System.out.println("numC:-----"+numC+" pos:"+buy.getShipping().getYng_Shipment().getYng_User().getYng_Ubication().getPostalCode());
+	    			} catch (Exception e1) {
+	    				e1.printStackTrace();
+	    			}
+					String xml=logistic.andreaniRemitenteWSDL(this.logistic.andreaniStringRe(per,tempShipping,perItem,getProductByIdItem,branchAndreaniC,branchAndreaniV,buy));
+					com.valework.yingul.logistic.EnvioHandler handlerS=new com.valework.yingul.logistic.EnvioHandler();
+			        
+			        sAXParser.parse(new InputSource(new StringReader(xml)), handlerS);
+			        ArrayList<com.valework.yingul.logistic.EnvioResponce> envios=handlerS.getEnvioResponse();
+			        System.out.println("aniem");
+			        for (com.valework.yingul.logistic.EnvioResponce versione : envios) {
+			        	numberAndreani=versione.getNumeroAndreani();
+			            System.out.println("versione.getNumero1:"+numberAndreani);
+			        	}
+			        System.out.println("logistic.andreaniPdfLink:"+numberAndreani);
+					System.out.println("res:"+xml);
+			        yng_Shipment.setRespuesta(xml);
+			        int i = 0;
+					System.out.println("numberAndreani  daniel :"+numberAndreani);
+					System.out.println(":"+numberAndreani+":");
+			        
+			        
+					link=logistic.andreaniPdfLink(numberAndreani +"");
+			        while (link.equals(logistic.errorPDF())) {          //Condición trivial: siempre cierta
+			            i++;
+			            link=logistic.andreaniPdfLink(numberAndreani +"");
+			            System.out.println ("Valor de i: " + i);
+			            if (i==11) { break;}
+			        } 
+					System.out.println("linkda: "+link);
+					if (link != null) {
+			            //strResponse = link;
+			            com.valework.yingul.logistic.ImprimirConstanciaHandler handlerI=new com.valework.yingul.logistic.ImprimirConstanciaHandler();
+			            sAXParser.parse(new InputSource(new StringReader(link)), handlerI);
+			            ArrayList<com.valework.yingul.logistic.ImprimirConstanciaResponse> impr=handlerI.getImprimirResponce();
+			            for (com.valework.yingul.logistic.ImprimirConstanciaResponse versione : impr) {
+			            	pdf=versione.getPdfLinkFile();
+			                System.out.println("versione.getNumero2:"+versione.getPdfLinkFile());            
+			            }
+			        }
+			        System.out.println("link pdf : "+pdf);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				yng_Shipment.setShipmentCod(numberAndreani);
+				yng_Shipment.setTicket(pdf);
+				yng_Shipment.setTypeMail(typeMail);
+				yng_Shipment.setYng_Item(buy.getYng_item());
+				yng_Shipment.setYng_User(buy.getUser());
+				Yng_Shipment shipmentTemp=new Yng_Shipment();
+				shipmentTemp=yng_Shipment;
+				System.out.println("shipmentTemp"+shipmentTemp.toString());
+				yng_Shipment=shipmentDao.save(shipmentTemp);
+			}
+				//-----fin del nuevo codigo
+				tempShipping.setYng_Shipment(yng_Shipment);
+			
+			tempShipping.setTypeShipping(typeEnvio);
+			tempShipping.setNameContact(buy.getShipping().getNameContact());
+			tempShipping.setPhoneContact(buy.getShipping().getPhoneContact());
+			System.out.println("tempShipping:"+tempShipping.toString());
+			tempShipping=shippingDao.save(tempShipping);
+			//shi
+			buy.setShipping(tempShipping);
+			
+			buy.setShipping(shippingDao.save(buy.getShipping()));
+			}
+			
+			
+			////////////////////////////////////////
+			//verificar que el stock funcione
+			Yng_Item itemTemp1=itemDao.findByItemId(buy.getYng_item().getItemId());
+			if(!itemTemp1.getType().equals("Service")) {
+				itemTemp1.setQuantity(itemTemp1.getQuantity()-buy.getQuantity());
+			}
+			if(itemTemp1.getQuantity()<=0) {
+				itemTemp1.setEnabled(false);
+			}
+			itemTemp1=itemDao.save(itemTemp1);
+			buy.setYng_item(itemTemp1);
+			//
+	    	buy=buyDao.save(buy);    	
+	    	Yng_Confirm confirm=new Yng_Confirm();
+	    	confirm.setBuy(buy);
+	    	confirm.setBuyerConfirm(false);
+	    	confirm.setSellerConfirm(false);
+	    	confirm.setCodeConfirm(1000 + (int)(Math.random() * ((9999 - 1000) + 1)));
+	    	confirm.setStatus("pending");
+	    	confirm.setBuyer(buy.getUser());
+	    	confirm.setSeller(buy.getSeller());
+	    	confirm=confirmDao.save(confirm);
+	    	//modificar los correos para pagos no con tarjeta
+			
+			if(typeEnvio.equals("home")) {
+				smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","<b>DETALLE DE LA VENTA:</b>"
+						+ "<table border=\"1\">\r\n"  
+						+ "  <tr>\r\n"
+						+ "    <th width=\"10%\">CANT.</th>\r\n" 
+						+ "    <th width=\"50%\">DESCRIPCIÓN</th>\r\n" 
+						+ "    <th width=\"20%\">PRECIO UNITARIO</th>\r\n"
+						+ "    <th width=\"20%\">IMPORTE</th>\r\n"
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n"
+						+ "    <td>"+buy.getQuantity()+"</td>\r\n" 
+						+ "    <td>"+buy.getYng_item().getName()+"</td>\r\n" 
+						+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+						+ "    <td>"+buy.getItemCost()+" ARS.</td>\r\n" 
+						+ "  </tr>\r\n"
+						+ "  <tr>\r\n" 
+						+ "    <th colspan=\"3\">TOTAL.</th>\r\n" 
+						+ "    <th>"+buy.getCost()+" ARS</th>\r\n"
+						+ "  </tr>\r\n"
+						+ "</table>"
+						+ "<br/> Este importe esta sujeto al cobro de comisiones Yingul por venta."
+						+ "<br/> Los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección: "+userTemp.getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ userTemp.getYng_Ubication().getYng_City().getName()+" Calle: "+userTemp.getYng_Ubication().getStreet()+"  Numero: "+userTemp.getYng_Ubication().getNumber()
+						+ "<br/> Encuantrate con tu comprador para firmar la entrega del producto."
+						+ "<br/> - Al Momento de entregar el producto al comprador ingresa a: http://www.yingul.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones "
+						+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
+						+ "<br/> - No entregues el producto sin que tu y el vendedor firmen la entrega no aceptaremos reclamos si la confirmacion no esta firmada por ambas partes"
+						+ "<br/> - Por tu seguridad no entregues el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
+						+ "<br/> - Despues de entregar el producto tu comprador tiene 10 dias para observar sus condiciones posterior a eso te daremos mas instrucciones para recoger tu dinero"
+						);
+				if(buy.getYng_Payment().getType().equals("CASH")) {
+					smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
+							+ "<table border=\"1\">\r\n"  
+							+ "  <tr>\r\n"
+							+ "    <th width=\"10%\">CANT.</th>\r\n" 
+							+ "    <th width=\"50%\">DESCRIPCIÓN</th>\r\n" 
+							+ "    <th width=\"20%\">PRECIO UNITARIO</th>\r\n"
+							+ "    <th width=\"20%\">IMPORTE</th>\r\n"
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n"
+							+ "    <td>"+buy.getQuantity()+"</td>\r\n" 
+							+ "    <td>"+buy.getYng_item().getName()+"</td>\r\n" 
+							+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+							+ "    <td>"+buy.getItemCost()+" ARS.</td>\r\n" 
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n" 
+							+ "    <th colspan=\"3\">TOTAL.</th>\r\n" 
+							+ "    <th>"+buy.getCost()+" ARS</th>\r\n"
+							+ "  </tr>\r\n"
+							+ "</table>"
+							+ "<br/> Pago realizado en EFECTIVO a través de: "+buy.getYng_Payment().getCashPayment().getPaymentMethod()+" Cumpla las siguientes instrucciones:."
+							+ "<br/> Los datos del vendedor son: "+"Email :"+buy.getYng_item().getUser().getEmail()+"  Teléfono : "+buy.getYng_item().getUser().getPhone()+"  Dirección:"+buy.getYng_item().getUser().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getUser().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getUser().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber()
+							+ "<br/> - Al Momento de recibir el producto dale este codigo a tu vendedor: "+confirm.getCodeConfirm()+" si el producto esta en buenas condiciones."
+							+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina."
+							+ "<br/> - No recibas el producto ni des el código si no estas conforme con el producto no aceptaremos reclamos posteriores."
+							+ "<br/> - Por tu seguridad no recibas el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día."
+							+ "<br/> - Despues de recibir el producto tienes 10 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero.");
+				}
+				if(buy.getYng_Payment().getType().equals("CARD")) {
+					smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
+							+ "<table border=\"1\">\r\n"  
+							+ "  <tr>\r\n"
+							+ "    <th width=\"10%\">CANT.</th>\r\n" 
+							+ "    <th width=\"50%\">DESCRIPCIÓN</th>\r\n" 
+							+ "    <th width=\"20%\">PRECIO UNITARIO</th>\r\n"
+							+ "    <th width=\"20%\">IMPORTE</th>\r\n"
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n"
+							+ "    <td>"+buy.getQuantity()+"</td>\r\n" 
+							+ "    <td>"+buy.getYng_item().getName()+"</td>\r\n" 
+							+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+							+ "    <td>"+buy.getItemCost()+" ARS.</td>\r\n" 
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n" 
+							+ "    <th colspan=\"3\">TOTAL.</th>\r\n" 
+							+ "    <th>"+buy.getCost()+" ARS</th>\r\n"
+							+ "  </tr>\r\n"
+							+ "</table>"
+							+ "<br/> Pago realizado con TARJETA: "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" Cumpla las siguientes instrucciones:."
+							+ "<br/> Los datos del vendedor son: "+"Email :"+buy.getYng_item().getUser().getEmail()+"  Teléfono : "+buy.getYng_item().getUser().getPhone()+"  Dirección:"+buy.getYng_item().getUser().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getUser().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getUser().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber()
+							+ "<br/> - Al Momento de recibir el producto dile este codigo a tu vendedor: "+confirm.getCodeConfirm()+" si el producto esta en buenas condiciones "
+							+ "<br/> - Espera el mensaje de confirmación exitosa de nuestra página."
+							+ "<br/> - No recibas el producto ni des el código si no estas conforme con el producto no aceptaremos reclamos posteriores."
+							+ "<br/> - Por tu seguridad no recibas el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
+							+ "<br/> - Despues de recibir el producto tienes 10 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero");
+				}	
+			}
+			else {
+				if(buy.getYng_item().getProductPagoEnvio().equals("gratis")) {
+					smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","<b>DETALLE DE LA VENTA:</b>"
+							+ "<table border=\"1\">\r\n"  
+							+ "  <tr>\r\n"
+							+ "    <th width=\"10%\">CANT.</th>\r\n" 
+							+ "    <th width=\"50%\">DESCRIPCIÓN</th>\r\n" 
+							+ "    <th width=\"20%\">PRECIO UNITARIO</th>\r\n"
+							+ "    <th width=\"20%\">IMPORTE</th>\r\n"
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n"
+							+ "    <td>"+buy.getQuantity()+"</td>\r\n" 
+							+ "    <td>"+buy.getYng_item().getName()+"</td>\r\n" 
+							+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+							+ "    <td>"+buy.getItemCost()+" ARS.</td>\r\n" 
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n" 
+							+ "    <th colspan=\"3\">TOTAL.</th>\r\n" 
+							+ "    <th>"+buy.getCost()+" ARS</th>\r\n"
+							+ "  </tr>\r\n"
+							+ "</table>"
+							+ "<br/> Este importe esta sujeto al cobro de comisiones Yingul por venta."
+							+ "<br/> Costo del envio : " +buy.getShipping().getYng_Quote().getRate()+" ARS. El costo de envio se descontara posteriormente de tu saldo en YingulPay."  
+							+ "<br/>--Imprimir la etiqueta de Andreani. (<a href=\"http://www.yingul.com/userFront/sales\" target=\"_blank\">Descargar etiqueta de envío</a>)"
+							+ "<br/>--Preparar y embalar el paquete junto a la etiqueta." 
+							+ "<br/>--Déjalo en la sucursal Andreani: "+branchAndreaniV.getLocation()+" "+branchAndreaniV.getSchedules()+" Fono: "+branchAndreaniV.getPhones()
+							+ "<br/>Nos pondremos en contacto con usted cuando tu comprador recoja el producto de Andreani.");
+					if(buy.getYng_Payment().getType().equals("CASH")) {
+						smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
+							+ "<table border=\"1\">\r\n"  
+							+ "  <tr>\r\n"
+							+ "    <th width=\"10%\">CANT.</th>\r\n" 
+							+ "    <th width=\"50%\">DESCRIPCIÓN</th>\r\n" 
+							+ "    <th width=\"20%\">PRECIO UNITARIO</th>\r\n"
+							+ "    <th width=\"20%\">IMPORTE</th>\r\n"
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n"
+							+ "    <td>"+buy.getQuantity()+"</td>\r\n" 
+							+ "    <td>"+buy.getYng_item().getName()+"</td>\r\n" 
+							+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+							+ "    <td>"+buy.getItemCost()+" ARS.</td>\r\n" 
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n"
+							+ "    <td>1</td>\r\n" 
+							+ "    <td>Envio</td>\r\n" 
+							+ "    <td>-</td>\r\n" 
+							+ "    <td>GRATIS</td>\r\n" 
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n" 
+							+ "    <th colspan=\"3\">TOTAL.</th>\r\n" 
+							+ "    <th>"+buy.getCost()+" ARS</th>\r\n"
+							+ "  </tr>\r\n"
+							+ "</table>"
+							+ "<br/> Pago realizado en EFECTIVO a través de: "+buy.getYng_Payment().getCashPayment().getPaymentMethod()+"."	
+							+ "<br/> Nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani:"
+							+ "<br/>Sucursal: "+branchAndreaniC.getLocation()+" "+branchAndreaniC.getSchedules()+" Fono: "+branchAndreaniC.getPhones());
+					}
+					if(buy.getYng_Payment().getType().equals("CARD")) {
+						smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
+							+ "<table border=\"1\">\r\n"  
+							+ "  <tr>\r\n"
+							+ "    <th width=\"10%\">CANT.</th>\r\n" 
+							+ "    <th width=\"50%\">DESCRIPCIÓN</th>\r\n" 
+							+ "    <th width=\"20%\">PRECIO UNITARIO</th>\r\n"
+							+ "    <th width=\"20%\">IMPORTE</th>\r\n"
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n"
+							+ "    <td>"+buy.getQuantity()+"</td>\r\n" 
+							+ "    <td>"+buy.getYng_item().getName()+"</td>\r\n" 
+							+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+							+ "    <td>"+buy.getItemCost()+" ARS.</td>\r\n" 
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n"
+							+ "    <td>1</td>\r\n" 
+							+ "    <td>Envio</td>\r\n" 
+							+ "    <td>-</td>\r\n" 
+							+ "    <td>GRATIS</td>\r\n" 
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n" 
+							+ "    <th colspan=\"3\">TOTAL.</th>\r\n" 
+							+ "    <th>"+buy.getCost()+" ARS</th>\r\n"
+							+ "  </tr>\r\n"
+							+ "</table>"
+							+ "<br/> Pago realizado con TARJETA: "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+"."	
+							+ "<br/> Nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani."
+							+ "<br/> Sucursal: "+branchAndreaniC.getLocation()+" "+branchAndreaniC.getSchedules()+" Fono: "+branchAndreaniC.getPhones());
+					}
+				}else {
+					smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","<b>DETALLE DE LA VENTA:</b>"
+							+ "<table border=\"1\">\r\n"  
+							+ "  <tr>\r\n"
+							+ "    <th width=\"10%\">CANT.</th>\r\n" 
+							+ "    <th width=\"50%\">DESCRIPCIÓN</th>\r\n" 
+							+ "    <th width=\"20%\">PRECIO UNITARIO</th>\r\n"
+							+ "    <th width=\"20%\">IMPORTE</th>\r\n"
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n"
+							+ "    <td>"+buy.getQuantity()+"</td>\r\n" 
+							+ "    <td>"+buy.getYng_item().getName()+"</td>\r\n" 
+							+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+							+ "    <td>"+buy.getItemCost()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n" 
+							+ "    <th colspan=\"3\">TOTAL.</th>\r\n" 
+							+ "    <th>"+buy.getItemCost()+" "+buy.getYng_item().getMoney()+"</th>\r\n"
+							+ "  </tr>\r\n"
+							+ "</table>"
+							+ "<br/> Este importe esta sujeto al cobro de comisiones Yingul por venta."
+							+ "<br/>--Imprimir la etiqueta de Andreani. (<a href=\"http://www.yingul.com/userFront/sales\" target=\"_blank\">Descargar etiqueta de envío</a>)"
+							+ "<br/>--Preparar y embalar el paquete junto a la etiqueta." 
+							+ "<br/>--Déjalo en la sucursal Andreani: "+branchAndreaniV.getLocation()+" "+branchAndreaniV.getSchedules()+" Fono: "+branchAndreaniV.getPhones()
+							+ "<br/>Nos pondremos en contacto con usted cuando tu comprador recoja el producto de Andreani.");
+					if(buy.getYng_Payment().getType().equals("CASH")) {
+						smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
+							+ "<table border=\"1\">\r\n"  
+							+ "  <tr>\r\n"
+							+ "    <th width=\"10%\">CANT.</th>\r\n" 
+							+ "    <th width=\"50%\">DESCRIPCIÓN</th>\r\n" 
+							+ "    <th width=\"20%\">PRECIO UNITARIO</th>\r\n"
+							+ "    <th width=\"20%\">IMPORTE</th>\r\n"
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n"
+							+ "    <td>"+buy.getQuantity()+"</td>\r\n" 
+							+ "    <td>"+buy.getYng_item().getName()+"</td>\r\n" 
+							+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+							+ "    <td>"+buy.getItemCost()+" ARS.</td>\r\n" 
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n"
+							+ "    <td>1</td>\r\n" 
+							+ "    <td>Envio</td>\r\n" 
+							+ "    <td>-</td>\r\n" 
+							+ "    <td>"+buy.getShipping().getYng_Quote().getRate()+" ARS.</td>\r\n" 
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n" 
+							+ "    <th colspan=\"3\">TOTAL.</th>\r\n" 
+							+ "    <th>"+buy.getCost()+" ARS</th>\r\n"
+							+ "  </tr>\r\n"
+							+ "</table>"
+							+ "<br/> Pago realizado en EFECTIVO a través de: "+buy.getYng_Payment().getCashPayment().getPaymentMethod()+"."	
+							+ "<br/> Nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani."
+							+ "<br/> Sucursal: "+branchAndreaniC.getLocation()+" "+branchAndreaniC.getSchedules()+" Fono: "+branchAndreaniC.getPhones());
+					}
+					if(buy.getYng_Payment().getType().equals("CARD")) {
+						smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
+							+ "<table border=\"1\">\r\n"  
+							+ "  <tr>\r\n"
+							+ "    <th width=\"10%\">CANT.</th>\r\n" 
+							+ "    <th width=\"50%\">DESCRIPCIÓN</th>\r\n" 
+							+ "    <th width=\"20%\">PRECIO UNITARIO</th>\r\n"
+							+ "    <th width=\"20%\">IMPORTE</th>\r\n"
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n"
+							+ "    <td>"+buy.getQuantity()+"</td>\r\n" 
+							+ "    <td>"+buy.getYng_item().getName()+"</td>\r\n" 
+							+ "    <td>"+buy.getYng_item().getPrice()+" "+buy.getYng_item().getMoney()+"</td>\r\n" 
+							+ "    <td>"+buy.getItemCost()+" ARS.</td>\r\n" 
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n"
+							+ "    <td>1</td>\r\n" 
+							+ "    <td>Envio</td>\r\n" 
+							+ "    <td>-</td>\r\n" 
+							+ "    <td>"+buy.getShipping().getYng_Quote().getRate()+" ARS.</td>\r\n" 
+							+ "  </tr>\r\n"
+							+ "  <tr>\r\n" 
+							+ "    <th colspan=\"3\">TOTAL.</th>\r\n" 
+							+ "    <th>"+buy.getCost()+" ARS</th>\r\n"
+							+ "  </tr>\r\n"
+							+ "</table>"
+							+ "<br/> Pago realizado con TARJETA: "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+"."	
+							+ "<br/> Nos pondremos en contacto con usted cuando pueda recoger el producto en Andreani."
+							+ "<br/> Sucursal: "+branchAndreaniC.getLocation()+" "+branchAndreaniC.getSchedules()+" Fono: "+branchAndreaniC.getPhones());
+					}
+				}
+			}
+	    	return "save";
+    	}else {
+    		return "prohibited";
+    	}
+    }
+    //@RequestMapping(value = "/createBuyCash", method = RequestMethod.POST)
+    @ResponseBody
+    public String createBuyCash(@Valid @RequestBody Yng_Buy buy) throws Exception {	
     			ObjectMapper mapperRequest = new ObjectMapper();
     			java.util.Date fecha = new Date();
     			System.out.println (fecha);
@@ -764,6 +1333,10 @@ public class BuyController {
 		}
     	return "save";
     }
+    
+    
+    
+    
     @RequestMapping(value = "/updateUser", method = RequestMethod.POST)
     @ResponseBody
     public String updateUser(@Valid @RequestBody Yng_User yng_user) throws MessagingException {	
@@ -873,7 +1446,7 @@ public class BuyController {
     	Yng_User yng_User = userDao.findByUsername(username);
         List<Yng_Buy> buyList = buyDao.findBySellerOrderByBuyIdDesc(yng_User);
         for (Yng_Buy s : buyList) {
-        	if(s.getYng_Payment().getYng_Card().equals(null)||s.getYng_Payment().getYng_Card().equals("")) {
+        	if(s.getYng_Payment().getYng_Card()==null) {
         		
         	}else {
         		s.getYng_Payment().getYng_Card().setNumber(s.getYng_Payment().getYng_Card().getNumber()%10000);

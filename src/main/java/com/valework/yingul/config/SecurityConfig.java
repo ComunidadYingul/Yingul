@@ -34,7 +34,42 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private static final String[] PUBLIC_MATCHERS = {
-            "/**"
+    		"/webjars/**",
+            "/css/**",
+            "/js/**",
+            "/images/**",
+            "/",
+            "/about/**",
+            "/contact/**",
+            "/error/**/*",
+            "/console/**",
+            "/signup",
+            "/userFront",
+            "/auth/login",
+            "/sell/**",
+            "/ubication/**",
+            "/category/**",
+            "/index/**",
+            "/user/**",
+            "/item/**",
+            "/query/**",
+            "/buy/**",
+            "/motorized/**",
+            "/business/**",
+            "/logistics/**",
+            "/store/**",
+            "/favorite/**",
+            "/confirm/**",
+            "/account/**",
+            "/bank/**",
+            "/wireTransfer/**",
+            "/admin/**",
+            "/claim/**",
+            "/about/**",
+            "/login/**",
+            "/send/**",
+            "/payment/**",
+            "/shipping/**"
     };
 
     @Override
