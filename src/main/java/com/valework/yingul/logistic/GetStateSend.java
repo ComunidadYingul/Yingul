@@ -33,12 +33,8 @@ public class GetStateSend {
 		   andr.setHost("www.e-andreani.com");
 		   andr.setWsURL("https://www.e-andreani.com/eAndreaniWS/Service.svc/soap12");
 		   andr.setSOAPAction("");
-		   //headers he=new  headers();
-		   //he.setName("");
-		   //he.setValue("");
-		  // Li
-		   andr.setXmlInput(andreaniXmlSeguimiento(numberAndreani,Cliente));
-		   //aniem();
+		   andr.setXmlInput(andreaniXmlState(numberAndreani,Cliente));
+
 		   
 		   return someMethod2(andr);
 	   }
@@ -107,7 +103,7 @@ public class GetStateSend {
 			//List<>
 			httpConn.setRequestProperty("Content-Length",String.valueOf(b.length));
 			httpConn.setRequestProperty("Accept-Encoding", "gzip,deflate");
-			httpConn.setRequestProperty("Content-Type", "application/soap+xml;charset=UTF-8;action=\"http://www.andreani.com.ar/IService/ObtenerTrazabilidad\"");
+			httpConn.setRequestProperty("Content-Type", "application/soap+xml;charset=UTF-8;action=\"http://www.andreani.com.ar/IService/ObtenerEstadoDistribucionCodificado\"");
 			httpConn.setRequestProperty("SOAPAction", andreaniProp.getSOAPAction());
 			httpConn.setRequestProperty("Host",andreaniProp.getHost());
 			httpConn.setRequestProperty("Connection", "Keep-Alive");
@@ -230,5 +226,32 @@ public class GetStateSend {
 		    // key is not found
 		    return finalValue;
 	}
+	   public String andreaniXmlState(String numA,String cliente) {
+		   String s="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
+		   		"<env:Envelope\r\n" + 
+		   		"    xmlns:env=\"http://www.w3.org/2003/05/soap-envelope\"\r\n" + 
+		   		"    xmlns:ns1=\"http://www.andreani.com.ar/req\"\r\n" + 
+		   		"    xmlns:ns2=\"http://schemas.datacontract.org/2004/07/EAndreaniWS\"\r\n" + 
+		   		"    xmlns:ns3=\"http://www.andreani.com.ar\">\r\n" + 
+		   		"    <env:Body>\r\n" + 
+		   		"        <ns3:ObtenerEstadoDistribucionCodificado>\r\n" + 
+		   		"            <ns3:EnviosConsultas>\r\n" + 
+		   		"                <ns1:CodigoCliente>"
+		   		+ cliente
+		   		+ "</ns1:CodigoCliente>\r\n" + 
+		   		"                <ns1:Envios>\r\n" + 
+		   		"                    <ns2:Envio>\r\n" + 
+		   		"                        <ns2:IdentificadorCliente></ns2:IdentificadorCliente>\r\n" + 
+		   		"                        <ns2:NumeroAndreani>"
+		   		+ numA
+		   		+ "</ns2:NumeroAndreani>\r\n" + 
+		   		"                    </ns2:Envio>\r\n" + 
+		   		"                </ns1:Envios>\r\n" + 
+		   		"            </ns3:EnviosConsultas>\r\n" + 
+		   		"        </ns3:ObtenerEstadoDistribucionCodificado>\r\n" + 
+		   		"    </env:Body>\r\n" + 
+		   		"</env:Envelope>";
+		   	   return ""+s;
+		      }
 
 }

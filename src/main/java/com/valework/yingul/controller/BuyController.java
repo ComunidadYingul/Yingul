@@ -59,8 +59,10 @@ import com.valework.yingul.dao.YingulRequestDao;
 import com.valework.yingul.logistic.FedexResponce;
 import com.valework.yingul.logistic.FedexXML;
 import com.valework.yingul.logistic.GetStateSend;
+import com.valework.yingul.logistic.GetTraceability;
 import com.valework.yingul.logistic.Logistic;
 import com.valework.yingul.logistic.PropertyObjectHttp;
+import com.valework.yingul.logistic.Yng_AndreaniTrazabilidad;
 import com.valework.yingul.logistic.http;
 import com.valework.yingul.model.Yng_Branch;
 import com.valework.yingul.model.Yng_BranchAndreani;
@@ -1469,7 +1471,20 @@ public class BuyController {
         return stateShipping;
     }
     
-    
+    @RequestMapping("/getTrazabBuy/{codnumber}")
+    public Yng_AndreaniTrazabilidad getTrazabBuy(@PathVariable("codnumber") String codnumber) {
+    	Yng_Standard clienteStandard = standardDao.findByKey("Cliente");
+    	Yng_AndreaniTrazabilidad traza=new Yng_AndreaniTrazabilidad();
+    	GetTraceability getState = new GetTraceability();
+    	try {
+    		traza=getState.sendState(codnumber,clienteStandard.getValue());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	    	
+        return traza;
+    }
     @RequestMapping("/getTicket/{codnumber}")
     public String getTicket(@PathVariable("codnumber") String codnumber) {
     	//Yng_StateShipping stateShipping=new Yng_StateShipping();
