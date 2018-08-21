@@ -29,6 +29,8 @@ import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.TransactionDao;
 import com.valework.yingul.dao.TransactionDetailDao;
 import com.valework.yingul.logistic.GetStateSend;
+import com.valework.yingul.logistic.GetTraceability;
+import com.valework.yingul.logistic.Yng_AndreaniTrazabilidad;
 import com.valework.yingul.model.Yng_Account;
 import com.valework.yingul.model.Yng_Buy;
 import com.valework.yingul.model.Yng_Commission;
@@ -387,7 +389,7 @@ public class GreetingBatchBean {
 	
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 5 * * *")//cada dia a las 6 de la mañana
-	@Scheduled(cron = "0 48/16 13 * * ?")//cada 8 minutos desde las 10:45
+	@Scheduled(cron = "0 10/10 16 * * ?")//cada 8 minutos desde las 10:45
 	public void deliveryConfirmation() throws MessagingException{
 		System.out.println("tercer cron");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("pending");
@@ -396,23 +398,33 @@ public class GreetingBatchBean {
 			if(confirmTemp.getBuy().getShipping()!=null) {
 		    	if(confirmTemp.getBuy().getShipping().getTypeShipping().equals("branch")) {
 		    		String confirmStateDao=standardDao.findByKey("codeConfirmAndreani").getValue();
-		    		Yng_StateShipping stateShipping=new Yng_StateShipping();
-			    	GetStateSend getState = new GetStateSend();
+		    		Yng_AndreaniTrazabilidad andreaniTrazabilidad=new Yng_AndreaniTrazabilidad();
+		    		GetTraceability getTrazability = new GetTraceability();
 			    	String confirmState=confirmTemp.getBuy().getShipping().getYng_Shipment().getShipmentCod();
 			    	String stateApi ="";
+			    	
 			    	Yng_Standard clienteStandard = standardDao.findByKey("Cliente");
+			    	Yng_Standard codeDeliveryConfirmAndreani = standardDao.findByKey("codeDeliveryConfirmAndreani");//entre ala sucurlas el envio ingresado 
+			    	boolean enterOnBranch=false;
 			    	try {
-			    		stateShipping=getState.sendState(""+confirmState,clienteStandard.getValue());
-			    		stateApi=stateShipping.getEstado();
-			    		System.out.println("state:"+stateApi+":"+confirmStateDao);
+			    		andreaniTrazabilidad=getTrazability.sendState(""+confirmState,clienteStandard.getValue());
+			    		//stateApi=andreaniTrazabilidad.getEstado();
+			    		System.out.println("null:"+andreaniTrazabilidad);
+			    		if(andreaniTrazabilidad!=null) {
+			    			enterOnBranch=getTrazability.serchState(andreaniTrazabilidad,codeDeliveryConfirmAndreani.getValue());	
+			    		}
+			    		
+			    		System.out.println("state:"+stateApi+"enterOnBranch:"+enterOnBranch +" confirmState: "+confirmState);
+			    		
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 		    		String status=stateApi;
-		    		Yng_Standard codeDeliveryConfirmAndreani = standardDao.findByKey("codeDeliveryConfirmAndreani");//entre ala sucurlas el envio ingresado 
+		    		
 		    		System.out.println("status:"+status+":"+"confirmcode:"+codeDeliveryConfirmAndreani.getValue()+"id confirm"+confirmTemp.getConfirmId());
-		    		if(status.equals(codeDeliveryConfirmAndreani.getValue())) {
+		    		//if(status.equals(codeDeliveryConfirmAndreani.getValue())) {
+		    		if(enterOnBranch==true)	{
 		    			System.out.println("entro para confirmar");
 		    			confirmTemp.setBuyerConfirm(false);
 		        		confirmTemp.setSellerConfirm(true);
@@ -439,7 +451,7 @@ public class GreetingBatchBean {
 	
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 7 * * *")//cada dia a las 6 de la mañana
-	@Scheduled(cron = "0 52/16 13 * * ?")//cada 8 minutos desde las 10:51
+	@Scheduled(cron = "0 34/16 17 * * ?")//cada 8 minutos desde las 10:51
 	public void whithdrawalConfirmation() throws MessagingException{
 		System.out.println("cuarto cron");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("delivered");
@@ -449,21 +461,26 @@ public class GreetingBatchBean {
 	       	String confirmStateDao=standardDao.findByKey("codeConfirmAndreani").getValue();
 	       	//System.out.println("confirmTemp:"+confirmTemp.toString()+" value:"+);
 	       	String cliente=standardDao.findByKey("Cliente").getValue();
-	       	Yng_StateShipping stateShipping=new Yng_StateShipping();
-	    	GetStateSend getState = new GetStateSend();
+	       	Yng_Standard codeWhithdrawalConfirmAndreani = standardDao.findByKey("codeWhithdrawalConfirmAndreani");
+	       	Yng_AndreaniTrazabilidad andreaniTrazabilidad=new Yng_AndreaniTrazabilidad();
+    		GetTraceability getTrazability = new GetTraceability();
 	    	String confirmState=confirmTemp.getBuy().getShipping().getYng_Shipment().getShipmentCod();
 	    	String stateApi ="";
+	    	boolean deliveredBuyer=false;
 	    	try {
-	    		stateShipping=getState.sendState(""+confirmState,cliente);
-	    		stateApi=stateShipping.getEstado();
+	    		andreaniTrazabilidad=getTrazability.sendState(""+confirmState,cliente);
+	    		//stateApi=stateShipping.getEstado();
+	    		if(andreaniTrazabilidad!=null) {
+	    			deliveredBuyer=getTrazability.serchState(andreaniTrazabilidad,codeWhithdrawalConfirmAndreani.getValue());	
+	    		}
 	    		System.out.println("state:"+stateApi+":"+confirmStateDao);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
 			String status=stateApi;//envio entregado al comprador
-			Yng_Standard codeWhithdrawalConfirmAndreani = standardDao.findByKey("codeWhithdrawalConfirmAndreani");
-	    	if(status.equals(codeWhithdrawalConfirmAndreani.getValue())) {
+			if(deliveredBuyer==true)	{
+	    	//if(status.equals(codeWhithdrawalConfirmAndreani.getValue())) {
 	        		confirmTemp.setBuyerConfirm(true);
 	        		confirmTemp.setSellerConfirm(true);
 	        		Date date = new Date();

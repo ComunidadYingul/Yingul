@@ -298,4 +298,14 @@ public class GetTraceability {
 			
 			return re;
 		}
+		public boolean serchState(Yng_AndreaniTrazabilidad andreaniTrazabilidad,String buscar) {
+			List<Yng_AndreaniTrazabilidadEvento> eventos=andreaniTrazabilidad.getEventos().getEvento_();
+			for (Yng_AndreaniTrazabilidadEvento yng_AndreaniTrazabilidadEvento : eventos) {
+				if(yng_AndreaniTrazabilidadEvento.getEstado().equals(buscar)) {
+					return true;
+				}					
+			}
+			
+			return false;
+		}
 }
