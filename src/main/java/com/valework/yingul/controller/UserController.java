@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.BranchAndreaniDao;
+import com.valework.yingul.dao.BusinessDao;
 import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.dao.CountryDao;
 import com.valework.yingul.dao.PersonDao;
@@ -21,6 +22,7 @@ import com.valework.yingul.dao.ProvinceDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.model.Yng_BranchAndreani;
+import com.valework.yingul.model.Yng_Business;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
@@ -57,6 +59,8 @@ public class UserController {
 	LogisticsController logisticsController;
 	@Autowired
 	PersonDao personDao;
+	@Autowired
+	BusinessDao businessDao;
 	@RequestMapping("/{username}")
     public Yng_User findByUsername(@PathVariable("username") String username) {
         return userDao.findByUsername(username);
@@ -73,6 +77,11 @@ public class UserController {
 			}
 		}
 		return null;
+    }
+	@RequestMapping("/business/{username}")
+    public Yng_Business getBusiness(@PathVariable("username") String username) {
+		Yng_User yng_User = userDao.findByUsername(username); 
+		return businessDao.findByUser(yng_User);
     }
 	@RequestMapping("/getPersonWithAuthorization/{username}")
     public Yng_Person getPersonWithAuthorization(@PathVariable("username") String username,@RequestHeader("Authorization") String authorization) {
@@ -191,6 +200,61 @@ public class UserController {
 		}
     	
     }
+	@RequestMapping(value = "/updateBusinessName", method = RequestMethod.POST)
+	@ResponseBody
+    public String updateBusinessName(@Valid @RequestBody Yng_Business business,@RequestHeader("Authorization") String authorization) throws MessagingException {
+		String token =new String(org.apache.commons.codec.binary.Base64.decodeBase64(authorization));
+		String[] parts = token.split(":");
+		Yng_User yng_User= userDao.findByUsername(parts[0]);
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
+		if(yng_User.getUsername().equals(parts[0]) && encoder.matches(parts[1], yng_User.getPassword())){
+			Yng_Business businessTemp = businessDao.findByUser(yng_User);
+			businessTemp.setBusinessName(business.getBusinessName().toUpperCase().trim());
+			businessTemp = businessDao.save(businessTemp);
+			return "save";
+		}else {
+			return "prohibited";
+		}
+    	
+    }
+	@RequestMapping(value = "/updateBusinessDocumentNumber", method = RequestMethod.POST)
+	@ResponseBody
+    public String updateBusinessDocumentNumber(@Valid @RequestBody Yng_Business business,@RequestHeader("Authorization") String authorization) throws MessagingException {
+		String token =new String(org.apache.commons.codec.binary.Base64.decodeBase64(authorization));
+		String[] parts = token.split(":");
+		Yng_User yng_User= userDao.findByUsername(parts[0]);
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
+		if(yng_User.getUsername().equals(parts[0]) && encoder.matches(parts[1], yng_User.getPassword())){
+			Yng_Business businessTemp = businessDao.findByUser(yng_User);
+			businessTemp.setDocumentNumber(business.getDocumentNumber());
+			businessTemp.setDocumentType(business.getDocumentType());
+			businessTemp = businessDao.save(businessTemp);
+			return "save";
+		}else {
+			return "prohibited";
+		}
+    	
+    }
+	
+	@RequestMapping(value = "/updateUserDocument", method = RequestMethod.POST)
+	@ResponseBody
+    public String updateUserDocument(@Valid @RequestBody Yng_User user,@RequestHeader("Authorization") String authorization) throws MessagingException {
+		String token =new String(org.apache.commons.codec.binary.Base64.decodeBase64(authorization));
+		String[] parts = token.split(":");
+		Yng_User yng_User= userDao.findByUsername(parts[0]);
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
+		if(yng_User.getUsername().equals(parts[0]) && encoder.matches(parts[1], yng_User.getPassword())){
+			yng_User.setDocumentNumber(user.getDocumentNumber());
+			yng_User.setDocumentType(user.getDocumentType());
+			yng_User=userDao.save(yng_User);
+			return "save";
+		}else {
+			return "prohibited";
+		}
+    	
+    }
+	
+	
 	@RequestMapping(value = "/updatePhones", method = RequestMethod.POST)
 	@ResponseBody
     public String updatePhonesPost(@Valid @RequestBody Yng_User user,@RequestHeader("Authorization") String authorization) throws MessagingException {
@@ -208,6 +272,8 @@ public class UserController {
 		}
     	
     }
+	
+	
 	@RequestMapping(value = "/updatePhone", method = RequestMethod.POST)
 	@ResponseBody
     public String updatePhonePost(@Valid @RequestBody Yng_User user,@RequestHeader("Authorization") String authorization) throws MessagingException {

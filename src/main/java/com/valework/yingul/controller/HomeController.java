@@ -1,5 +1,6 @@
 package com.valework.yingul.controller;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.text.Normalizer;
 import java.util.HashSet;
@@ -8,6 +9,7 @@ import java.util.Set;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +22,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.AccountDao;
 import com.valework.yingul.dao.BarrioDao;
+import com.valework.yingul.dao.BusinessDao;
 import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.dao.DepartmentDao;
 import com.valework.yingul.dao.ProvinceDao;
@@ -68,7 +74,8 @@ public class HomeController {
 	AccountDao accountDao;
 	@Autowired 
 	StandardDao standardDao;
-
+	@Autowired
+	BusinessDao businessDao;
 	
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
 	@ResponseBody
@@ -118,12 +125,27 @@ public class HomeController {
 	
 	@RequestMapping(value = "/business", method = RequestMethod.POST)
 	@ResponseBody
-    public String signupBusinessPost(@Valid @RequestBody Yng_Business business) throws MessagingException {
-		Yng_User user=business.getYng_User();
-		System.out.println("11111");
-		//user.setYng_Ubication(null);
-		String password= user.getPassword();
-		user.setUsername(business.getName()+business.getSocialName());
+    public String signupBusinessPost(@Valid @RequestBody JSONObject objectForBusiness) throws MessagingException, JsonParseException, JsonMappingException {
+		JSONObject personObj = objectForBusiness.optJSONObject("person");
+		JSONObject businessObj = objectForBusiness.optJSONObject("business");
+		ObjectMapper mapper = new ObjectMapper();
+        
+		Yng_Person person = new Yng_Person();
+        Yng_Business business = new Yng_Business();
+        
+		try {
+			business = mapper.readValue(String.valueOf(businessObj), Yng_Business.class);
+			person = mapper.readValue(String.valueOf(personObj), Yng_Person.class);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			return "problem";
+		}
+        
+		Yng_User user=person.getYng_User();
+		user.setYng_Ubication(null);
+		user.setPassword(user.getPassword().trim());
+		String password= user.getPassword().trim();
+		user.setUsername((cleanString(person.getName())+cleanString(person.getLastname())).replace(" ",""));
 		LOG.info(user.getUsername());
 		if(userService.checkUsernameExists(user.getUsername())) {
 			LOG.info("existe"+user.getUsername());
@@ -135,37 +157,34 @@ public class HomeController {
 			}
 		}
 		LOG.info(user.getUsername());
+		user.setEmail(user.getEmail().trim().toLowerCase());
 		if (userService.checkEmailExists(user.getEmail())) {
+			System.out.println("llego :email exist");
             return "email exist";
-        } else { 
-
-        Yng_Ubication ubicationTemp = new Yng_Ubication();
-   		ubicationTemp.setStreet(business.getYng_User().getYng_Ubication().getStreet());
-   		ubicationTemp.setNumber(business.getYng_User().getYng_Ubication().getNumber());
-   		ubicationTemp.setPostalCode(business.getYng_User().getYng_Ubication().getPostalCode());
-   		ubicationTemp.setAditional(business.getYng_User().getYng_Ubication().getAditional());
-   		ubicationTemp.setYng_Province(provinceDao.findByProvinceId(business.getYng_User().getYng_Ubication().getYng_Province().getProvinceId()));
-   		ubicationTemp.setYng_City(cityDao.findByCityId(business.getYng_User().getYng_Ubication().getYng_City().getCityId()));	
-   		ubicationTemp.setYng_Barrio(barrioDao.findByBarrioId(business.getYng_User().getYng_Ubication().getYng_Barrio().getBarrioId()));
-           Yng_Ubication ubicationTempo=ubicationDao.save(ubicationTemp);
-           user.setYng_Ubication(ubicationTempo);
-        	
-        	
-        	
-        	
+        } else {     	
         	Set<Yng_UserRole> userRoles = new HashSet<>();
             userRoles.add(new Yng_UserRole(user, roleDao.findByName("ROLE_USER")));
             userService.createUser(user, userRoles);
             Yng_User temp = userService.findByEmail(user.getEmail());
-            
-         
-            
-            businessService.createBusiness(business, temp);
-            
+            personService.createPerson(person, temp);
+            //estoy aumentado la cuenta para el usuario cuando se registra como nuevo
+            Yng_Account account = new Yng_Account();   
+            account.setAccountNonExpired(true);
+            account.setAccountNonLocked(true);
+            account.setAvailableMoney(0);
+            account.setCurrency("ARS");
+            account.setReleasedMoney(0);
+            account.setWithheldMoney(0);
+            account.setUser(temp);
+            accountDao.save(account);
+            //
+            business.setBusinessName(business.getBusinessName().toUpperCase());
+            business.setUser(user);
+            businessDao.save(business);
             smtpMailSender.send(user.getEmail(), "Autenticado exitosamente", "Ya esta autenticado su password es:"+password);
+            System.out.println("llego :save");
             return "save";
         }
-		//return "save";
     }
 	
 	

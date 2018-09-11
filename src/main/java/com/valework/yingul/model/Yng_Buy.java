@@ -54,7 +54,7 @@ public class Yng_Buy {
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "shipping_id")
     private Yng_Shipping shipping;
-
+	
 	public Long getBuyId() {
 		return buyId;
 	}
