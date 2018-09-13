@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.MessageDigest;
 import java.text.DateFormat;
-import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,9 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.xml.bind.DatatypeConverter;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -30,8 +27,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
-//import org.assertj.core.util.DateUtil;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +58,6 @@ import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.PersonService;
 import com.valework.yingul.util.VisaAPIClient;
-
 
 @Component
 public class PayUFunds {
@@ -144,7 +138,7 @@ public class PayUFunds {
 	    		"         },\r\n" + 
 	    		"         \"buyer\": {\r\n" + 
 	    		"            \"merchantBuyerId\": \""+buy.getUser().getUserId()+"\",\r\n" + 
-	    		"            \"fullName\": \""+cleanString(person.getName()).toUpperCase()+" "+cleanString(person.getLastname()).toUpperCase()+"\",\r\n" + 
+	    		"            \"fullName\": \""+person.getName().toUpperCase()+" "+person.getLastname().toUpperCase()+"\",\r\n" + 
 	    		"            \"emailAddress\": \""+buy.getUser().getEmail()+"\",\r\n" + 
 	    		"            \"contactPhone\": \""+buy.getUser().getPhone()+"\",\r\n" + 
 	    		"            \"dniNumber\": \"5415668464654\",\r\n" + 
@@ -170,15 +164,15 @@ public class PayUFunds {
 	    		"      },\r\n" + 
 	    		"      \"payer\": {\r\n" + 
 	    		"         \"merchantPayerId\": \""+buy.getUser().getUserId()+"\",\r\n" + 
-	    		"         \"fullName\": \""+cleanString(person.getName()).toUpperCase()+" "+cleanString(person.getLastname()).toUpperCase()+"\",\r\n" + 
+	    		"         \"fullName\": \""+person.getName().toUpperCase()+" "+person.getLastname().toUpperCase()+"\",\r\n" + 
 	    		"         \"emailAddress\": \""+buy.getUser().getEmail()+"\",\r\n" + 
 	    		"         \"contactPhone\": \""+buy.getUser().getPhone()+"\",\r\n" + 
 	    		"         \"dniNumber\": \""+buy.getUser().getDocumentNumber()+"\",\r\n" + 
 	    		"         \"billingAddress\": {\r\n" + 
-	    		"            \"street1\": \""+cleanString(buy.getUser().getYng_Ubication().getStreet()).toUpperCase()+"\",\r\n" + 
+	    		"            \"street1\": \""+buy.getUser().getYng_Ubication().getStreet().toUpperCase()+"\",\r\n" + 
 	    		"            \"street2\": \""+buy.getUser().getYng_Ubication().getNumber()+"\",\r\n" + 
-	    		"            \"city\": \""+cleanString(buy.getUser().getYng_Ubication().getYng_City().getName()).toUpperCase()+"\",\r\n" + 
-	    		"            \"state\": \""+cleanString(buy.getUser().getYng_Ubication().getYng_Province().getName()).toUpperCase()+"\",\r\n" + 
+	    		"            \"city\": \""+buy.getUser().getYng_Ubication().getYng_City().getName().toUpperCase()+"\",\r\n" + 
+	    		"            \"state\": \""+buy.getUser().getYng_Ubication().getYng_Province().getName().toUpperCase()+"\",\r\n" + 
 	    		"            \"country\": \"AR\",\r\n" + 
 	    		"            \"postalCode\": \""+buy.getUser().getYng_Ubication().getUbicationId()+"\",\r\n" + 
 	    		"            \"phone\": \""+buy.getUser().getPhone()+"\"\r\n" + 
@@ -216,10 +210,10 @@ public class PayUFunds {
 	    body.setRequest(requestTemp);
 		requestBodyDao.save(body);
 	    
-	    StringEntity entity = new StringEntity(json);
+	    StringEntity entity = new StringEntity(json, "UTF-8");
 	    httpPost.setEntity(entity);
 	    httpPost.setHeader("Accept", "application/json");
-	    httpPost.setHeader("Content-type", "application/json");
+	    httpPost.setHeader("Content-type", "application/json; charset=utf-8");
 	 
 	    CloseableHttpResponse response = client.execute(httpPost);
 	    Yng_Response responseTemp = this.logResponse(response);
@@ -431,10 +425,10 @@ public class PayUFunds {
 	    body.setRequest(requestTemp);
 		requestBodyDao.save(body);
 	    
-	    StringEntity entity = new StringEntity(json);
+	    StringEntity entity = new StringEntity(json, "UTF-8");
 	    httpPost.setEntity(entity);
 	    httpPost.setHeader("Accept", "application/json");
-	    httpPost.setHeader("Content-type", "application/json");
+	    httpPost.setHeader("Content-type", "application/json; charset=utf-8");
 	 
 	    CloseableHttpResponse response = client.execute(httpPost);
 	    Yng_Response responseTemp = this.logResponse(response);
@@ -558,10 +552,10 @@ public class PayUFunds {
 	    		"}";
 	    
 	    
-	    StringEntity entity = new StringEntity(json);
+	    StringEntity entity = new StringEntity(json, "UTF-8");
 	    httpPost.setEntity(entity);
 	    httpPost.setHeader("Accept", "application/json");
-	    httpPost.setHeader("Content-type", "application/json");
+	    httpPost.setHeader("Content-type", "application/json; charset=utf-8");
 	 
 	    CloseableHttpResponse response = client.execute(httpPost);
 	    
@@ -610,13 +604,6 @@ public class PayUFunds {
 				
 		return cal.getTime();
 	}
-	
-	public static String cleanString(String texto) {
-        texto = texto.trim().replace(" ","%20");
-        texto = Normalizer.normalize(texto, Normalizer.Form.NFD);
-        texto = texto.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
-        return texto;
-    }
 
 	public String getStatusPayment(Yng_Payment payment) throws Exception, ClientProtocolException, IOException{
 		Yng_Standard test = standardDao.findByKey("PAYU_test_p");
@@ -636,10 +623,10 @@ public class PayUFunds {
 	    		"      \"orderId\": "+payment.getOrderId()+"\r\n" + 
 	    		"   }\r\n" + 
 	    		"}";
-	    StringEntity entity = new StringEntity(json);
+	    StringEntity entity = new StringEntity(json, "UTF-8");
 	    httpPost.setEntity(entity);
 	    httpPost.setHeader("Accept", "application/json");
-	    httpPost.setHeader("Content-type", "application/json");
+	    httpPost.setHeader("Content-type", "application/json; charset=utf-8");
 	    CloseableHttpResponse response = client.execute(httpPost);
 	    BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
         StringBuffer result = new StringBuffer();

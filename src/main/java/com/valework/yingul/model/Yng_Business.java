@@ -6,6 +6,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 @Entity
@@ -14,16 +15,17 @@ public class Yng_Business {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "businessId", nullable = false, updatable = false)
     private Long businessId;
-	
-	private String name;
-	private String socialName;
-	private String typeContri;
-	private boolean isBusiness;
-	private String address;
-	
+	private String businessName;
+	private String documentType;
+	private String documentNumber;
 	
 	@OneToOne(fetch = FetchType.EAGER)
-	private Yng_User yng_User;
+	@JoinColumn(name = "user_id")
+	private Yng_User user;
+	
+	public Yng_Business() {
+		super();
+	}
 
 	public Long getBusinessId() {
 		return businessId;
@@ -33,63 +35,38 @@ public class Yng_Business {
 		this.businessId = businessId;
 	}
 
-	public String getName() {
-		return name;
+
+	public Yng_User getUser() {
+		return user;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setUser(Yng_User user) {
+		this.user = user;
 	}
 
-	public String getSocialName() {
-		return socialName;
+	public String getBusinessName() {
+		return businessName;
 	}
 
-	public void setSocialName(String socialName) {
-		this.socialName = socialName;
+	public void setBusinessName(String businessName) {
+		this.businessName = businessName;
 	}
 
-	public String getTypeContri() {
-		return typeContri;
+	public String getDocumentType() {
+		return documentType;
 	}
 
-	public void setTypeContri(String typeContri) {
-		this.typeContri = typeContri;
+	public void setDocumentType(String documentType) {
+		this.documentType = documentType;
 	}
 
-	public boolean isBusiness() {
-		return isBusiness;
+	public String getDocumentNumber() {
+		return documentNumber;
 	}
 
-	public void setBusiness(boolean isBusiness) {
-		this.isBusiness = isBusiness;
+	public void setDocumentNumber(String documentNumber) {
+		this.documentNumber = documentNumber;
 	}
-
-	public Yng_User getYng_User() {
-		return yng_User;
-	}
-
-	public void setYng_User(Yng_User yng_User) {
-		this.yng_User = yng_User;
-	}
-
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	@Override
-	public String toString() {
-		return "Yng_Business [businessId=" + businessId + ", name=" + name + ", socialName=" + socialName
-				+ ", typeContri=" + typeContri + ", isBusiness=" + isBusiness + ", address=" + address + ", yng_User="
-				+ yng_User + "]";
-	}
-
-
 	
-	
-	
+
 }

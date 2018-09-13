@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.valework.yingul.PayUFunds;
 import com.valework.yingul.SmtpMailSender;
+import com.valework.yingul.XubioFunds;
 import com.valework.yingul.dao.AccountDao;
 import com.valework.yingul.dao.CommissionDao;
 import com.valework.yingul.dao.ConfirmDao;
@@ -79,11 +80,13 @@ public class GreetingBatchBean {
 	PayUFunds payUFunds;
 	@Autowired
 	PersonDao personDao;
+	@Autowired
+	XubioFunds xubioFunds;
 	
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 6 * * *")//cada dia a las 6 de la mañana
 	//@Scheduled(cron = "0 0/16 12 * * ?")//cada 8 minutos desde las 10:45
-	//@Scheduled(cron = "0 40/16 13 * * ?")//cada 8 minutos desde las 10:45
+	@Scheduled(cron = "0 15/16 21 * * ?")//cada 8 minutos desde las 10:45
 	public void cronJob() throws ClientProtocolException, IOException, Exception {
 		smtpMailSender.send("quenallataeddy@gmail.com", "INICIO DE LOS CRONS", "CRONS");
 		System.out.println("primer cron");
@@ -578,7 +581,7 @@ public class GreetingBatchBean {
 	
 	//@Scheduled(cron = "0,59 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 4 * * *")//cada dia a las 5 de la mañana
-	//@Scheduled(cron = "0 44/30 13 * * ?")//cada 5 minutos desde las 10:45
+	@Scheduled(cron = "0 19/30 21 * * ?")//cada 5 minutos desde las 10:45
 	public void cronJob1() throws ClientProtocolException, IOException, Exception {
 		System.out.println("segundo cron");
 		List<Yng_Payment> confirmCashPayment= paymentDao.findByTypeAndStatusAndBuyStatus("CASH","PENDING","PENDING");
@@ -620,7 +623,7 @@ public class GreetingBatchBean {
 	
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 5 * * *")//cada dia a las 6 de la mañana
-	//@Scheduled(cron = "0 48/16 13 * * ?")//cada 8 minutos desde las 10:45
+	@Scheduled(cron = "0 23/16 21 * * ?")//cada 8 minutos desde las 10:45
 	public void deliveryConfirmation() throws MessagingException{
 		System.out.println("tercer cron");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("pending");
@@ -682,7 +685,7 @@ public class GreetingBatchBean {
 	
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 7 * * *")//cada dia a las 6 de la mañana
-	//@Scheduled(cron = "0 52/16 13 * * ?")//cada 8 minutos desde las 10:51
+	@Scheduled(cron = "0 27/16 21 * * ?")//cada 8 minutos desde las 10:51
 	public void whithdrawalConfirmation() throws MessagingException{
 		System.out.println("cuarto cron");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("delivered");
@@ -741,6 +744,13 @@ public class GreetingBatchBean {
 		}
 	}
 	//@Scheduled(cron = "0 46/16 17 * * ?")//cada 8 minutos desde las 10:51
+	
+	@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
+	public void	invoiceCommissions() throws Exception{
+		//System.out.println("-----------------"+xubioFunds.getToken());
+	}
+	
+	
 	public void labelQuery() throws MessagingException{
 		System.out.println("quinto cron");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("pending");
