@@ -143,11 +143,17 @@ public class Logistic {
 		System.out.println("Username:"+Username.getValue());
 		Yng_Standard Password = standardDao.findByKey("Password");
 		System.out.println("Password:"+Password);
-		
+		System.out.println("typeShipping: "+buy.getShipping().getTypeShipping());
 		Yng_Standard Cliente = standardDao.findByKey("Cliente");
 		System.out.println("Cliente:"+Cliente);
-		Yng_Standard Contrato = standardDao.findByKey("Contrato");
-		System.out.println("Contrato:"+Contrato);
+		String ContratoS=null;
+		if(buy.getShipping().getTypeShipping().equals("branchHome")) {
+			ContratoS = standardDao.findByKey("ContratoStandardHome").getValue();
+		}
+		if(buy.getShipping().getTypeShipping().equals("branch")) {
+			ContratoS = standardDao.findByKey("Contrato").getValue();
+		}
+		System.out.println("Contrato:"+ContratoS);
 		String postalCode=per.getYng_User().getYng_Ubication().getPostalCode();
 		System.out.println("postalCode:----"+postalCode);
 		//LogisticsController  logisticsController=new LogisticsController();
@@ -179,7 +185,7 @@ public class Logistic {
 		   			+ "1"
 		   		+ "</ecom:categoriaDePeso>\r\n" + 
 		   		"<ecom:contrato>"
-		   			+ Contrato.getValue()
+		   			+ ContratoS
 		   		+ "</ecom:contrato>\r\n" + 
 		   		"<ecom:destinatario>\r\n" + 
 			   		"<and:apellido>"
