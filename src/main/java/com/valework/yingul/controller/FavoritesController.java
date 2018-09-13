@@ -49,7 +49,7 @@ public class FavoritesController {
     	else {
 			favoriteDao.save(yng_Favorite);
 		    /*try {
-				smtpMailSender.send(yng_User.getEmail(), "Yingul favoritos", "Agregaste a favoritos "+yng_Item.getName()+" "+yng_Item.getDescription()+" para ver tus productos, servicios, inmuebles o vehiculos favoritos ingresa a: http://www.yingul.com/favorites");
+				smtpMailSender.send(yng_User.getEmail(), "Yingul favoritos", "Agregaste a favoritos "+yng_Item.getName()+" "+yng_Item.getDescription()+" para ver tus productos, servicios, inmuebles o vehiculos favoritos ingresa a: https://www.yingul.com/favorites");
 			} catch (MessagingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

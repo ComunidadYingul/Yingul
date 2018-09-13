@@ -129,7 +129,7 @@ public class PayUFunds {
 	    		"         \"description\": \"payment test\",\r\n" + 
 	    		"         \"language\": \"es\",\r\n" + 
 	    		"         \"signature\": \""+signature+"\",\r\n" + 
-	    		"         \"notifyUrl\": \"http://www.yingul.com\",\r\n" + 
+	    		"         \"notifyUrl\": \"https://www.yingul.com\",\r\n" + 
 	    		"         \"additionalValues\": {\r\n" + 
 	    		"            \"TX_VALUE\": {\r\n" + 
 	    		"               \"value\": "+buy.getCost()+",\r\n" + 

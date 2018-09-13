@@ -737,9 +737,9 @@ public class GreetingBatchBean {
 	            	confirmTemp.setStatus("confirm");
 	            	confirmDao.save(confirmTemp);
 	            	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(), "CONFIRMACIÓN DE RECEPCIÓN EXITOSA","Tu comprador realizo la confirmacion de la recepción del producto :  "+confirmTemp.getBuy().getYng_item().getName() +"  Descripción : "+confirmTemp.getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +confirmTemp.getBuy().getYng_item().getPrice()+" de la suscursal Andreani"
-	            			+ "<br/>--Si tu comprador no tiene ninguna observacion del producto en "+daysForClaims.getValue()+" días podras recoger tu dinero ingresando a : http://www.yingul.com/frontYingulPay");
+	            			+ "<br/>--Si tu comprador no tiene ninguna observacion del producto en "+daysForClaims.getValue()+" días podras recoger tu dinero ingresando a : https://www.yingul.com/frontYingulPay");
 	    			smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "CONFIRMACIÓN DE RECEPCIÓN EXITOSA", "Se realizo la confirmacion de la recepción del producto : "+confirmTemp.getBuy().getQuantity()+" "+confirmTemp.getBuy().getYng_item().getName()+" a:"+confirmTemp.getBuy().getCost()+" de la sucursal Andreani"
-	    					+ "<br/> --Tiene "+daysForClaims.getValue()+" días de garantia con Yingul para realizar alguna observación ingrese a: http://www.yingul.com/userFront/claims despues de ese lapso no se aceptaran reclamos.");
+	    					+ "<br/> --Tiene "+daysForClaims.getValue()+" días de garantia con Yingul para realizar alguna observación ingrese a: https://www.yingul.com/userFront/claims despues de ese lapso no se aceptaran reclamos.");
 	    	}
 		}
 	}
@@ -747,7 +747,7 @@ public class GreetingBatchBean {
 	
 	@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	public void	invoiceCommissions() throws Exception{
-		//System.out.println("-----------------"+xubioFunds.getToken());
+		//System.out.println("-----------------"+xubioFunds.postCreateClient());
 	}
 	
 	

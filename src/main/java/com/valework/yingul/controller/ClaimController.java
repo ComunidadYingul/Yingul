@@ -55,7 +55,7 @@ public class ClaimController {
 		smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "RECLAMO REALIZADO EXITOSAMENTE", "Se hizo el reclamo respecto a :  "+confirmTemp.getBuy().getYng_item().getName() 
     			+ "<br/> Tu argumento es : "+ claim.getClaimText()
     			+ "<br/> Nos pondremos en contacto contigo lo mas pronto posible o puedes escribirnos a yingulcompany@internetvale.com codigo de seguimiento:"+confirmTemp.getConfirmId());
-    			/*+ "<br/> Encuentrate con tu vendedor e ingresa a: http://www.yingul.com/agreement/"+claim.getClaimId()+" donde ambos podran firmar un acuerdo que los beneficie."
+    			/*+ "<br/> Encuentrate con tu vendedor e ingresa a: https://www.yingul.com/agreement/"+claim.getClaimId()+" donde ambos podran firmar un acuerdo que los beneficie."
     			+ "<br/> No devuelvas el poducto al vendedor hasta que ambos hasta que te llegue un email indicando que lo puedes hacer si no no podremos devolverte tu dinero");*/
 		smtpMailSender.send("yingulcompany@internetvale.com", "RECLAMO EN www.yingul.com", "Se hizo el reclamo respecto a :  "+confirmTemp.getBuy().getYng_item().getName() 
     			+ "<br/> El argumento del comprador es : "+ claim.getClaimText()
