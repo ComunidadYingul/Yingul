@@ -227,7 +227,9 @@ public class XubioFunds {
     	requestTemp=xubioRequestDao.save(requestTemp);
     	if(responseTemp.getStatus().equals("HTTP/1.1 200 OK")) {
     		JSONObject  jObject = new JSONObject(responseTemp.getBody());
-    		return String.valueOf(jObject.optLong("cliente_id"));
+    		if(jObject.has("cliente_id")) {
+    			return String.valueOf(jObject.optLong("cliente_id"));	
+    		}
 	    }
         response.close();
 	    client.close();
