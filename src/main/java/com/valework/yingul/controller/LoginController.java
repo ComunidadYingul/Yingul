@@ -55,7 +55,7 @@ public class LoginController {
         	}
         	smtpMailSender.send(userTemp.getEmail(), "Restaure la contraseña del usuario de Yingul", "Estimado "+userTemp.getUsername()+":<br>" + 
         			"Para restaurar la contraseña, haga clic en este vínculo.<br>" + 
-        			"http://www.yingul.com/resetPassword/"+resetPassword.getResetpasswordId()+"<br>" +
+        			"https://www.yingul.com/resetPassword/"+resetPassword.getResetpasswordId()+"<br>" +
         			"Ingres este código "+resetPassword.getCodeResetPassword()+"<br>" +
         			"Tenga en cuenta lo siguiente: <br>" + 
         			"Por motivos de seguridad, el vínculo caducará 72 horas después de su envío.<br>" + 

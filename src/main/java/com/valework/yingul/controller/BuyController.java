@@ -532,7 +532,7 @@ public class BuyController {
 						+ "<br/> Este importe esta sujeto al cobro de comisiones Yingul por venta."
 						+ "<br/> Los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección: "+userTemp.getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ userTemp.getYng_Ubication().getYng_City().getName()+" Calle: "+userTemp.getYng_Ubication().getStreet()+"  Numero: "+userTemp.getYng_Ubication().getNumber()
 						+ "<br/> Encuantrate con tu comprador para firmar la entrega del producto."
-						+ "<br/> - Al Momento de entregar el producto al comprador ingresa a: http://www.yingul.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones "
+						+ "<br/> - Al Momento de entregar el producto al comprador ingresa a: https://www.yingul.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones "
 						+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
 						+ "<br/> - No entregues el producto sin que tu y el vendedor firmen la entrega no aceptaremos reclamos si la confirmacion no esta firmada por ambas partes"
 						+ "<br/> - Por tu seguridad no entregues el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
@@ -618,7 +618,7 @@ public class BuyController {
 							+ "</table>"
 							+ "<br/> Este importe esta sujeto al cobro de comisiones Yingul por venta."
 							+ "<br/> Costo del envio : " +buy.getShipping().getYng_Quote().getRate()+" ARS. El costo de envio se descontara posteriormente de tu saldo en YingulPay."  
-							+ "<br/>--Imprimir la etiqueta de Andreani. (<a href=\"http://www.yingul.com/userFront/sales\" target=\"_blank\">Descargar etiqueta de envío</a>)"
+							+ "<br/>--Imprimir la etiqueta de Andreani. (<a href=\"https://www.yingul.com/userFront/sales\" target=\"_blank\">Descargar etiqueta de envío</a>)"
 							+ "<br/>--Preparar y embalar el paquete junto a la etiqueta." 
 							+ "<br/>--Déjalo en la sucursal Andreani: "+branchAndreaniV.getLocation()+" "+branchAndreaniV.getSchedules()+" Fono: "+branchAndreaniV.getPhones()
 							+ "<br/>Nos pondremos en contacto con usted cuando tu comprador recoja el producto de Andreani.");
@@ -703,7 +703,7 @@ public class BuyController {
 							+ "  </tr>\r\n"
 							+ "</table>"
 							+ "<br/> Este importe esta sujeto al cobro de comisiones Yingul por venta."
-							+ "<br/>--Imprimir la etiqueta de Andreani. (<a href=\"http://www.yingul.com/userFront/sales\" target=\"_blank\">Descargar etiqueta de envío</a>)"
+							+ "<br/>--Imprimir la etiqueta de Andreani. (<a href=\"https://www.yingul.com/userFront/sales\" target=\"_blank\">Descargar etiqueta de envío</a>)"
 							+ "<br/>--Preparar y embalar el paquete junto a la etiqueta." 
 							+ "<br/>--Déjalo en la sucursal Andreani: "+branchAndreaniV.getLocation()+" "+branchAndreaniV.getSchedules()+" Fono: "+branchAndreaniV.getPhones()
 							+ "<br/>Nos pondremos en contacto con usted cuando tu comprador recoja el producto de Andreani.");
@@ -1094,7 +1094,7 @@ public class BuyController {
 					+ "<br/> Este importe esta sujeto al cobro de comisiones Yingul por venta."
 					+ "<br/> Los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección: "+userTemp.getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ userTemp.getYng_Ubication().getYng_City().getName()+" Calle: "+userTemp.getYng_Ubication().getStreet()+"  Numero: "+userTemp.getYng_Ubication().getNumber()
 					+ "<br/> Encuantrate con tu comprador para firmar la entrega del producto."
-					+ "<br/> - Al Momento de entregar el producto al comprador ingresa a: http://www.yingul.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones "
+					+ "<br/> - Al Momento de entregar el producto al comprador ingresa a: https://www.yingul.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones "
 					+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
 					+ "<br/> - No entregues el producto sin que tu y el vendedor firmen la entrega no aceptaremos reclamos si la confirmacion no esta firmada por ambas partes"
 					+ "<br/> - Por tu seguridad no entregues el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
@@ -1180,7 +1180,7 @@ public class BuyController {
 						+ "</table>"
 						+ "<br/> Este importe esta sujeto al cobro de comisiones Yingul por venta."
 						+ "<br/> Costo del envio : " +buy.getShipping().getYng_Quote().getRate()+" ARS. El costo de envio se descontara posteriormente de tu saldo en YingulPay."  
-						+ "<br/>--Imprimir la etiqueta de Andreani. (<a href=\"http://www.yingul.com/userFront/sales\" target=\"_blank\">Descargar etiqueta de envío</a>)"
+						+ "<br/>--Imprimir la etiqueta de Andreani. (<a href=\"https://www.yingul.com/userFront/sales\" target=\"_blank\">Descargar etiqueta de envío</a>)"
 						+ "<br/>--Preparar y embalar el paquete junto a la etiqueta." 
 						+ "<br/>--Déjalo en la sucursal Andreani: "+branchAndreaniV.getLocation()+" "+branchAndreaniV.getSchedules()+" Fono: "+branchAndreaniV.getPhones()
 						+ "<br/>Nos pondremos en contacto con usted cuando tu comprador recoja el producto de Andreani.");
@@ -1265,7 +1265,7 @@ public class BuyController {
 						+ "  </tr>\r\n"
 						+ "</table>"
 						+ "<br/> Este importe esta sujeto al cobro de comisiones Yingul por venta."
-						+ "<br/>--Imprimir la etiqueta de Andreani. (<a href=\"http://www.yingul.com/userFront/sales\" target=\"_blank\">Descargar etiqueta de envío</a>)"
+						+ "<br/>--Imprimir la etiqueta de Andreani. (<a href=\"https://www.yingul.com/userFront/sales\" target=\"_blank\">Descargar etiqueta de envío</a>)"
 						+ "<br/>--Preparar y embalar el paquete junto a la etiqueta." 
 						+ "<br/>--Déjalo en la sucursal Andreani: "+branchAndreaniV.getLocation()+" "+branchAndreaniV.getSchedules()+" Fono: "+branchAndreaniV.getPhones()
 						+ "<br/>Nos pondremos en contacto con usted cuando tu comprador recoja el producto de Andreani.");
@@ -1801,7 +1801,7 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 		
 		if(typeEnvio.equals("home")) {
 			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA"," Se realizo la venta del producto :  "+buy.getYng_item().getName()+ "  "+"  Precio:" +buy.getYng_item().getPrice()+ "  " +"    los datos del comprador son: "+"Email :"+userTemp.getEmail()+"  Teléfono : "+userTemp.getPhone()+"  Dirección:"+buy.getYng_item().getYng_Ubication().getYng_Province().getName()+ "  Ciudad: "+ buy.getYng_item().getYng_Ubication().getYng_City().getName()+" Calle:"+buy.getYng_item().getYng_Ubication().getStreet()+"  Numero:"+buy.getYng_item().getYng_Ubication().getNumber()
-					+ "<br/> - Al Momento de entregar el producto al comprador ingresa a: http://www.yingul.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones "
+					+ "<br/> - Al Momento de entregar el producto al comprador ingresa a: https://www.yingul.com/confirmwos/"+confirm.getConfirmId()+" donde tu y tu comprador firmaran la entrega del producto en buenas condiciones "
 					+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
 					+ "<br/> - No entregues el producto sin que tu y el vendedor firmen la entrega no aceptaremos reclamos si la confirmacion no esta firmada por ambas partes"
 					+ "<br/> - Por tu seguridad no entregues el producto en lugares desconocidos o solitarios ni en la noche hazlo en un lugar de confianza, concurrido y en el día"
@@ -1820,7 +1820,7 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 					"      --Preparar y embalar el paquete junto a la etiqueta   " + 
 					"      --Déjalo en la sucursal Andreani más cercana ." + 
 					"           "+buy.getShipping().getYng_Shipment().getTicket()
-					+ "   Al Momento de entregar el producto en la sucursal Andreani ingresa a: http://www.yingul.com/confirmws/"+confirm.getConfirmId()+" donde firmaras la entrega del producto en buenas condiciones"
+					+ "   Al Momento de entregar el producto en la sucursal Andreani ingresa a: https://www.yingul.com/confirmws/"+confirm.getConfirmId()+" donde firmaras la entrega del producto en buenas condiciones"
 					+ "Despues de entregar el producto Andreani tiene 2 dias para entregarlo a tu comprador "
 					+ "Y tu comprador tiene 7 dias para observar sus condiciones, posterior a eso te daremos mas instrucciones para recoger tu dinero");
 			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible.");

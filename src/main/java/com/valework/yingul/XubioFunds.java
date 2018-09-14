@@ -157,5 +157,83 @@ public class XubioFunds {
     	return "failXubio";
 
 	}
+	public String postCreateClient() throws Exception{
+		Yng_Standard api = standardDao.findByKey("XUBIO_api_client");
+		//crear el referenceCode y el signature
+		CloseableHttpClient client = HttpClients.createDefault();
+	    HttpPost httpPost = new HttpPost(api.getValue());
+	    String json = "{\r\n" + 
+	    		"  \"CUIT\": \"38.015.219\",\r\n" + 
+	    		"  \"categoriaFiscal\": {\r\n" + 
+	    		"    \"ID\": 4,\r\n" + 
+	    		"    \"codigo\": \"MT\",\r\n" + 
+	    		"    \"nombre\": \"Monotributista\"\r\n" + 
+	    		"  },\r\n" + 
+	    		"  \"codigoPostal\": \"1744\",\r\n" + 
+	    		"  \"cuentaCompra_id\": {\r\n" + 
+	    		"    \"ID\": -7,\r\n" + 
+	    		"    \"codigo\": \"PROVEEDORES\",\r\n" + 
+	    		"    \"nombre\": \"Proveedores\"\r\n" + 
+	    		"  },\r\n" + 
+	    		"  \"cuentaVenta_id\": {\r\n" + 
+	    		"    \"ID\": -3,\r\n" + 
+	    		"    \"codigo\": \"DEUDORES_POR_VENTA\",\r\n" + 
+	    		"    \"nombre\": \"Deudores por Venta\"\r\n" + 
+	    		"  },\r\n" + 
+	    		"  \"descripcion\": \"\",\r\n" + 
+	    		"  \"direccion\": \"joaquin v gonzales 10440\",\r\n" + 
+	    		"  \"email\": \"davidiren45@gmail.com\",\r\n" + 
+	    		"  \"identificacionTributaria\": {\r\n" + 
+	    		"    \"ID\": 10,\r\n" + 
+	    		"    \"codigo\": \"DNI\",\r\n" + 
+	    		"    \"nombre\": \"DNI\"\r\n" + 
+	    		"  },\r\n" + 
+	    		"  \"nombre\": \"Sergio David Iren\",\r\n" + 
+	    		"  \"pais\": {\r\n" + 
+	    		"    \"ID\": 1,\r\n" + 
+	    		"    \"codigo\": \"ARGENTINA\",\r\n" + 
+	    		"    \"nombre\": \"Argentina\"\r\n" + 
+	    		"  },\r\n" + 
+	    		"  \"razonSocial\": \"Sergio David Iren\",\r\n" + 
+	    		"  \"telefono\": \"5491123399622\",\r\n" + 
+	    		"  \"usrCode\": \"4157\"\r\n" + 
+	    		"}";
+		// crear el request 
+	    Date time = new Date();
+    	DateFormat hourdateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		String date=hourdateFormat.format(time);
+		Yng_XubioRequest requestTemp = new Yng_XubioRequest(); 
+		requestTemp.setURI(api.getValue());
+		requestTemp.setInfo("Create client");
+		requestTemp.setBody(json);
+		requestTemp.setDate(date);
+		requestTemp = xubioRequestDao.save(requestTemp);
+	    
+	    StringEntity entity = new StringEntity(json, "UTF-8");
+	    httpPost.setEntity(entity);
+	    httpPost.setHeader("Accept", "application/json");
+	    httpPost.setHeader("Content-type", "application/json; charset=utf-8");
+	    String authorization = getToken();
+	    if(authorization.equals("failXubio")) {
+	    	return "failXubio";
+	    }
+	    httpPost.setHeader("Authorization", "Bearer "+authorization);
+	    
+	    CloseableHttpResponse response = client.execute(httpPost);
+	    Yng_XubioResponse responseTemp= this.logResponse(response);
+	   
+    	responseTemp=xubioResponseDao.save(responseTemp);
+    	requestTemp.setXubioResponse(responseTemp);
+    	requestTemp=xubioRequestDao.save(requestTemp);
+    	if(responseTemp.getStatus().equals("HTTP/1.1 200 OK")) {
+    		JSONObject  jObject = new JSONObject(responseTemp.getBody());
+    		return String.valueOf(jObject.optLong("cliente_id"));
+	    }
+        response.close();
+	    client.close();
+    	
+    	return "failXubio";
+
+	}
 
 }

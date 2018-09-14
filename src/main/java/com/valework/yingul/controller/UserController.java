@@ -123,7 +123,7 @@ public class UserController {
 	        			"<br>" + 
 	        			"Su USERNAME de Yingul ha cambiado recientemente.<br>" + 
 	        			"Si usted no solicitó el cambio de USERNAME, póngase en contacto con el equipo de asistencia al cliente.<br>" + 
-	        			"http://www.yingul.com/about/contactUs<br>" + 
+	        			"https://www.yingul.com/about/contactUs<br>" + 
 	        			"<br>" + 
 	        			"El equipo de Yingul<br>" + 
 	        			"<br>" + 
@@ -150,7 +150,7 @@ public class UserController {
 	        			"<br>" + 
 	        			"Su Email de Yingul ha cambiado recientemente.<br>" + 
 	        			"Si usted no solicitó el cambio de Email, póngase en contacto con el equipo de asistencia al cliente.<br>" + 
-	        			"http://www.yingul.com/about/contactUs<br>" + 
+	        			"https://www.yingul.com/about/contactUs<br>" + 
 	        			"<br>" + 
 	        			"El equipo de Yingul<br>" + 
 	        			"<br>" + 
@@ -161,7 +161,7 @@ public class UserController {
 	        			"<br>" + 
 	        			"Su Email de Yingul ha cambiado recientemente.<br>" + 
 	        			"Si usted no solicitó el cambio de Email, póngase en contacto con el equipo de asistencia al cliente.<br>" + 
-	        			"http://www.yingul.com/about/contactUs<br>" + 
+	        			"https://www.yingul.com/about/contactUs<br>" + 
 	        			"<br>" + 
 	        			"El equipo de Yingul<br>" + 
 	        			"<br>" + 
@@ -189,7 +189,7 @@ public class UserController {
         			"<br>" + 
         			"Su Clave de Yingul ha cambiado recientemente.<br>" + 
         			"Si usted no solicitó el cambio de Clave, póngase en contacto con el equipo de asistencia al cliente.<br>" + 
-        			"http://www.yingul.com/about/contactUs<br>" + 
+        			"https://www.yingul.com/about/contactUs<br>" + 
         			"<br>" + 
         			"El equipo de Yingul<br>" + 
         			"<br>" + 

@@ -1109,9 +1109,9 @@ public class SellController {
     public String facebookPostPhoto(Yng_Item item) {
     	PropertySocial p=new PropertySocial();
     	//****Local
-    	p=propertyLocal();
+    	//p=propertyLocal();
     	//****production
-    	//p=propertyProduction();
+    	p=propertyProduction();
     	FacebookPhoto photo= new FacebookPhoto();    	
     	String urlp=p.getUrlImage()+item.getPrincipalImage();      	
 		photo.setUrl(""+urlp);
@@ -1218,7 +1218,7 @@ public class SellController {
 	public PropertySocial propertyProduction(){
 		PropertySocial p=new PropertySocial();
 		p.setUrlImage("https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/image/");
-		p.setUrlPagina("http://www.yingul.com/itemDetail/");
+		p.setUrlPagina("https://www.yingul.com/itemDetail/");
 		return p;
 	}
     public class PropertySocial{
@@ -1289,13 +1289,13 @@ public class SellController {
 				"  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n" + 
 				"     <!-- HTML meta refresh URL redirection -->\r\n" + 
 				"   <meta http-equiv=\"refresh\" \r\n" + 
-				"   content=\"0; url=http://www.yingul.com/itemDetail/"
+				"   content=\"0; url=https://www.yingul.com/itemDetail/"
 				+ itemId
 				+ "\">\r\n" + 
 				"</head>\r\n" + 
 				"<body>\r\n" + 
 				"     <p>The page has moved to: \r\n" + 
-				"   <a href=\"http://www.yingul.com/itemDetail/"
+				"   <a href=\"https://www.yingul.com/itemDetail/"
 				+ itemId
 				+ "\">this page</a></p>\r\n" + 
 				"\r\n" + 
