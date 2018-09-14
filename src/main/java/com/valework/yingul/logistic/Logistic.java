@@ -244,7 +244,7 @@ public class Logistic {
 			   		"<!--Optional:-->\r\n" + 
 			   		"<and:alturaDeDomicilio></and:alturaDeDomicilio>\r\n" + 
 			   		"<and:calle>"
-			   			+ per.getYng_User().getYng_Ubication().getStreet()
+			   			+ buy.getShipping().getYng_Shipment().getYng_User().getYng_Ubication().getStreet()
 			   		+ "</and:calle>\r\n" + 
 			   		"<and:codigoPostal>"
 			   			+ buy.getShipping().getYng_Shipment().getYng_User().getYng_Ubication().getPostalCode()

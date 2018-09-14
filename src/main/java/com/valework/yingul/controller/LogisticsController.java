@@ -1582,7 +1582,7 @@ public class LogisticsController {
 			    	  cotizarAndreani.setCodigoDeCliente(ClienteAndreni);
 			    	  cotizarAndreani.setCodigoDeSucursal(""+quote.getYng_Item().getYng_Ubication().getCodAndreani());
 			    	  System.out.println("postal:"+postalCode);
-			    	  cotizarAndreani.setCodigoPostal(postalCode);//quote.getYng_User().getYng_Ubication().getPostalCode()
+			    	  cotizarAndreani.setCodigoPostal(postalCode);
 			    	  cotizarAndreani.setNumeroDeContrato(ContratoAndreni);
 			    	  cotizarAndreani.setPassword(PasswordAndreni);
 			    	  cotizarAndreani.setUsername(UserNameAndrani);
@@ -1980,7 +1980,7 @@ public class LogisticsController {
 			    	  cotizarAndreani.setCodigoDeCliente(ClienteAndreni);
 			    	  cotizarAndreani.setCodigoDeSucursal(""+quote.getYng_Item().getYng_Ubication().getCodAndreani());
 			    	  System.out.println("postal:"+postalCode);
-			    	  cotizarAndreani.setCodigoPostal(postalCode);//quote.getYng_User().getYng_Ubication().getPostalCode()
+			    	  cotizarAndreani.setCodigoPostal(postalCode);
 			    	  cotizarAndreani.setNumeroDeContrato(ContratoAndreni);
 			    	  cotizarAndreani.setPassword(PasswordAndreni);
 			    	  cotizarAndreani.setUsername(UserNameAndrani);
