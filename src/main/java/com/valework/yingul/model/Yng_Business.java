@@ -18,6 +18,7 @@ public class Yng_Business {
 	private String businessName;
 	private String documentType;
 	private String documentNumber;
+	private String contributorType;
 	
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "user_id")
@@ -33,15 +34,6 @@ public class Yng_Business {
 
 	public void setBusinessId(Long businessId) {
 		this.businessId = businessId;
-	}
-
-
-	public Yng_User getUser() {
-		return user;
-	}
-
-	public void setUser(Yng_User user) {
-		this.user = user;
 	}
 
 	public String getBusinessName() {
@@ -67,6 +59,28 @@ public class Yng_Business {
 	public void setDocumentNumber(String documentNumber) {
 		this.documentNumber = documentNumber;
 	}
-	
+
+	public String getContributorType() {
+		return contributorType;
+	}
+
+	public void setContributorType(String contributorType) {
+		this.contributorType = contributorType;
+	}
+
+	public Yng_User getUser() {
+		return user;
+	}
+
+	public void setUser(Yng_User user) {
+		this.user = user;
+	}
+
+	@Override
+	public String toString() {
+		return "Yng_Business [businessId=" + businessId + ", businessName=" + businessName + ", documentType="
+				+ documentType + ", documentNumber=" + documentNumber + ", contributorType=" + contributorType
+				+ ", user=" + user + "]";
+	}
 
 }
