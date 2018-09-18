@@ -747,7 +747,7 @@ public class GreetingBatchBean {
 	
 	@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	public void	invoiceCommissions() throws Exception{
-		//System.out.println("-----------------"+xubioFunds.postCreateClient());
+		System.out.println("-----------------"+xubioFunds.postCreateInvoiceTypeB());
 	}
 	
 	

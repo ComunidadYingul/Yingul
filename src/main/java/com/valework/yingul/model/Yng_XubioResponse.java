@@ -12,7 +12,8 @@ public class Yng_XubioResponse {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long responseId;
 	private String status;
-	private String message;
+	@Column(columnDefinition = "text")
+	private java.lang.String message;
 	@Column(columnDefinition = "text")
 	private java.lang.String header="";
 	@Column(columnDefinition = "text")
@@ -38,11 +39,11 @@ public class Yng_XubioResponse {
 		this.status = status;
 	}
 
-	public String getMessage() {
+	public java.lang.String getMessage() {
 		return message;
 	}
 
-	public void setMessage(String message) {
+	public void setMessage(java.lang.String message) {
 		this.message = message;
 	}
 

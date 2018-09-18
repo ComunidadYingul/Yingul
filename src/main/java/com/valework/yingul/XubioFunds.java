@@ -3,24 +3,15 @@ package com.valework.yingul;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.xml.bind.DatatypeConverter;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -34,28 +25,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.valework.yingul.dao.BusinessDao;
+import com.valework.yingul.dao.PersonDao;
 import com.valework.yingul.dao.StandardDao;
+import com.valework.yingul.dao.XubioClientDao;
 import com.valework.yingul.dao.XubioRequestDao;
 import com.valework.yingul.dao.XubioResponseDao;
-import com.valework.yingul.model.Yng_Buy;
-import com.valework.yingul.model.Yng_Card;
-import com.valework.yingul.model.Yng_Payment;
+import com.valework.yingul.model.Yng_Business;
 import com.valework.yingul.model.Yng_Person;
-import com.valework.yingul.model.Yng_Request;
-import com.valework.yingul.model.Yng_RequestBody;
-import com.valework.yingul.model.Yng_Response;
-import com.valework.yingul.model.Yng_ResponseBody;
-import com.valework.yingul.model.Yng_ResponseHeader;
 import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_User;
+import com.valework.yingul.model.Yng_XubioClient;
 import com.valework.yingul.model.Yng_XubioRequest;
 import com.valework.yingul.model.Yng_XubioResponse;
 import com.valework.yingul.util.VisaAPIClient;
-
 
 @Component
 public class XubioFunds {
@@ -66,7 +52,24 @@ public class XubioFunds {
 	XubioRequestDao xubioRequestDao;
 	@Autowired
 	XubioResponseDao xubioResponseDao;
+	@Autowired
+	PersonDao personDao;
+	@Autowired
+	BusinessDao businessDao;
+	@Autowired
+	XubioClientDao xubioClientDao;
 	
+	public Yng_Person getPersonForUser(Yng_User user) {
+		List<Yng_Person> personList= personDao.findAll();
+		Yng_Person person = new Yng_Person();
+		for (Yng_Person yng_Person : personList) {
+			if(yng_Person.getYng_User().getUsername().equals(user.getUsername())) {
+				person = yng_Person;
+				return person;
+			}
+		}
+		return null;
+	}
 	public Yng_XubioResponse logResponse(CloseableHttpResponse response) throws IOException, JSONException {
 		Yng_XubioResponse responseTemp= new Yng_XubioResponse();
     	Header[] h = response.getAllHeaders();
@@ -117,7 +120,6 @@ public class XubioFunds {
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true); // format json
         return mapper;
     }
-
 	
 	public String getToken() throws Exception{
 		
@@ -157,19 +159,55 @@ public class XubioFunds {
     	return "failXubio";
 
 	}
-	public String postCreateClient() throws Exception{
+	public Yng_XubioClient postCreateClient(Yng_User user) throws Exception{
+		Yng_XubioClient xubioClient = new Yng_XubioClient();
+		Yng_Person person = getPersonForUser(user);
+		if(person.isBusiness()) {
+			Yng_Business business = businessDao.findByUser(user);
+			xubioClient.setNombre(person.getName()+" "+person.getLastname());
+			xubioClient.setRazonSocial(business.getBusinessName());
+			xubioClient.setCodeCategoriaFiscal("");
+			xubioClient.setCategoriaFiscal("");
+			switch (business.getDocumentType()) {
+		        case "DNI":  
+		        	xubioClient.setCodeIdentificacionTributaria("DNI");
+					xubioClient.setIdentificacionTributaria("DNI");
+		        	break;
+		        case "CUIT":  
+		        	xubioClient.setCodeIdentificacionTributaria("CUIT");
+					xubioClient.setIdentificacionTributaria("CUIT");
+		        	break;
+	        }
+			xubioClient.setCUIT(business.getDocumentNumber());
+		}else {
+			xubioClient.setNombre(person.getName()+" "+person.getLastname());
+			xubioClient.setRazonSocial(person.getName()+" "+person.getLastname());
+			xubioClient.setCodeCategoriaFiscal("CF");
+			xubioClient.setCategoriaFiscal("Consumidor Final");
+			switch (user.getDocumentType()) {
+		        case "DNI":  
+		        	xubioClient.setCodeIdentificacionTributaria("DNI");
+					xubioClient.setIdentificacionTributaria("DNI");
+		        	break;
+		        case "CUIT":  
+		        	xubioClient.setCodeIdentificacionTributaria("CUIT");
+					xubioClient.setIdentificacionTributaria("CUIT");
+		        	break;
+	        }
+			xubioClient.setCUIT(user.getDocumentNumber());
+		}	
+			
 		Yng_Standard api = standardDao.findByKey("XUBIO_api_client");
 		//crear el referenceCode y el signature
 		CloseableHttpClient client = HttpClients.createDefault();
 	    HttpPost httpPost = new HttpPost(api.getValue());
 	    String json = "{\r\n" + 
-	    		"  \"CUIT\": \"38.015.219\",\r\n" + 
+	    		"  \"CUIT\": \""+xubioClient.getCUIT()+"\",\r\n" + 
 	    		"  \"categoriaFiscal\": {\r\n" + 
-	    		"    \"ID\": 4,\r\n" + 
-	    		"    \"codigo\": \"MT\",\r\n" + 
-	    		"    \"nombre\": \"Monotributista\"\r\n" + 
+	    		"    \"codigo\": \""+xubioClient.getCodeCategoriaFiscal()+"\",\r\n" + 
+	    		"    \"nombre\": \""+xubioClient.getCategoriaFiscal()+"\"\r\n" + 
 	    		"  },\r\n" + 
-	    		"  \"codigoPostal\": \"1744\",\r\n" + 
+	    		"  \"codigoPostal\": \""+user.getYng_Ubication().getPostalCode()+"\",\r\n" + 
 	    		"  \"cuentaCompra_id\": {\r\n" + 
 	    		"    \"ID\": -7,\r\n" + 
 	    		"    \"codigo\": \"PROVEEDORES\",\r\n" + 
@@ -181,23 +219,178 @@ public class XubioFunds {
 	    		"    \"nombre\": \"Deudores por Venta\"\r\n" + 
 	    		"  },\r\n" + 
 	    		"  \"descripcion\": \"\",\r\n" + 
-	    		"  \"direccion\": \"joaquin v gonzales 10440\",\r\n" + 
-	    		"  \"email\": \"davidiren45@gmail.com\",\r\n" + 
+	    		"  \"direccion\": \""+user.getYng_Ubication().getStreet()+" "+user.getYng_Ubication().getNumber()+"\",\r\n" + 
+	    		"  \"email\": \""+user.getEmail()+"\",\r\n" + 
 	    		"  \"identificacionTributaria\": {\r\n" + 
-	    		"    \"ID\": 10,\r\n" + 
-	    		"    \"codigo\": \"DNI\",\r\n" + 
-	    		"    \"nombre\": \"DNI\"\r\n" + 
+	    		"    \"codigo\": \""+xubioClient.getCodeIdentificacionTributaria()+"\",\r\n" + 
+	    		"    \"nombre\": \""+xubioClient.getIdentificacionTributaria()+"\"\r\n" + 
 	    		"  },\r\n" + 
-	    		"  \"nombre\": \"Sergio David Iren\",\r\n" + 
+	    		"  \"nombre\": \""+xubioClient.getNombre()+"\",\r\n" + 
 	    		"  \"pais\": {\r\n" + 
 	    		"    \"ID\": 1,\r\n" + 
 	    		"    \"codigo\": \"ARGENTINA\",\r\n" + 
 	    		"    \"nombre\": \"Argentina\"\r\n" + 
 	    		"  },\r\n" + 
-	    		"  \"razonSocial\": \"Sergio David Iren\",\r\n" + 
-	    		"  \"telefono\": \"5491123399622\",\r\n" + 
-	    		"  \"usrCode\": \"4157\"\r\n" + 
+	    		"  \"razonSocial\": \""+xubioClient.getRazonSocial()+"\",\r\n" + 
+	    		"  \"telefono\": \""+user.getPhone()+"\",\r\n" + 
+	    		"  \"usrCode\": \""+user.getUserId()+"\"\r\n" + 
 	    		"}";
+	    
+		// crear el request 
+	    Date time = new Date();
+    	DateFormat hourdateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		String date=hourdateFormat.format(time);
+		Yng_XubioRequest requestTemp = new Yng_XubioRequest(); 
+		requestTemp.setURI(api.getValue());
+		requestTemp.setInfo("Create client");
+		requestTemp.setBody(json);
+		requestTemp.setDate(date);
+		requestTemp = xubioRequestDao.save(requestTemp);
+	    
+	    StringEntity entity = new StringEntity(json, "UTF-8");
+	    httpPost.setEntity(entity);
+	    httpPost.setHeader("Accept", "application/json");
+	    httpPost.setHeader("Content-type", "application/json; charset=utf-8");
+	    String authorization = getToken();
+	    if(authorization.equals("failXubio")) {
+	    	return null;
+	    }
+	    httpPost.setHeader("Authorization", "Bearer "+authorization);
+	    
+	    CloseableHttpResponse response = client.execute(httpPost);
+	    Yng_XubioResponse responseTemp= this.logResponse(response);
+	   
+    	responseTemp=xubioResponseDao.save(responseTemp);
+    	requestTemp.setXubioResponse(responseTemp);
+    	requestTemp=xubioRequestDao.save(requestTemp);
+    	if(responseTemp.getStatus().equals("HTTP/1.1 200 OK")) {
+    		JSONObject  jObject = new JSONObject(responseTemp.getBody());
+    		if(jObject.has("cliente_id")) {
+    			xubioClient.setCUIT(jObject.optString("CUIT"));
+    			xubioClient.setCliente_id(jObject.optLong("cliente_id"));
+    			xubioClient.setCodigoPostal(jObject.optString("codigoPostal"));
+    			xubioClient.setDireccion(jObject.optString("direccion"));
+    			xubioClient.setEmail(jObject.optString("email"));
+    			xubioClient.setTelefono(jObject.optString("telefono"));
+    			xubioClient.setUsrCode(jObject.optString("usrCode"));
+    			xubioClient.setUser(user);
+    			xubioClient=xubioClientDao.save(xubioClient);
+    			return xubioClient;
+    		}
+	    }
+        response.close();
+	    client.close();
+    	
+    	return null;
+
+	}
+	
+	public String postCreateInvoiceTypeB() throws Exception{
+			
+		Yng_Standard api = standardDao.findByKey("XUBIO_api_proof_of_purchase");
+		//crear el referenceCode y el signature
+		CloseableHttpClient client = HttpClients.createDefault();
+	    HttpPost httpPost = new HttpPost(api.getValue());
+	    String json = "{\r\n" + 
+	    		"  \"circuitoContable\": {\r\n" + 
+	    		"    \"ID\": -2,\r\n" + 
+	    		"    \"codigo\": \"DEFAULT\",\r\n" + 
+	    		"    \"nombre\": \"default\"\r\n" + 
+	    		"  },\r\n" + 
+	    		//"  \"transaccionid\": 14564644,\r\n" + 
+	    		"  \"externalId\": \"string\",\r\n" + 
+	    		"  \"cliente\": {\r\n" + 
+	    		"    \"ID\": 2735021,\r\n" + 
+	    		"    \"codigo\": \"FREDDY_IVAN_QUISPE_CONDORI\",\r\n" + 
+	    		"    \"nombre\": \"Freddy Ivan Quispe Condori\"\r\n" + 
+	    		"  },\r\n" + 
+	    		"  \"tipo\": 1,\r\n" + 
+	    		"  \"nombre\": \"string\",\r\n" + 
+	    		"  \"fecha\": \"2018-09-12\",\r\n" + 
+	    		"  \"fechaVto\": \"2018-09-12\",\r\n" + 
+	    		"  \"puntoVenta\": {\r\n" + 
+	    		//"    \"ID\": 113819,\r\n" + 
+	    		//"    \"codigo\": \"0001\",\r\n" + 
+	    		"    \"nombre\": \"default\"\r\n" + 
+	    		"  },\r\n" + 
+	    		"  \"numeroDocumento\": \"B-0002-00000001\",\r\n" + 
+	    		"  \"condicionDePago\": 1,\r\n" + 
+	    		"  \"deposito\": {\r\n" + 
+	    		"    \"ID\": -2,\r\n" + 
+	    		"    \"codigo\": \"DEPOSITO_UNIVERSAL\",\r\n" + 
+	    		"    \"nombre\": \"Depósito Universal\"\r\n" + 
+	    		"  },\r\n" + 
+	    		//"  \"primerTktA\": \"string\",\r\n" + 
+	    		//"  \"ultimoTktA\": \"string\",\r\n" + 
+	    		//"  \"primerTktBC\": \"string\",\r\n" + 
+	    		//"  \"ultimoTktBC\": \"string\",\r\n" + 
+	    		//"  \"cantComprobantesEmitidos\": 0,\r\n" + 
+	    		//"  \"cantComprobantesCancelados\": 0,\r\n" + 
+	    		"  \"cotizacion\": 1,\r\n" + 
+	    		"  \"moneda\": {\r\n" + 
+	    		"    \"ID\": -2,\r\n" + 
+	    		"    \"codigo\": \"PESOS_ARGENTINOS\",\r\n" + 
+	    		"    \"nombre\": \"Pesos Argentinos\"\r\n" + 
+	    		"  },\r\n" + 
+	    		//"  \"importeMonPrincipal\": 0,\r\n" + 
+	    		"  \"importetotal\": 2.66,\r\n" + 
+	    		"  \"importeImpuestos\": 0.46,\r\n" + 
+	    		"  \"importeGravado\": 2.2,\r\n" + 
+	    		"  \"provincia\": {\r\n" + 
+	    		"    \"ID\": 1,\r\n" + 
+	    		"    \"codigo\": \"BUENOS_AIRES\",\r\n" + 
+	    		"    \"nombre\": \"Buenos Aires\"\r\n" + 
+	    		"  },\r\n" + 
+	    		"  \"cotizacionListaDePrecio\": 1,\r\n" + 
+	    		//"  \"listaDePrecio\": {\r\n" + 
+	    		//"    \"nombre\": \"string\",\r\n" + 
+	    		//"    \"codigo\": \"string\",\r\n" + 
+	    		//"    \"id\": 0\r\n" + 
+	    		//"  },\r\n" + 
+	    		//"  \"vendedor\": {\r\n" + 
+	    		//"    \"nombre\": \"string\",\r\n" + 
+	    		//"    \"codigo\": \"string\",\r\n" + 
+	    		//"    \"id\": 0\r\n" + 
+	    		//"  },\r\n" + 
+	    		"  \"porcentajeComision\": 0,\r\n" + 
+	    		//"  \"mailEstado\": \"string\",\r\n" + 
+	    		"  \"descripcion\": \"\",\r\n" + 
+	    		"  \"CBUInformada\": false,\r\n" + 
+	    		"  \"facturaNoExportacion\": true,\r\n" + 
+	    		"  \"transaccionProductoItems\": [\r\n" + 
+	    		"    {\r\n" + 
+	    		//"      \"transaccionCVItemId\": 0,\r\n" + 
+	    		"      \"precioconivaincluido\": 2.66,\r\n" + 
+	    		//"      \"transaccionId\": 14564644,\r\n" + 
+	    		"      \"producto\": {\r\n" + 
+	    		"        \"ID\": -98,\r\n" + 
+	    		"        \"codigo\": \"SERVICIO_AL_21\",\r\n" + 
+	    		"        \"nombre\": \"Servicio al 21%\"\r\n" + 
+	    		"      },\r\n" + 
+	    		//"      \"centroDeCosto\": {\r\n" + 
+	    		//"        \"nombre\": \"string\",\r\n" + 
+	    		//"        \"codigo\": \"string\",\r\n" + 
+	    		//"        \"id\": 0\r\n" + 
+	    		//"      },\r\n" + 
+	    		"      \"deposito\": {\r\n" + 
+	    		"        \"ID\": -2,\r\n" + 
+	    		"        \"codigo\": \"DEPOSITO_UNIVERSAL\",\r\n" + 
+	    		"        \"nombre\": \"Depósito Universal\"\r\n" + 
+	    		"      },\r\n" + 
+	    		"      \"descripcion\": \"Facturado desde https://www.yingul.com\",\r\n" + 
+	    		"      \"cantidad\": 1,\r\n" + 
+	    		"      \"precio\": 2.66,\r\n" + 
+	    		"      \"iva\": 0.4617,\r\n" + 
+	    		"      \"importe\": 2.1983,\r\n" + 
+	    		"      \"total\": 2.66,\r\n" + 
+	    		"      \"procentajeDescuento\": 0,\r\n" + 
+	    		"      \"montoExtento\": 0\r\n" + 
+	    		"    }\r\n" + 
+	    		"  ],\r\n" + 
+	    		"  \"transaccionPercepcionItems\": [],\r\n" + 
+	    		"  \"transaccionCobranzaItems\": []\r\n" + 
+	    		"}";
+	    
 		// crear el request 
 	    Date time = new Date();
     	DateFormat hourdateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -227,8 +420,8 @@ public class XubioFunds {
     	requestTemp=xubioRequestDao.save(requestTemp);
     	if(responseTemp.getStatus().equals("HTTP/1.1 200 OK")) {
     		JSONObject  jObject = new JSONObject(responseTemp.getBody());
-    		if(jObject.has("cliente_id")) {
-    			return String.valueOf(jObject.optLong("cliente_id"));	
+    		if(jObject.has("transaccionid")) {
+    			return String.valueOf(jObject.optLong("transaccionid"));
     		}
 	    }
         response.close();
@@ -237,5 +430,4 @@ public class XubioFunds {
     	return "failXubio";
 
 	}
-
 }
