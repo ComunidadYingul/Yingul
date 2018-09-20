@@ -20,7 +20,7 @@ public class Yng_XubioResponse {
 	private java.lang.String body="";
     
 	public Yng_XubioResponse() {
-		
+		super();
 	}
 
 	public long getResponseId() {

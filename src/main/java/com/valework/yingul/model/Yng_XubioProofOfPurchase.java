@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 @Entity
@@ -16,6 +17,7 @@ public class Yng_XubioProofOfPurchase {
     @Column(name = "xubioProofOfPurchaseId", nullable = false, updatable = false)
     private Long xubioProofOfPurchaseId;
 	
+	private String externalId;
 	private String circuitoContable;
 	private String codeCircuitoContable;
 	private Long transaccionid;
@@ -45,9 +47,13 @@ public class Yng_XubioProofOfPurchase {
 	@JoinColumn(name = "xubio_transaction_id")
 	private Yng_XubioTransaccionProductoItems xubioTransaccionProductoItems;
 	
-	@OneToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "xubio_client_id")
 	private Yng_XubioClient xubioClient;
+	
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "yng_transaction_id")
+	private Yng_Transaction transaction;
 	
 	public Yng_XubioProofOfPurchase() {
 		super();
@@ -269,4 +275,20 @@ public class Yng_XubioProofOfPurchase {
 		this.xubioClient = xubioClient;
 	}
 
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
+	public Yng_Transaction getTransaction() {
+		return transaction;
+	}
+
+	public void setTransaction(Yng_Transaction transaction) {
+		this.transaction = transaction;
+	}
+	
 }

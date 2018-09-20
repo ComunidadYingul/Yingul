@@ -81,6 +81,8 @@ public class WireTransferController {
 				transactionTemp.setDescription("Debito a través de transferencia bancaria");
 				transactionTemp.setAYingulTransaction(false);
 				transactionTemp.setAWireTransfer(true);
+				transactionTemp.setInvoiceStatus("unrequited");
+				transactionTemp.setTypeCode("DTB");
 				double saldo=account.getAvailableMoney();
 				account.setAvailableMoney((double)Math.round((saldo-transactionTemp.getAmount()) * 100d) / 100d);
 				wireTransfer.setBank(bankDao.findByBankId(wireTransfer.getBank().getBankId()));
@@ -112,6 +114,8 @@ public class WireTransferController {
 					transactionTemp1.setSecond(Integer.parseInt(hourdateFormat6.format(date)));
 					transactionTemp1.setAWireTransfer(false);
 					transactionTemp1.setAYingulTransaction(true);
+					transactionTemp1.setInvoiceStatus("unrequited");
+					transactionTemp1.setTypeCode("CTB");
 					saldo=account.getAvailableMoney();
 					account.setAvailableMoney((double)Math.round((saldo-transactionTemp1.getAmount()) * 100d) / 100d);
 					account=accountDao.save(account);

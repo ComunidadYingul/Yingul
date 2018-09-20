@@ -26,7 +26,7 @@ public class Yng_XubioRequest {
     private Yng_XubioResponse xubioResponse;
 	
 	public Yng_XubioRequest() {
-	
+		super();
 	}
 
 	public long getXubioRequestId() {

@@ -2,13 +2,10 @@ package com.valework.yingul.batch;
 
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
 import javax.mail.MessagingException;
-
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.joda.time.DateTime;
@@ -142,6 +139,8 @@ public class GreetingBatchBean {
 					transactionTemp.setSecond(Integer.parseInt(hourdateFormat6.format(date)));
 					transactionTemp.setAWireTransfer(false);
 					transactionTemp.setAYingulTransaction(true);
+					transactionTemp.setInvoiceStatus("unrequited");
+					transactionTemp.setTypeCode("AVP");
 					double saldo=accountTemp.getAvailableMoney();
 					accountTemp.setAvailableMoney(saldo+transactionTemp.getAmount());
 					accountTemp=accountDao.save(accountTemp);
@@ -170,6 +169,8 @@ public class GreetingBatchBean {
 					commissionTemp.setSecond(Integer.parseInt(hourdateFormat6.format(date)));
 					commissionTemp.setAWireTransfer(false);
 					commissionTemp.setAYingulTransaction(true);
+					commissionTemp.setInvoiceStatus("pending");
+					commissionTemp.setTypeCode("CTV");
 					double costCommission=0;
 					Yng_TransactionDetail transactionDetail=new Yng_TransactionDetail();
 					System.out.println(s.getBuy().getYng_item().getUser().getUsername());
@@ -249,6 +250,8 @@ public class GreetingBatchBean {
 							payShipping.setAWireTransfer(false);
 							payShipping.setAYingulTransaction(true);
 							payShipping.setAmount(s.getBuy().getShippingCost());
+							payShipping.setInvoiceStatus("unrequited");
+							payShipping.setTypeCode("CEV");
 							saldo=accountTemp.getAvailableMoney();
 							accountTemp.setAvailableMoney(saldo-payShipping.getAmount());
 							accountTemp=accountDao.save(accountTemp);
@@ -370,6 +373,7 @@ public class GreetingBatchBean {
 					transactionTemp.setOrg("Entel S.A. - EntelNet");
 					transactionTemp.setRegionName("Buenos Aires");
 					transactionTemp.setType("Acreditacion");
+					transactionTemp.setTypeCode("AVP");
 					transactionTemp.setYear(Integer.parseInt(hourdateFormat2.format(date)));
 					transactionTemp.setZip("1744");
 					transactionTemp.setHour(Integer.parseInt(hourdateFormat4.format(date)));
@@ -377,6 +381,7 @@ public class GreetingBatchBean {
 					transactionTemp.setSecond(Integer.parseInt(hourdateFormat6.format(date)));
 					transactionTemp.setAWireTransfer(false);
 					transactionTemp.setAYingulTransaction(true);
+					transactionTemp.setInvoiceStatus("unrequited");
 					double saldo=accountTemp.getWithheldMoney();
 					accountTemp.setWithheldMoney(saldo+transactionTemp.getAmount());
 					accountTemp=accountDao.save(accountTemp);
@@ -405,6 +410,8 @@ public class GreetingBatchBean {
 					commissionTemp.setSecond(Integer.parseInt(hourdateFormat6.format(date)));
 					commissionTemp.setAWireTransfer(false);
 					commissionTemp.setAYingulTransaction(true);
+					commissionTemp.setInvoiceStatus("unrequited");
+					commissionTemp.setTypeCode("CTV");
 					double costCommission=0;
 					Yng_TransactionDetail transactionDetail=new Yng_TransactionDetail();
 					System.out.println(s.getBuy().getYng_item().getUser().getUsername());
@@ -482,6 +489,8 @@ public class GreetingBatchBean {
 							payShipping.setAWireTransfer(false);
 							payShipping.setAYingulTransaction(true);
 							payShipping.setAmount(s.getBuy().getShippingCost());
+							payShipping.setInvoiceStatus("unrequited");
+							payShipping.setTypeCode("CEV");
 							saldo=accountTemp.getWithheldMoney();
 							accountTemp.setWithheldMoney(saldo-payShipping.getAmount());
 							accountTemp=accountDao.save(accountTemp);
@@ -745,9 +754,28 @@ public class GreetingBatchBean {
 	}
 	//@Scheduled(cron = "0 46/16 17 * * ?")//cada 8 minutos desde las 10:51
 	
-	@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
+	@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos este metodo puede ser a cualquier hora
 	public void	invoiceCommissions() throws Exception{
-		System.out.println("-----------------"+xubioFunds.postCreateInvoiceTypeB());
+		List<Yng_Transaction> listTransaction = transactionDao.findByInvoiceStatus("pending");
+		for (Yng_Transaction s : listTransaction) {
+			String responseXubio = xubioFunds.postCreateInvoice(s);
+			if(responseXubio.equals("save")) {
+				s.setInvoiceStatus("invoiced");
+				s = transactionDao.save(s); 
+			}
+		}
+	}
+	
+	@Scheduled(cron = "0,59 * * * * *")//para cada 30 segundos
+	public void	sendInvoiceCommissions() throws Exception{
+		List<Yng_Transaction> listTransaction = transactionDao.findByInvoiceStatus("invoiced");
+		for (Yng_Transaction s : listTransaction) {
+			String responseXubio = xubioFunds.sendInvoiceByEmail(s);
+			if(responseXubio.equals("save")) {
+				s.setInvoiceStatus("sentBill");
+				s = transactionDao.save(s); 
+			}
+		}
 	}
 	
 	

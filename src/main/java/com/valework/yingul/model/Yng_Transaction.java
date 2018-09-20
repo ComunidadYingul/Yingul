@@ -24,6 +24,7 @@ public class Yng_Transaction {
 	private int minute;
 	private int second;
 	private String type;
+	private String typeCode;
 	private String description;
 	//datos de la ip de la transaccion
 	private String ip;
@@ -38,6 +39,7 @@ public class Yng_Transaction {
 	//mejora 
 	private boolean isAYingulTransaction;
 	private boolean isAWireTransfer;
+	private String invoiceStatus;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id")
@@ -229,6 +231,22 @@ public class Yng_Transaction {
 
 	public void setAWireTransfer(boolean isAWireTransfer) {
 		this.isAWireTransfer = isAWireTransfer;
+	}
+
+	public String getInvoiceStatus() {
+		return invoiceStatus;
+	}
+
+	public void setInvoiceStatus(String invoiceStatus) {
+		this.invoiceStatus = invoiceStatus;
+	}
+
+	public String getTypeCode() {
+		return typeCode;
+	}
+
+	public void setTypeCode(String typeCode) {
+		this.typeCode = typeCode;
 	}
 
 }
