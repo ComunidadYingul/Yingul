@@ -211,13 +211,14 @@ public class XubioFunds {
 		        case "DNI":  
 		        	xubioClient.setCodeIdentificacionTributaria("DNI");
 					xubioClient.setIdentificacionTributaria("DNI");
+					xubioClient.setCUIT(business.getDocumentNumber().substring(0, 2)+"."+business.getDocumentNumber().substring(2, 5)+"."+business.getDocumentNumber().substring(5, 8));
 		        	break;
 		        case "CUIT":  
 		        	xubioClient.setCodeIdentificacionTributaria("CUIT");
 					xubioClient.setIdentificacionTributaria("CUIT");
+					xubioClient.setCUIT(business.getDocumentNumber().substring(0, 2)+"."+business.getDocumentNumber().substring(2, 5)+"."+business.getDocumentNumber().substring(5, 8));
 		        	break;
 	        }
-			xubioClient.setCUIT(business.getDocumentNumber());
 		}else {
 			xubioClient.setNombre(person.getName()+" "+person.getLastname());
 			xubioClient.setRazonSocial(person.getName()+" "+person.getLastname());
@@ -227,13 +228,14 @@ public class XubioFunds {
 		        case "DNI":  
 		        	xubioClient.setCodeIdentificacionTributaria("DNI");
 					xubioClient.setIdentificacionTributaria("DNI");
+					xubioClient.setCUIT(user.getDocumentNumber().substring(0, 2)+"."+user.getDocumentNumber().substring(2, 5)+"."+user.getDocumentNumber().substring(5, 8));
 		        	break;
 		        case "CUIT":  
 		        	xubioClient.setCodeIdentificacionTributaria("CUIT");
 					xubioClient.setIdentificacionTributaria("CUIT");
+					xubioClient.setCUIT(user.getDocumentNumber().substring(0, 2)+"-"+user.getDocumentNumber().substring(2, 10)+"-"+user.getDocumentNumber().substring(10, 11));
 		        	break;
 	        }
-			xubioClient.setCUIT(user.getDocumentNumber());
 		}	
 			
 		Yng_Standard api = standardDao.findByKey("XUBIO_api_client");
@@ -331,12 +333,14 @@ public class XubioFunds {
 		try {
 			xubioClient = xubioClientDao.findByUser(transaction.getAccount().getUser());	
 		} catch (Exception e) {
+		
+		}
+		if(xubioClient==null || xubioClient.equals(null)) {
 			xubioClient = postCreateClient(transaction.getAccount().getUser());
 		}
 		if(xubioClient==null || xubioClient.equals(null)) {
-			return "failXubio";
+			return "failClient";
 		}
-		
 		invoice.setXubioClient(xubioClient);
 		switch(transaction.getTypeCode()) {
 			case "CTV":
@@ -399,9 +403,9 @@ public class XubioFunds {
 	    		"  \"puntoVenta\": {\r\n" + 
 	    		//"    \"ID\": 113819,\r\n" + preguntar a ivan si el punto de venta va directamente aqui
 	    		//"    \"codigo\": \"0001\",\r\n" + 
-	    		"    \"nombre\": \"default\"\r\n" + 
+	    		"    \"nombre\": \"0002\"\r\n" + 
 	    		"  },\r\n" + 
-	    		//"  \"numeroDocumento\": \"B-0002-00000001\",\r\n" + 
+	    		//"  \"numeroDocumento\": \"B-0001-00000001\",\r\n" + 
 	    		"  \"condicionDePago\": 1,\r\n" + 
 	    		"  \"deposito\": {\r\n" + 
 	    		"    \"ID\": -2,\r\n" + 
@@ -495,7 +499,7 @@ public class XubioFunds {
 	    httpPost.setHeader("Content-type", "application/json; charset=utf-8");
 	    String authorization = getToken();
 	    if(authorization.equals("failXubio")) {
-	    	return "failXubio";
+	    	return "failAuthorization";
 	    }
 	    httpPost.setHeader("Authorization", "Bearer "+authorization);
 	    
@@ -508,9 +512,9 @@ public class XubioFunds {
     	if(responseTemp.getStatus().equals("HTTP/1.1 200 OK")) {
     		JSONObject  jObject = new JSONObject(responseTemp.getBody());
     		if(jObject.has("transaccionid")) {
-    			productoItems.setTransaccionId(jObject.optJSONArray("transaccionProductoItems").getJSONObject(0).getLong("transaccionId"));
-    			productoItems.setIva((double)Math.round((jObject.optJSONArray("transaccionProductoItems").getJSONObject(0).getDouble("iva")) * 100d) / 100d);
-    			productoItems.setImporte((double)Math.round((jObject.optJSONArray("transaccionProductoItems").getJSONObject(0).getDouble("importe")) * 100d) / 100d);
+    			productoItems.setTransaccionId(jObject.optJSONArray("transaccionProductoItems").optJSONObject(0).optLong("transaccionId"));
+    			productoItems.setIva((double)Math.round((jObject.optJSONArray("transaccionProductoItems").optJSONObject(0).optDouble("iva")) * 100d) / 100d);
+    			productoItems.setImporte((double)Math.round((jObject.optJSONArray("transaccionProductoItems").optJSONObject(0).optDouble("importe")) * 100d) / 100d);
     			productoItems = xubioTransaccionProductoItemsDao.save(productoItems);
     			invoice.setTransaccionid(jObject.optLong("transaccionid"));
     			invoice.setNumeroDocumento(jObject.optString("numeroDocumento"));
@@ -529,7 +533,7 @@ public class XubioFunds {
         response.close();
 	    client.close();
     	
-    	return null;
+    	return "failGeneral";
 
 	}
 
@@ -546,7 +550,7 @@ public class XubioFunds {
 		transactionByMail.setAsunto("Factura correspondiente a los servicios de Yingul Company SRL");
 		transactionByMail.setCuerpo("Estimado cliente, La factura adjunta es de Carácter informativo, los valores ya fueron debitados de su cuenta virtual en Yingul Pay Importante: No debe realizar ningun pago a Yingul Pay por esta factura. Cordial Saludo.");
 			
-		Yng_Standard api = standardDao.findByKey("XUBIO_api_proof_of_purchase");
+		Yng_Standard api = standardDao.findByKey("XUBIO_api_send_by_mail");
 		//crear el referenceCode y el signature
 		CloseableHttpClient client = HttpClients.createDefault();
 	    HttpPost httpPost = new HttpPost(api.getValue());

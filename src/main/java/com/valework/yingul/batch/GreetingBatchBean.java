@@ -754,11 +754,13 @@ public class GreetingBatchBean {
 	}
 	//@Scheduled(cron = "0 46/16 17 * * ?")//cada 8 minutos desde las 10:51
 	
-	@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos este metodo puede ser a cualquier hora
+	@Scheduled(cron = "0 0 0-23 * * ?")//para cada 30 segundos este metodo puede ser a cualquier hora
 	public void	invoiceCommissions() throws Exception{
+		smtpMailSender.send("quenallataeddy@gmail.com", "CRONS INVO", "CRONS");
 		List<Yng_Transaction> listTransaction = transactionDao.findByInvoiceStatus("pending");
 		for (Yng_Transaction s : listTransaction) {
 			String responseXubio = xubioFunds.postCreateInvoice(s);
+			System.out.println(responseXubio);
 			if(responseXubio.equals("save")) {
 				s.setInvoiceStatus("invoiced");
 				s = transactionDao.save(s); 
@@ -766,8 +768,9 @@ public class GreetingBatchBean {
 		}
 	}
 	
-	@Scheduled(cron = "0,59 * * * * *")//para cada 30 segundos
+	@Scheduled(cron = "0 5 0-23 * * ?")//para cada 30 segundos
 	public void	sendInvoiceCommissions() throws Exception{
+		smtpMailSender.send("quenallataeddy@gmail.com", "CRONS SEND INVO", "CRONS");
 		List<Yng_Transaction> listTransaction = transactionDao.findByInvoiceStatus("invoiced");
 		for (Yng_Transaction s : listTransaction) {
 			String responseXubio = xubioFunds.sendInvoiceByEmail(s);
