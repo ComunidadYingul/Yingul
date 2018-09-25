@@ -191,16 +191,16 @@ public class XubioFunds {
 					xubioClient.setCodeCategoriaFiscal("CF");
 		        	break;
 				case "Exento":  
-					xubioClient.setCodeCategoriaFiscal("E");
+					xubioClient.setCodeCategoriaFiscal("EX");
 		        	break;
 				case "Exterior":  
-					xubioClient.setCodeCategoriaFiscal("E");
+					//xubioClient.setCodeCategoriaFiscal("E");
 		        	break;
 				case "IVA No Alcanzado":  
-					xubioClient.setCodeCategoriaFiscal("INA");
+					xubioClient.setCodeCategoriaFiscal("NA");
 		        	break;
 				case "Monotributista":  
-					xubioClient.setCodeCategoriaFiscal("M");
+					xubioClient.setCodeCategoriaFiscal("MT");
 		        	break;
 				case "Responsable Inscripto":  
 					xubioClient.setCodeCategoriaFiscal("RI");
