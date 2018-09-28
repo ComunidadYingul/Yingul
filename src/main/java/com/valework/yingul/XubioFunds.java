@@ -216,7 +216,7 @@ public class XubioFunds {
 		        case "CUIT":  
 		        	xubioClient.setCodeIdentificacionTributaria("CUIT");
 					xubioClient.setIdentificacionTributaria("CUIT");
-					xubioClient.setCUIT(business.getDocumentNumber().substring(0, 2)+"."+business.getDocumentNumber().substring(2, 5)+"."+business.getDocumentNumber().substring(5, 8));
+					xubioClient.setCUIT(business.getDocumentNumber().substring(0, 2)+"-"+business.getDocumentNumber().substring(2, 10)+"-"+business.getDocumentNumber().substring(10, 11));
 		        	break;
 	        }
 		}else {
