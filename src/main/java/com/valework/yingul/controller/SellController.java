@@ -1109,9 +1109,9 @@ public class SellController {
     public String facebookPostPhoto(Yng_Item item) {
     	PropertySocial p=new PropertySocial();
     	//****Local
-    	p=propertyLocal();
+    	//p=propertyLocal();
     	//****production
-    	//p=propertyProduction();
+    	p=propertyProduction();
     	FacebookPhoto photo= new FacebookPhoto();    	
     	String urlp=p.getUrlImage()+item.getPrincipalImage();      	
 		photo.setUrl(""+urlp);
