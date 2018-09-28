@@ -242,7 +242,9 @@ public class Logistic {
 		   		"</ecom:destinatario>\r\n" + 
 		   		"<ecom:destino>\r\n" + 
 			   		"<!--Optional:-->\r\n" + 
-			   		"<and:alturaDeDomicilio></and:alturaDeDomicilio>\r\n" + 
+			   		"<and:alturaDeDomicilio>"
+			   		+ buy.getShipping().getYng_Shipment().getYng_User().getYng_Ubication().getNumber()
+			   		+ "</and:alturaDeDomicilio>\r\n" + 
 			   		"<and:calle>"
 			   			+ buy.getShipping().getYng_Shipment().getYng_User().getYng_Ubication().getStreet()
 			   		+ "</and:calle>\r\n" + 
@@ -276,7 +278,9 @@ public class Logistic {
 		   		+ "</ecom:idCliente>\r\n" + 
 		   		"<ecom:origen>\r\n" + 
 			   		"<!--Optional:-->\r\n" + 
-			   		"<and:alturaDeDomicilio></and:alturaDeDomicilio>\r\n" + 
+			   		"<and:alturaDeDomicilio>"
+			   		+ ""+shi.getYng_Quote().getYng_Item().getYng_Ubication().getNumber()
+			   		+ "</and:alturaDeDomicilio>\r\n" + 
 			   		"<and:calle>"
 			   		+ ""+shi.getYng_Quote().getYng_Item().getYng_Ubication().getStreet()//"calle alamos"
 			   		+ "</and:calle>\r\n" + 
