@@ -1041,11 +1041,24 @@ public class ItemController {
 			/*************para reemplazar la imagen principal**************/
 			String image=item.getPrincipalImage();
 			String extension="jpeg";
-			String nombre="principal"+itemTemp.getItemId();
-			deleteImage(nombre+"."+extension);
-			
+			String nombre=itemTemp.getPrincipalImage();
+			if(!nombre.equals("sin.jpg")) {
+				deleteImage(nombre);	
+			}
 			byte[] bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
 			bI=convertImage(bI);
+			System.out.println(nombre);
+			String[] parts1 = nombre.split("\\.");
+			System.out.println(Arrays.toString(parts1));
+			nombre=parts1[0];
+			int a=0;
+			if(nombre.contains("-")) {
+				parts1 = nombre.split("-");
+				a = Integer.parseInt(parts1[1]);
+				a++;
+				nombre=parts1[0];
+			}
+			nombre=nombre+"-"+a;
 			s3Services.uploadFile(nombre,extension, bI);
 			nombre=nombre+"."+extension;   
 			itemTemp.setPrincipalImage(nombre);
@@ -1064,7 +1077,7 @@ public class ItemController {
 	        	image=st.getImage();
 	    		st.setImage("");
 	    		extension="jpeg";
-	    		nombre="img"+k+itemTemp.getItemId();
+	    		nombre="img"+k+itemTemp.getItemId()+"-"+a;
 	    		bI = org.apache.commons.codec.binary.Base64.decodeBase64((image.substring(image.indexOf(",")+1)).getBytes());
 	    		bI=convertImage(bI);
 	    		s3Services.uploadFile(nombre,extension, bI);
