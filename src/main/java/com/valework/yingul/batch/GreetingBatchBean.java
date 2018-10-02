@@ -223,8 +223,8 @@ public class GreetingBatchBean {
 							commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
 							break;
 						}
-						transactionDetail.setCostCommission((double)Math.round((((s.getBuy().getCost()*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
-						//
+						//transactionDetail.setCostCommission((double)Math.round((((s.getBuy().getCost()*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
+						transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getCost()-((double)Math.round((((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice()) * 100d) / 100d)-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
 					}else {
 						if(s.getBuy().getCost()==s.getBuy().getItemCost()) {
 							//cobro de comisiones
@@ -291,8 +291,8 @@ public class GreetingBatchBean {
 								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
 								break;
 							}
-							//
-							transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getCost()-s.getBuy().getShippingCost())*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
+							//transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getCost()-s.getBuy().getShippingCost())*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
+							transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getCost()-s.getBuy().getShippingCost()-((double)Math.round((((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice()) * 100d) / 100d)-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
 						}else {
 							//cobro de comisiones
 							switch(s.getBuy().getYng_item().getType()) {
@@ -328,8 +328,9 @@ public class GreetingBatchBean {
 								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
 								break;
 							}
-							//
-							transactionDetail.setCostCommission((double)Math.round((((s.getBuy().getItemCost()*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
+							//transactionDetail.setCostCommission((double)Math.round((((s.getBuy().getItemCost()*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
+							//a mi parecer esta mal
+							transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getItemCost()-((double)Math.round((((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice()) * 100d) / 100d)-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
 						}
 					}
 					//corregir para envios gratis
@@ -462,8 +463,8 @@ public class GreetingBatchBean {
 							commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
 							break;
 						}
-						transactionDetail.setCostCommission((double)Math.round((((s.getBuy().getCost()*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
-						//
+						//transactionDetail.setCostCommission((double)Math.round((((s.getBuy().getCost()*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
+						transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getCost()-((double)Math.round((((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice()) * 100d) / 100d)-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
 					}else {
 						if(s.getBuy().getCost()==s.getBuy().getItemCost()) {
 							//cobro de comisiones
@@ -530,8 +531,8 @@ public class GreetingBatchBean {
 								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
 								break;
 							}
-							//
-							transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getCost()-s.getBuy().getShippingCost())*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
+							//transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getCost()-s.getBuy().getShippingCost())*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
+							transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getCost()-s.getBuy().getShippingCost()-((double)Math.round((((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice()) * 100d) / 100d)-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
 						}else {
 							//cobro de comisiones
 							switch(s.getBuy().getYng_item().getType()) {
@@ -567,8 +568,8 @@ public class GreetingBatchBean {
 								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
 								break;
 							}
-							//
-							transactionDetail.setCostCommission((double)Math.round((((s.getBuy().getItemCost()*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
+							//transactionDetail.setCostCommission((double)Math.round((((s.getBuy().getItemCost()*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
+							transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getItemCost()-((double)Math.round((((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice()) * 100d) / 100d)-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
 						}
 					}
 					//corregir para envios gratis
