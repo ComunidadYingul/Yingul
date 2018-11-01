@@ -11,12 +11,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 @Entity
-public class Yng_XubioProofOfPurchase {
+public class Yng_XubioSalesInvoice {
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "xubioProofOfPurchaseId", nullable = false, updatable = false)
-    private Long xubioProofOfPurchaseId;
-	
+    @Column(name = "xubioSalesInvoiceId", nullable = false, updatable = false)
+    private Long xubioSalesInvoiceId;
 	private String externalId;
 	private String circuitoContable;
 	private String codeCircuitoContable;
@@ -30,6 +29,8 @@ public class Yng_XubioProofOfPurchase {
 	private int condicionDePago;
 	private String deposito;
 	private String codeDeposito;
+	private String moneda;
+	private String codeMoneda;
 	private int cotizacion;
 	private double importetotal;
 	private double importeImpuestos;
@@ -43,28 +44,27 @@ public class Yng_XubioProofOfPurchase {
 	private String CAE;
 	private String CAEFechaVto;
 	
-	@OneToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "xubio_transaction_id")
-	private Yng_XubioTransaccionProductoItems xubioTransaccionProductoItems;
+	private String yngDescription;
+	private String yngStatus;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "xubio_client_id")
 	private Yng_XubioClient xubioClient;
 	
 	@OneToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "yng_transaction_id")
-	private Yng_Transaction transaction;
+	@JoinColumn(name = "yng_confirm_id")
+	private Yng_Confirm confirm;
 	
-	public Yng_XubioProofOfPurchase() {
+	public Yng_XubioSalesInvoice() {
 		super();
 	}
 
-	public Long getXubioProofOfPurchaseId() {
-		return xubioProofOfPurchaseId;
+	public Long getXubioSalesInvoiceId() {
+		return xubioSalesInvoiceId;
 	}
 
-	public void setXubioProofOfPurchaseId(Long xubioProofOfPurchaseId) {
-		this.xubioProofOfPurchaseId = xubioProofOfPurchaseId;
+	public void setXubioSalesInvoiceId(Long xubioSalesInvoiceId) {
+		this.xubioSalesInvoiceId = xubioSalesInvoiceId;
 	}
 
 	public String getCircuitoContable() {
@@ -163,6 +163,22 @@ public class Yng_XubioProofOfPurchase {
 		this.codeDeposito = codeDeposito;
 	}
 
+	public String getMoneda() {
+		return moneda;
+	}
+
+	public void setMoneda(String moneda) {
+		this.moneda = moneda;
+	}
+
+	public String getCodeMoneda() {
+		return codeMoneda;
+	}
+
+	public void setCodeMoneda(String codeMoneda) {
+		this.codeMoneda = codeMoneda;
+	}
+
 	public int getCotizacion() {
 		return cotizacion;
 	}
@@ -259,12 +275,20 @@ public class Yng_XubioProofOfPurchase {
 		CAEFechaVto = cAEFechaVto;
 	}
 
-	public Yng_XubioTransaccionProductoItems getXubioTransaccionProductoItems() {
-		return xubioTransaccionProductoItems;
+	public String getYngDescription() {
+		return yngDescription;
 	}
 
-	public void setXubioTransaccionProductoItems(Yng_XubioTransaccionProductoItems xubioTransaccionProductoItems) {
-		this.xubioTransaccionProductoItems = xubioTransaccionProductoItems;
+	public void setYngDescription(String yngDescription) {
+		this.yngDescription = yngDescription;
+	}
+
+	public String getYngStatus() {
+		return yngStatus;
+	}
+
+	public void setYngStatus(String yngStatus) {
+		this.yngStatus = yngStatus;
 	}
 
 	public Yng_XubioClient getXubioClient() {
@@ -275,20 +299,20 @@ public class Yng_XubioProofOfPurchase {
 		this.xubioClient = xubioClient;
 	}
 
+	public Yng_Confirm getConfirm() {
+		return confirm;
+	}
+
+	public void setConfirm(Yng_Confirm confirm) {
+		this.confirm = confirm;
+	}
+
 	public String getExternalId() {
 		return externalId;
 	}
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
-	}
-
-	public Yng_Transaction getTransaction() {
-		return transaction;
-	}
-
-	public void setTransaction(Yng_Transaction transaction) {
-		this.transaction = transaction;
 	}
 	
 }

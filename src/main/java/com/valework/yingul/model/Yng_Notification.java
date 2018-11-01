@@ -13,39 +13,57 @@ public class Yng_Notification {
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long notificationId;
+	private String title;
+	private String description;
 	private String url;
-	private String answer;
 	private String date;
 	private String status;
+	private String desktopStatus;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private Yng_User user;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "seller_id")
-    private Yng_User seller;
+    @JoinColumn(name = "item_id")
+    private Yng_Item item;
 	
 	public Yng_Notification() {
-		
-	}
-	
-	public Yng_User getUser() {
-		return user;
+		super();
 	}
 
-	public void setUser(Yng_User user) {
-		this.user = user;
+	public long getNotificationId() {
+		return notificationId;
 	}
 
-	public String getAnswer() {
-		return answer;
+	public void setNotificationId(long notificationId) {
+		this.notificationId = notificationId;
 	}
 
-	public void setAnswer(String answer) {
-		this.answer = answer;
+	public String getTitle() {
+		return title;
 	}
-	
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
 	public String getDate() {
 		return date;
 	}
@@ -54,20 +72,36 @@ public class Yng_Notification {
 		this.date = date;
 	}
 
-	public Yng_User getSeller() {
-		return seller;
-	}
-
-	public void setSeller(Yng_User seller) {
-		this.seller = seller;
-	}
-
 	public String getStatus() {
 		return status;
 	}
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public Yng_User getUser() {
+		return user;
+	}
+
+	public void setUser(Yng_User user) {
+		this.user = user;
+	}
+
+	public Yng_Item getItem() {
+		return item;
+	}
+
+	public void setItem(Yng_Item item) {
+		this.item = item;
+	}
+
+	public String getDesktopStatus() {
+		return desktopStatus;
+	}
+
+	public void setDesktopStatus(String desktopStatus) {
+		this.desktopStatus = desktopStatus;
 	}
 		
 }

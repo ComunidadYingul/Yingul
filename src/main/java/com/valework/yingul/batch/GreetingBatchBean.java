@@ -27,6 +27,7 @@ import com.valework.yingul.dao.PersonDao;
 import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.TransactionDao;
 import com.valework.yingul.dao.TransactionDetailDao;
+import com.valework.yingul.dao.XubioSalesInvoiceDao;
 import com.valework.yingul.logistic.GetStateSend;
 import com.valework.yingul.logistic.GetTraceability;
 import com.valework.yingul.logistic.Yng_AndreaniTrazabilidad;
@@ -41,6 +42,7 @@ import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_StateShipping;
 import com.valework.yingul.model.Yng_Transaction;
 import com.valework.yingul.model.Yng_TransactionDetail;
+import com.valework.yingul.model.Yng_XubioSalesInvoice;
 import com.valework.yingul.service.MotorizedService;
 import com.valework.yingul.service.PersonService;
 import com.valework.yingul.service.PropertyService;
@@ -79,13 +81,13 @@ public class GreetingBatchBean {
 	PersonDao personDao;
 	@Autowired
 	XubioFunds xubioFunds;
+	@Autowired 
+	XubioSalesInvoiceDao xubioSalesInvoiceDao;
 	
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 6 * * *")//cada dia a las 6 de la mañana
-	//@Scheduled(cron = "0 0/16 12 * * ?")//cada 8 minutos desde las 10:45
-	@Scheduled(cron = "0 15/16 21 * * ?")//cada 8 minutos desde las 10:45
+	//@Scheduled(cron = "0 25 0-23 * * ?")//para todas las horas y 20
 	public void cronJob() throws ClientProtocolException, IOException, Exception {
-		smtpMailSender.send("quenallataeddy@gmail.com", "INICIO DE LOS CRONS", "CRONS");
 		System.out.println("primer cron");
 		Date date = new Date();
     	DateFormat hourdateFormat = new SimpleDateFormat("dd");
@@ -185,46 +187,42 @@ public class GreetingBatchBean {
 					
 					Yng_Commission commission= new Yng_Commission();
 					Yng_Commission commissionPAYU= new Yng_Commission();
+					commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+					switch(s.getBuy().getYng_item().getType()) {
+					case "Product":
+						if(person.isBusiness()) {
+							commission =commissionDao.findByToWhoAndWhy("Business", "Product");
+						}else {
+							commission =commissionDao.findByToWhoAndWhy("Person", "Product");
+						}
+						break;
+					case "Property":
+						if(s.getBuy().getYng_item().getCondition().equals("Rental")) {
+							commission =commissionDao.findByConditionAndWhy("Rental", "Property");
+						}else {
+							commission =commissionDao.findByToWhoAndWhy("All", "Property");
+						}
+						break;
+					case "Motorized":
+						if(s.getBuy().getYng_item().getCondition().equals("New")) {
+							commission =commissionDao.findByConditionAndWhy("New", "Motorized");
+						}else {
+							commission =commissionDao.findByConditionAndWhy("All", "All");
+						}
+						break;
+					default:
+						commission =commissionDao.findByConditionAndWhy("All", "All");
+						break;
+					}
+					
+					double costPayu = ((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice();
+					double costPayuIva = (double)Math.round((costPayu+(costPayu*21/100)) * 100d) / 100d;
 					
 					//condicional para el cobro de comisiones				
 					if(s.getBuy().getShippingCost()==0) {
 						//cobro de comisiones
-						
-						switch(s.getBuy().getYng_item().getType()) {
-						case "Product":
-							if(person.isBusiness()) {
-								commission =commissionDao.findByToWhoAndWhy("Business", "Product");
-								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-							}else {
-								commission =commissionDao.findByToWhoAndWhy("Person", "Product");
-								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-							}
-							break;
-						case "Property":
-							if(s.getBuy().getYng_item().getCondition().equals("Rental")) {
-								commission =commissionDao.findByConditionAndWhy("Rental", "Property");
-								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-							}else {
-								commission =commissionDao.findByToWhoAndWhy("All", "Property");
-								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-							}
-							break;
-						case "Motorized":
-							if(s.getBuy().getYng_item().getCondition().equals("New")) {
-								commission =commissionDao.findByConditionAndWhy("New", "Motorized");
-								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-							}else {
-								commission =commissionDao.findByConditionAndWhy("All", "All");
-								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-							}
-							break;
-						default:
-							commission =commissionDao.findByConditionAndWhy("All", "All");
-							commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-							break;
-						}
 						//transactionDetail.setCostCommission((double)Math.round((((s.getBuy().getCost()*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
-						transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getCost()-((double)Math.round((((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice()) * 100d) / 100d)-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
+						transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getCost()-costPayuIva-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
 					}else {
 						if(s.getBuy().getCost()==s.getBuy().getItemCost()) {
 							//cobro de comisiones
@@ -258,86 +256,18 @@ public class GreetingBatchBean {
 							payShipping.setAccount(accountTemp);
 							transactionDao.save(payShipping);
 							
-							switch(s.getBuy().getYng_item().getType()) {
-							case "Product":
-								if(person.isBusiness()) {
-									commission =commissionDao.findByToWhoAndWhy("Business", "Product");
-									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								}else {
-									commission =commissionDao.findByToWhoAndWhy("Person", "Product");
-									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								}
-								break;
-							case "Property":
-									if(s.getBuy().getYng_item().getCondition().equals("Rental")) {
-										commission =commissionDao.findByConditionAndWhy("Rental", "Property");
-										commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-									}else {
-										commission =commissionDao.findByToWhoAndWhy("All", "Property");
-										commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-									}
-								break;
-							case "Motorized":
-								if(s.getBuy().getYng_item().getCondition().equals("New")) {
-									commission =commissionDao.findByConditionAndWhy("New", "Motorized");
-									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								}else {
-									commission =commissionDao.findByConditionAndWhy("All", "All");
-									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								}
-								break;
-							default:
-								commission =commissionDao.findByConditionAndWhy("All", "All");
-								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								break;
-							}
 							//transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getCost()-s.getBuy().getShippingCost())*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
-							transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getCost()-s.getBuy().getShippingCost()-((double)Math.round((((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice()) * 100d) / 100d)-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
+							transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getCost()-s.getBuy().getShippingCost()-costPayuIva-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
 						}else {
 							//cobro de comisiones
-							switch(s.getBuy().getYng_item().getType()) {
-							case "Product":						
-								if(person.isBusiness()) {
-									commission =commissionDao.findByToWhoAndWhy("Business", "Product");
-									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								}else {
-									commission =commissionDao.findByToWhoAndWhy("Person", "Product");
-									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								}
-								break;
-							case "Property":
-									if(s.getBuy().getYng_item().getCondition().equals("Rental")) {
-										commission =commissionDao.findByConditionAndWhy("Rental", "Property");
-										commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-									}else {
-										commission =commissionDao.findByToWhoAndWhy("All", "Property");
-										commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-									}
-								break;
-							case "Motorized":
-								if(s.getBuy().getYng_item().getCondition().equals("New")) {
-									commission =commissionDao.findByConditionAndWhy("New", "Motorized");
-									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								}else {
-									commission =commissionDao.findByConditionAndWhy("All", "All");
-									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								}
-								break;
-							default:
-								commission =commissionDao.findByConditionAndWhy("All", "All");
-								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								break;
-							}
+							
 							//transactionDetail.setCostCommission((double)Math.round((((s.getBuy().getItemCost()*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
 							//a mi parecer esta mal
-							transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getItemCost()-((double)Math.round((((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice()) * 100d) / 100d)-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
+							transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getItemCost()-costPayuIva-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
 						}
 					}
-					//corregir para envios gratis
-					
-					
-					transactionDetail.setCostPAYU((double)Math.round((((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice()) * 100d) / 100d);
-					costCommission=((double)Math.round((transactionDetail.getCostCommission()+transactionDetail.getCostPAYU()) * 100d) / 100d);
+					transactionDetail.setCostPAYU(costPayuIva);
+					costCommission=((double)Math.round((transactionDetail.getCostCommission()+transactionDetail.getCostPAYU()+2) * 100d) / 100d);
 					transactionDetail.setCostTotal(costCommission);
 					
 					commissionTemp.setAmount(costCommission);
@@ -426,45 +356,43 @@ public class GreetingBatchBean {
 					}
 					Yng_Commission commission= new Yng_Commission();
 					Yng_Commission commissionPAYU= new Yng_Commission();
+					commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+					switch(s.getBuy().getYng_item().getType()) {
+					case "Product":
+						if(person.isBusiness()) {
+							commission =commissionDao.findByToWhoAndWhy("Business", "Product");
+						}else {
+							commission =commissionDao.findByToWhoAndWhy("Person", "Product");
+						}
+						break;
+					case "Property":
+						if(s.getBuy().getYng_item().getCondition().equals("Rental")) {
+							commission =commissionDao.findByConditionAndWhy("Rental", "Property");
+						}else {
+							commission =commissionDao.findByToWhoAndWhy("All", "Property");
+						}
+						break;
+					case "Motorized":
+						if(s.getBuy().getYng_item().getCondition().equals("New")) {
+							commission =commissionDao.findByConditionAndWhy("New", "Motorized");
+						}else {
+							commission =commissionDao.findByConditionAndWhy("All", "All");
+						}
+						break;
+					default:
+						commission =commissionDao.findByConditionAndWhy("All", "All");
+						break;
+					}
+					
+					double costPayu = ((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice();
+					double costPayuIva = (double)Math.round((costPayu+(costPayu*21/100)) * 100d) / 100d;
+					
 					//condicional para el cobro de comisiones				
 					if(s.getBuy().getShippingCost()==0) {
 						//cobro de comisiones
 						
-						switch(s.getBuy().getYng_item().getType()) {
-						case "Product":
-							if(person.isBusiness()) {
-								commission =commissionDao.findByToWhoAndWhy("Business", "Product");
-								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-							}else {
-								commission =commissionDao.findByToWhoAndWhy("Person", "Product");
-								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-							}
-							break;
-						case "Property":
-							if(s.getBuy().getYng_item().getCondition().equals("Rental")) {
-								commission =commissionDao.findByConditionAndWhy("Rental", "Property");
-								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-							}else {
-								commission =commissionDao.findByToWhoAndWhy("All", "Property");
-								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-							}
-							break;
-						case "Motorized":
-							if(s.getBuy().getYng_item().getCondition().equals("New")) {
-								commission =commissionDao.findByConditionAndWhy("New", "Motorized");
-								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-							}else {
-								commission =commissionDao.findByConditionAndWhy("All", "All");
-								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-							}
-							break;
-						default:
-							commission =commissionDao.findByConditionAndWhy("All", "All");
-							commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-							break;
-						}
 						//transactionDetail.setCostCommission((double)Math.round((((s.getBuy().getCost()*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
-						transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getCost()-((double)Math.round((((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice()) * 100d) / 100d)-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
+						transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getCost()-costPayuIva-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
 					}else {
 						if(s.getBuy().getCost()==s.getBuy().getItemCost()) {
 							//cobro de comisiones
@@ -498,83 +426,18 @@ public class GreetingBatchBean {
 							payShipping.setAccount(accountTemp);
 							transactionDao.save(payShipping);
 							
-							switch(s.getBuy().getYng_item().getType()) {
-							case "Product":
-								if(person.isBusiness()) {
-									commission =commissionDao.findByToWhoAndWhy("Business", "Product");
-									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								}else {
-									commission =commissionDao.findByToWhoAndWhy("Person", "Product");
-									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								}
-								break;
-							case "Property":
-									if(s.getBuy().getYng_item().getCondition().equals("Rental")) {
-										commission =commissionDao.findByConditionAndWhy("Rental", "Property");
-										commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-									}else {
-										commission =commissionDao.findByToWhoAndWhy("All", "Property");
-										commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-									}
-								break;
-							case "Motorized":
-								if(s.getBuy().getYng_item().getCondition().equals("New")) {
-									commission =commissionDao.findByConditionAndWhy("New", "Motorized");
-									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								}else {
-									commission =commissionDao.findByConditionAndWhy("All", "All");
-									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								}
-								break;
-							default:
-								commission =commissionDao.findByConditionAndWhy("All", "All");
-								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								break;
-							}
 							//transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getCost()-s.getBuy().getShippingCost())*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
-							transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getCost()-s.getBuy().getShippingCost()-((double)Math.round((((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice()) * 100d) / 100d)-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
+							transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getCost()-s.getBuy().getShippingCost()-costPayuIva-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
 						}else {
 							//cobro de comisiones
-							switch(s.getBuy().getYng_item().getType()) {
-							case "Product":						
-								if(person.isBusiness()) {
-									commission =commissionDao.findByToWhoAndWhy("Business", "Product");
-									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								}else {
-									commission =commissionDao.findByToWhoAndWhy("Person", "Product");
-									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								}
-								break;
-							case "Property":
-									if(s.getBuy().getYng_item().getCondition().equals("Rental")) {
-										commission =commissionDao.findByConditionAndWhy("Rental", "Property");
-										commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-									}else {
-										commission =commissionDao.findByToWhoAndWhy("All", "Property");
-										commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-									}
-								break;
-							case "Motorized":
-								if(s.getBuy().getYng_item().getCondition().equals("New")) {
-									commission =commissionDao.findByConditionAndWhy("New", "Motorized");
-									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								}else {
-									commission =commissionDao.findByConditionAndWhy("All", "All");
-									commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								}
-								break;
-							default:
-								commission =commissionDao.findByConditionAndWhy("All", "All");
-								commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
-								break;
-							}
+							
 							//transactionDetail.setCostCommission((double)Math.round((((s.getBuy().getItemCost()*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
-							transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getItemCost()-((double)Math.round((((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice()) * 100d) / 100d)-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
+							transactionDetail.setCostCommission((double)Math.round(((((s.getBuy().getItemCost()-costPayuIva-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d);
 						}
 					}
 					//corregir para envios gratis
-					transactionDetail.setCostPAYU((double)Math.round((((s.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice()) * 100d) / 100d);
-					costCommission=((double)Math.round((transactionDetail.getCostCommission()+transactionDetail.getCostPAYU()) * 100d) / 100d);
+					transactionDetail.setCostPAYU(costPayuIva);
+					costCommission=((double)Math.round((transactionDetail.getCostCommission()+transactionDetail.getCostPAYU()+2) * 100d) / 100d);
 					transactionDetail.setCostTotal(costCommission);
 					commissionTemp.setAmount(costCommission);
 					saldo=accountTemp.getWithheldMoney();
@@ -589,9 +452,7 @@ public class GreetingBatchBean {
     	}
 	}
 	
-	//@Scheduled(cron = "0,59 * * * * *")//para cada 30 segundos
-	//@Scheduled(cron = "0 0 4 * * *")//cada dia a las 5 de la mañana
-	@Scheduled(cron = "0 19/30 21 * * ?")//cada 5 minutos desde las 10:45
+	//@Scheduled(cron = "0 20 0-23 * * ?")//para todas las horas y 20
 	public void cronJob1() throws ClientProtocolException, IOException, Exception {
 		System.out.println("segundo cron");
 		List<Yng_Payment> confirmCashPayment= paymentDao.findByTypeAndStatusAndBuyStatus("CASH","PENDING","PENDING");
@@ -631,16 +492,14 @@ public class GreetingBatchBean {
 		}
 	}
 	
-	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
-	//@Scheduled(cron = "0 0 5 * * *")//cada dia a las 6 de la mañana
-	@Scheduled(cron = "0 23/16 21 * * ?")//cada 8 minutos desde las 10:45
+	//@Scheduled(cron = "0 15 0-23 * * ?")//para todas las horas y 15
 	public void deliveryConfirmation() throws MessagingException{
 		System.out.println("tercer cron");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("pending");
 		for (Yng_Confirm s : listConfirm) {
 			Yng_Confirm confirmTemp=s;
 			if(confirmTemp.getBuy().getShipping()!=null) {
-		    	if(confirmTemp.getBuy().getShipping().getTypeShipping().equals("branch")) {
+		    	if(confirmTemp.getBuy().getShipping().getTypeShipping().equals("branch")||confirmTemp.getBuy().getShipping().getTypeShipping().equals("branchHome")) {
 		    		String confirmStateDao=standardDao.findByKey("codeConfirmAndreani").getValue();
 		    		Yng_AndreaniTrazabilidad andreaniTrazabilidad=new Yng_AndreaniTrazabilidad();
 		    		GetTraceability getTrazability = new GetTraceability();
@@ -693,9 +552,7 @@ public class GreetingBatchBean {
 		}
 	}
 	
-	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
-	//@Scheduled(cron = "0 0 7 * * *")//cada dia a las 6 de la mañana
-	@Scheduled(cron = "0 27/16 21 * * ?")//cada 8 minutos desde las 10:51
+	//@Scheduled(cron = "0 10 0-23 * * ?")//para todas las horas y 10
 	public void whithdrawalConfirmation() throws MessagingException{
 		System.out.println("cuarto cron");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("delivered");
@@ -753,79 +610,51 @@ public class GreetingBatchBean {
 	    	}
 		}
 	}
-	//@Scheduled(cron = "0 46/16 17 * * ?")//cada 8 minutos desde las 10:51
 	
-	@Scheduled(cron = "0 0 0-23 * * ?")//para cada 30 segundos este metodo puede ser a cualquier hora
-	public void	invoiceCommissions() throws Exception{
+	//@Scheduled(cron = "0 0 0-23 * * ?")//para todas la hora empunto
+	public void	createSalesInvoice() throws Exception{
 		smtpMailSender.send("quenallataeddy@gmail.com", "CRONS INVO", "CRONS");
-		List<Yng_Transaction> listTransaction = transactionDao.findByInvoiceStatus("pending");
-		for (Yng_Transaction s : listTransaction) {
-			String responseXubio = xubioFunds.postCreateInvoice(s);
+		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("closed");
+		for (Yng_Confirm s : listConfirm) {
+			String responseXubio = xubioFunds.createSalesInvoice(s);
 			System.out.println(responseXubio);
 			if(responseXubio.equals("save")) {
-				s.setInvoiceStatus("invoiced");
-				s = transactionDao.save(s); 
+				s.setStatus("invoiced");
+				s = confirmDao.save(s); 
 			}
 		}
 	}
 	
-	@Scheduled(cron = "0 5 0-23 * * ?")//para cada 30 segundos
-	public void	sendInvoiceCommissions() throws Exception{
-		smtpMailSender.send("quenallataeddy@gmail.com", "CRONS SEND INVO", "CRONS");
-		List<Yng_Transaction> listTransaction = transactionDao.findByInvoiceStatus("invoiced");
-		for (Yng_Transaction s : listTransaction) {
-			String responseXubio = xubioFunds.sendInvoiceByEmail(s);
-			if(responseXubio.equals("save")) {
-				s.setInvoiceStatus("sentBill");
-				s = transactionDao.save(s); 
-			}
-		}
-	}
-	
-	
-	public void labelQuery() throws MessagingException{
-		System.out.println("quinto cron");
-		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("pending");
-		for (Yng_Confirm s : listConfirm) {
-			Yng_Confirm confirmTemp=s;
-	    	if(confirmTemp.getBuy().getShipping().getTypeShipping().equals("branch")) {
-
-	    		String confirmStateDao=standardDao.findByKey("codeConfirmAndreani").getValue();
-	    		String cliente=standardDao.findByKey("Cliente").getValue();
-	    		Yng_StateShipping stateShipping=new Yng_StateShipping();
-		    	GetStateSend getState = new GetStateSend();
-		    	String confirmState=confirmTemp.getBuy().getShipping().getYng_Shipment().getShipmentCod();
-		    	String stateApi ="";
-		    	try {
-		    		stateShipping=getState.sendState(""+confirmState,cliente);
-		    		stateApi=stateShipping.getEstado();
-		    		System.out.println("state:"+stateApi+":"+confirmStateDao);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+	//@Scheduled(cron = "0 5 0-23 * * ?")//para todas las hora y 5
+	public void	invoiceOrSendSalesInvoice() throws Exception{
+		List<Yng_XubioSalesInvoice> listSalesInvoice = xubioSalesInvoiceDao.findAll();
+		String responseXubio;
+		for (Yng_XubioSalesInvoice s : listSalesInvoice) {
+			switch(s.getYngStatus()) {
+			case "pending":
+				responseXubio = xubioFunds.postCreateSalesInvoice(s);
+				System.out.println(responseXubio);
+				if(responseXubio.equals("save")) {
+					s.setYngStatus("invoiced");
+					s = xubioSalesInvoiceDao.save(s); 
 				}
-	    		String status=stateApi;
-	    		Yng_Standard codeDeliveryConfirmAndreani = standardDao.findByKey("codeDeliveryConfirmAndreani");//entre ala sucurlas el envio ingresado 
-	    		if(status.equals(codeDeliveryConfirmAndreani.getValue())) {
-	    			confirmTemp.setBuyerConfirm(false);
-	        		confirmTemp.setSellerConfirm(true);
-	        		Date date = new Date();
-	            	DateFormat hourdateFormat = new SimpleDateFormat("dd");
-	            	DateFormat hourdateFormat1 = new SimpleDateFormat("MM");
-	            	DateFormat hourdateFormat2 = new SimpleDateFormat("yyyy");
-	            	DateTime now = new DateTime( date );
-	            	confirmTemp.setDaySellerConfirm(Integer.parseInt(hourdateFormat.format(date)));
-	            	confirmTemp.setMonthSellerConfirm(Integer.parseInt(hourdateFormat1.format(date)));
-	            	confirmTemp.setYearSellerConfirm(Integer.parseInt(hourdateFormat2.format(date)));
-	            	confirmTemp.setStatus("delivered");
-	            	confirmDao.save(confirmTemp);
-	            	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(), "CONFIRMACIÓN DE ENTREGA EXITOSA","Se realizo la confirmacion de la entrega del producto en una sucursal andreani:  "+confirmTemp.getBuy().getYng_item().getName() +"  Descripción : "+confirmTemp.getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +confirmTemp.getBuy().getYng_item().getPrice()
-	            			+ "<br/>--Despues de que tu comprador recoja el producto tendra 10 dias vigentes para realizar reclamos acerca del producto.");
-	            	DateTime endClaim = now.plusDays(4);
-	            	smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "CONFIRMACIÓN DE ENTREGA EXITOSA", "Tu vendedor realizo la entrega del producto : "+confirmTemp.getBuy().getQuantity()+" "+confirmTemp.getBuy().getYng_item().getName()+" a:"+confirmTemp.getBuy().getCost()+" en la sucursal andreani"
-	    					+ "<br/>--Puedes recoger el producto de la sucursal Andreani desde "+Integer.parseInt(hourdateFormat.format(endClaim.toDate()))+"/"+Integer.parseInt(hourdateFormat1.format(endClaim.toDate()))+"/"+Integer.parseInt(hourdateFormat2.format(endClaim.toDate())));
-	    		}		
-	    	}
+				break;
+			case "invoiced":
+				responseXubio = xubioFunds.sendSalesInvoiceByEmail(s);
+				System.out.println(responseXubio);
+				if(responseXubio.equals("save")) {
+					s.setYngStatus("teminated");
+					s = xubioSalesInvoiceDao.save(s); 
+				}
+				break;
+			}
+			
 		}
+	}
+	
+	@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
+	public void labelQuery() throws MessagingException{
+		System.out.println("enviar mail");
+		smtpMailSender.send("quenallataeddy@gmail.com", "CRONS INVO", "CRONS");
 	}
 }

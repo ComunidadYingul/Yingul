@@ -2,9 +2,12 @@ package com.valework.yingul.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Yng_XubioTransaccionProductoItems {
@@ -19,6 +22,7 @@ public class Yng_XubioTransaccionProductoItems {
 	private String codeProducto;
 	private String deposito;
 	private String codeDeposito;
+	private String descripcion;
 	private int cantidad;
 	private double precio;
 	private double iva;
@@ -26,6 +30,10 @@ public class Yng_XubioTransaccionProductoItems {
 	private double total;
 	private int procentajeDescuento;
 	private double montoExtento;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "xubio_sales_invoice_id")
+	private Yng_XubioSalesInvoice xubioSalesInvoice;
 	
 	public Yng_XubioTransaccionProductoItems() {
 		super();
@@ -141,6 +149,22 @@ public class Yng_XubioTransaccionProductoItems {
 
 	public void setMontoExtento(double montoExtento) {
 		this.montoExtento = montoExtento;
+	}
+
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+
+	public Yng_XubioSalesInvoice getXubioSalesInvoice() {
+		return xubioSalesInvoice;
+	}
+
+	public void setXubioSalesInvoice(Yng_XubioSalesInvoice xubioSalesInvoice) {
+		this.xubioSalesInvoice = xubioSalesInvoice;
 	}
 
 }

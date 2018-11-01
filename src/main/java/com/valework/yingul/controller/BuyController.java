@@ -40,6 +40,7 @@ import com.valework.yingul.dao.DepartmentDao;
 import com.valework.yingul.dao.EnvioDao;
 import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.ListCreditCardDao;
+import com.valework.yingul.dao.NotificationDao;
 import com.valework.yingul.dao.PaymentDao;
 import com.valework.yingul.dao.PersonDao;
 import com.valework.yingul.dao.ProductDao;
@@ -73,6 +74,7 @@ import com.valework.yingul.model.Yng_Confirm;
 import com.valework.yingul.model.Yng_Country;
 import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_ListCreditCard;
+import com.valework.yingul.model.Yng_Notification;
 import com.valework.yingul.model.Yng_Payment;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Product;
@@ -179,6 +181,8 @@ public class BuyController {
 	ProductDao productDao;
 	@Autowired
 	PersonDao personDao;
+	@Autowired
+	NotificationDao notificationDao;
 	
 	@RequestMapping("/listCreditCard/all")
     public List<Yng_ListCreditCard> findProvinceList() {
@@ -507,6 +511,28 @@ public class BuyController {
 	    	confirm.setBuyer(buy.getUser());
 	    	confirm.setSeller(buy.getSeller());
 	    	confirm=confirmDao.save(confirm);
+	    	//******************crear las notificaciones para comprador y vendedor*********************************
+	    	Yng_Notification sellerNotification = new Yng_Notification();
+	    	sellerNotification.setDate(buy.getTime());
+	    	sellerNotification.setDescription("¡Vendiste!");
+	    	sellerNotification.setItem(buy.getYng_item());
+	    	sellerNotification.setStatus("pending");
+	    	sellerNotification.setDesktopStatus("pending");
+	    	sellerNotification.setTitle("Acabas de vender el producto "+buy.getYng_item().getName());
+	    	sellerNotification.setUrl("https://www.yingul.com/userFront/sales");
+	    	sellerNotification.setUser(buy.getSeller());
+	    	notificationDao.save(sellerNotification);
+	    	Yng_Notification buyerNotification = new Yng_Notification();
+	    	buyerNotification.setDate(buy.getTime());
+	    	buyerNotification.setDescription("¡Compraste!");
+	    	buyerNotification.setItem(buy.getYng_item());
+	    	buyerNotification.setStatus("pending");
+	    	buyerNotification.setDesktopStatus("pending");
+	    	buyerNotification.setTitle("Acabas de comprar el producto "+buy.getYng_item().getName());
+	    	buyerNotification.setUrl("https://www.yingul.com/userFront/purchases");
+	    	buyerNotification.setUser(buy.getUser());
+	    	notificationDao.save(buyerNotification);
+	    	//*****************************************************************************************************
 	    	//modificar los correos para pagos no con tarjeta
 			
 			if(typeEnvio.equals("home")) {
@@ -813,9 +839,9 @@ public class BuyController {
     	System.out.println(buy.getQuantity());
     	System.out.println(itemTemp.getQuantity());
     	//System.out.println(itemTemp.getQuantity());
-    	if(itemTemp.getQuantity()<=0||!itemTemp.isEnabled()||itemTemp.getQuantity()<buy.getQuantity()) {
+    	/*if(itemTemp.getQuantity()<=0||!itemTemp.isEnabled()||itemTemp.getQuantity()<buy.getQuantity()) {
     		return "Sin stock";
-    	}
+    	}*/
     	buy.setYng_item(itemTemp);
     	//fin setear el item
     	//para setear el usuario y el vendedor 
@@ -1070,7 +1096,28 @@ public class BuyController {
     	confirm.setSeller(buy.getSeller());
     	confirm=confirmDao.save(confirm);
     	//modificar los correos para pagos no con tarjeta
-		
+    	//******************crear las notificaciones para comprador y vendedor*********************************
+    	Yng_Notification sellerNotification = new Yng_Notification();
+    	sellerNotification.setDate(buy.getTime());
+    	sellerNotification.setDescription("¡Vendiste!");
+    	sellerNotification.setItem(buy.getYng_item());
+    	sellerNotification.setStatus("pending");
+    	sellerNotification.setDesktopStatus("pending");
+    	sellerNotification.setTitle("Acabas de vender "+buy.getYng_item().getName());
+    	sellerNotification.setUrl("https://www.yingul.com/userFront/sales");
+    	sellerNotification.setUser(buy.getSeller());
+    	notificationDao.save(sellerNotification);
+    	Yng_Notification buyerNotification = new Yng_Notification();
+    	buyerNotification.setDate(buy.getTime());
+    	buyerNotification.setDescription("¡Compraste!");
+    	buyerNotification.setItem(buy.getYng_item());
+    	buyerNotification.setStatus("pending");
+    	buyerNotification.setDesktopStatus("pending");
+    	buyerNotification.setTitle("Acabas de comprar "+buy.getYng_item().getName());
+    	buyerNotification.setUrl("https://www.yingul.com/userFront/purchases");
+    	buyerNotification.setUser(buy.getUser());
+    	notificationDao.save(buyerNotification);
+    	//*****************************************************************************************************
 		if(typeEnvio.equals("home")) {
 			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","<b>DETALLE DE LA VENTA:</b>"
 					+ "<table border=\"1\">\r\n"  

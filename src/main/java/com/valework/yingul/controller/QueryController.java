@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.ItemDao;
+import com.valework.yingul.dao.NotificationDao;
 import com.valework.yingul.dao.QueryDao;
 import com.valework.yingul.dao.UserDao;
+import com.valework.yingul.model.Yng_Notification;
 import com.valework.yingul.model.Yng_Query;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.QueryService;
@@ -39,6 +41,8 @@ public class QueryController {
 	QueryService queryService;
 	@Autowired
 	ItemDao itemDao;
+	@Autowired
+	NotificationDao notificationDao;
 	
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	@ResponseBody
@@ -66,6 +70,16 @@ public class QueryController {
     	}
     	else {
 			queryDao.save(query);
+			Yng_Notification sellerNotification = new Yng_Notification();
+	    	sellerNotification.setDate(query.getDate());
+	    	sellerNotification.setTitle("¡Consulta!");
+	    	sellerNotification.setItem(query.getYng_Item());
+	    	sellerNotification.setStatus("pending");
+	    	sellerNotification.setDesktopStatus("pending");
+	    	sellerNotification.setDescription("Te acaban de consultar por:  "+query.getYng_Item().getName()+"... "+query.getQuery());
+	    	sellerNotification.setUrl("https://www.yingul.com/userFront/sales/query");
+	    	sellerNotification.setUser(query.getYng_Item().getUser());
+	    	notificationDao.save(sellerNotification);
 		    try {
 				smtpMailSender.send(query.getYng_Item().getUser().getEmail(), "Consulta urgente sobre su Item", query.getUser().getUsername()+" pregunto "+query.getQuery()+" sobre el Item "+query.getYng_Item().getName()+". Puedes responder las consultas en: https://www.yingul.com/userFront/sales/query");
 			} catch (MessagingException e) {
@@ -152,6 +166,16 @@ public class QueryController {
 		}
     	//fin de la fecha de respuesta
     	queryDao.save(queryTemp);
+    	Yng_Notification buyerNotification = new Yng_Notification();
+    	buyerNotification.setDate(query.getDate());
+    	buyerNotification.setTitle("¡Respuesta!");
+    	buyerNotification.setItem(query.getYng_Item());
+    	buyerNotification.setStatus("pending");
+    	buyerNotification.setDesktopStatus("pending");
+    	buyerNotification.setDescription("Te acaban de responder por:  "+query.getYng_Item().getName()+"... "+query.getAnswer());
+    	buyerNotification.setUrl("https://www.yingul.com/userFront/purchases/query");
+    	buyerNotification.setUser(query.getUser());
+    	notificationDao.save(buyerNotification);
 		return "save";
     }
     @RequestMapping("/delete/{queryId}")

@@ -19,11 +19,13 @@ import com.valework.yingul.dao.CityDao;
 import com.valework.yingul.dao.CountryDao;
 import com.valework.yingul.dao.PersonDao;
 import com.valework.yingul.dao.ProvinceDao;
+import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.model.Yng_BranchAndreani;
 import com.valework.yingul.model.Yng_Business;
 import com.valework.yingul.model.Yng_Person;
+import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.service.PersonService;
@@ -61,6 +63,8 @@ public class UserController {
 	PersonDao personDao;
 	@Autowired
 	BusinessDao businessDao;
+	@Autowired
+	private StandardDao standardDao;
 	@RequestMapping("/{username}")
     public Yng_User findByUsername(@PathVariable("username") String username) {
         return userDao.findByUsername(username);
@@ -104,6 +108,22 @@ public class UserController {
 			return null;
 		}
 			
+    }
+	
+	@RequestMapping("/getUserByPhoneNumber/{phoneNumber}")
+    public Yng_User getUserByPhoneNumber(@PathVariable("phoneNumber") String phoneNumber,@RequestHeader("X-API-KEY") String XAPIKEY) {
+		Yng_Standard api = standardDao.findByKey("BACKEND_API_KEY");
+    	if(XAPIKEY.equals(api.getValue())) {
+    		List<Yng_User> userList = userDao.findAll();
+    		for (Yng_User user : userList) {
+				if(user.getPhone()!=null) {
+					if(user.getPhone().replace(" ", "").replace("+", "").replace("-", "").contains(phoneNumber)||phoneNumber.contains(user.getPhone().replace(" ", "").replace("+", "").replace("-", ""))) {
+						return user;
+					}
+				}
+			}
+    	}
+		return null; 
     }
 	
 	@RequestMapping(value = "/updateUsername", method = RequestMethod.POST)

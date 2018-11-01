@@ -29,24 +29,28 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.valework.yingul.dao.BusinessDao;
+import com.valework.yingul.dao.CommissionDao;
 import com.valework.yingul.dao.PersonDao;
 import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.TransactionDao;
 import com.valework.yingul.dao.TransactionDetailDao;
 import com.valework.yingul.dao.XubioClientDao;
-import com.valework.yingul.dao.XubioProofOfPurchaseDao;
 import com.valework.yingul.dao.XubioRequestDao;
 import com.valework.yingul.dao.XubioResponseDao;
+import com.valework.yingul.dao.XubioSalesInvoiceDao;
 import com.valework.yingul.dao.XubioSendTransactionByMailDao;
 import com.valework.yingul.dao.XubioTransaccionProductoItemsDao;
+import com.valework.yingul.model.Yng_Account;
 import com.valework.yingul.model.Yng_Business;
+import com.valework.yingul.model.Yng_Commission;
+import com.valework.yingul.model.Yng_Confirm;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_Transaction;
 import com.valework.yingul.model.Yng_TransactionDetail;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.model.Yng_XubioClient;
-import com.valework.yingul.model.Yng_XubioProofOfPurchase;
+import com.valework.yingul.model.Yng_XubioSalesInvoice;
 import com.valework.yingul.model.Yng_XubioRequest;
 import com.valework.yingul.model.Yng_XubioResponse;
 import com.valework.yingul.model.Yng_XubioSendTransactionByMail;
@@ -70,14 +74,16 @@ public class XubioFunds {
 	XubioClientDao xubioClientDao;
 	@Autowired
 	TransactionDetailDao transactionDetailDao;
-	@Autowired
-	XubioProofOfPurchaseDao xubioProofOfPurchaseDao;
 	@Autowired 
 	TransactionDao transactionDao;
 	@Autowired
 	XubioSendTransactionByMailDao xubioSendTransactionByMailDao;
 	@Autowired
 	XubioTransaccionProductoItemsDao xubioTransaccionProductoItemsDao;
+	@Autowired 
+	CommissionDao commissionDao;
+	@Autowired
+	XubioSalesInvoiceDao xubioSalesInvoiceDao;
 	
 	public Yng_Person getPersonForUser(Yng_User user) {
 		List<Yng_Person> personList= personDao.findAll();
@@ -326,58 +332,9 @@ public class XubioFunds {
 
 	}
 	
-	public String postCreateInvoice(Yng_Transaction transaction) throws Exception{
-		Yng_XubioProofOfPurchase invoice = new Yng_XubioProofOfPurchase();
+	public String postCreateSalesInvoice(Yng_XubioSalesInvoice invoice) throws Exception{
 		
-		Yng_XubioClient xubioClient = new Yng_XubioClient();
-		try {
-			xubioClient = xubioClientDao.findByUser(transaction.getAccount().getUser());	
-		} catch (Exception e) {
-		
-		}
-		if(xubioClient==null || xubioClient.equals(null)) {
-			xubioClient = postCreateClient(transaction.getAccount().getUser());
-		}
-		if(xubioClient==null || xubioClient.equals(null)) {
-			return "failClient";
-		}
-		invoice.setXubioClient(xubioClient);
-		switch(transaction.getTypeCode()) {
-			case "CTV":
-				Yng_TransactionDetail transactionDetail = transactionDetailDao.findByTransaction(transaction);
-				invoice.setImportetotal(transactionDetail.getCostCommission());
-				break;
-		}
-		invoice.setCodeCircuitoContable("DEFAULT");
-		invoice.setCircuitoContable("default");
-		invoice.setExternalId(String.valueOf(transaction.getTransactionId()));
-		invoice.setTipo(1);
-		Date time = new Date();
-		DateFormat hourdateFormat1 = new SimpleDateFormat("yyyy-MM-dd");
-		invoice.setFecha(hourdateFormat1.format(time));
-		invoice.setFechaVto(hourdateFormat1.format(time));
-		invoice.setCondicionDePago(1);
-		invoice.setDeposito("Depósito Universal");
-		invoice.setCodeDeposito("DEPOSITO_UNIVERSAL");
-		//invoice.setPuntoVenta("");
-		//invoice.setCodePuntoVenta("");
-		invoice.setCotizacion(1);
-		invoice.setCotizacionListaDePrecio(1);
-		invoice.setPorcentajeComision(0);
-		invoice.setCBUInformada(false);
-		invoice.setFacturaNoExportacion(true);
-		
-		Yng_XubioTransaccionProductoItems productoItems = new Yng_XubioTransaccionProductoItems();
-		productoItems.setPrecioconivaincluido(invoice.getImportetotal());
-		productoItems.setProducto("Servicio al 21%");
-		productoItems.setCodeProducto("SERVICIO_AL_21");
-		productoItems.setDeposito("Depósito Universal");
-		productoItems.setCodeDeposito("DEPOSITO_UNIVERSAL");
-		productoItems.setCantidad(1);
-		productoItems.setPrecio(invoice.getImportetotal());
-		productoItems.setTotal(productoItems.getPrecio());
-		productoItems.setProcentajeDescuento(0);
-		productoItems.setMontoExtento(0);
+		List<Yng_XubioTransaccionProductoItems> items = xubioTransaccionProductoItemsDao.findByXubioSalesInvoice(invoice);
 		
 		Yng_Standard api = standardDao.findByKey("XUBIO_api_proof_of_purchase");
 		//crear el referenceCode y el signature
@@ -425,7 +382,7 @@ public class XubioFunds {
 	    		"    \"nombre\": \"Pesos Argentinos\"\r\n" + 
 	    		"  },\r\n" + 
 	    		//"  \"importeMonPrincipal\": 0,\r\n" + 
-	    		"  \"importetotal\": "+invoice.getImportetotal()+",\r\n" + 
+	    		//"  \"importetotal\": "+invoice.getImportetotal()+",\r\n" + 
 	    		//"  \"importeImpuestos\": 0.46,\r\n" + 
 	    		//"  \"importeGravado\": 2.2,\r\n" + 
 	    		"  \"provincia\": {\r\n" + 
@@ -449,41 +406,49 @@ public class XubioFunds {
 	    		"  \"descripcion\": \"\",\r\n" + 
 	    		"  \"CBUInformada\": false,\r\n" + 
 	    		"  \"facturaNoExportacion\": true,\r\n" + 
-	    		"  \"transaccionProductoItems\": [\r\n" + 
-	    		"    {\r\n" + 
-	    		//"      \"transaccionCVItemId\": 0,\r\n" + 
-	    		"      \"precioconivaincluido\": "+productoItems.getPrecioconivaincluido()+",\r\n" + 
-	    		//"      \"transaccionId\": 14564644,\r\n" + 
-	    		"      \"producto\": {\r\n" + 
-	    		"        \"ID\": -98,\r\n" + 
-	    		"        \"codigo\": \"SERVICIO_AL_21\",\r\n" + 
-	    		"        \"nombre\": \"Servicio al 21%\"\r\n" + 
-	    		"      },\r\n" + 
-	    		//"      \"centroDeCosto\": {\r\n" + 
-	    		//"        \"nombre\": \"string\",\r\n" + 
-	    		//"        \"codigo\": \"string\",\r\n" + 
-	    		//"        \"id\": 0\r\n" + 
-	    		//"      },\r\n" + 
-	    		"      \"deposito\": {\r\n" + 
-	    		"        \"ID\": -2,\r\n" + 
-	    		"        \"codigo\": \"DEPOSITO_UNIVERSAL\",\r\n" + 
-	    		"        \"nombre\": \"Depósito Universal\"\r\n" + 
-	    		"      },\r\n" + 
-	    		"      \"descripcion\": \"\",\r\n" + 
-	    		"      \"cantidad\": 1,\r\n" + 
-	    		"      \"precio\": "+productoItems.getPrecio()+",\r\n" + 
-	    		//"      \"iva\": 0.4617,\r\n" + 
-	    		//"      \"importe\": 2.1983,\r\n" + 
-	    		"      \"total\": "+productoItems.getTotal()+",\r\n" + 
-	    		"      \"procentajeDescuento\": 0,\r\n" + 
-	    		"      \"montoExtento\": 0\r\n" + 
-	    		"    }\r\n" + 
-	    		"  ],\r\n" + 
+	    		"  \"transaccionProductoItems\": [\r\n";
+	    		int i = 0;
+	    		for (Yng_XubioTransaccionProductoItems itemxubio : items) {
+	    			i++;
+	    			json += "{\r\n" + 
+		    		    		//"      \"transaccionCVItemId\": 0,\r\n" + 
+		    		    		"      \"precioconivaincluido\": "+itemxubio.getPrecioconivaincluido()+",\r\n" + 
+		    		    		//"      \"transaccionId\": 14564644,\r\n" + 
+		    		    		"      \"producto\": {\r\n" + 
+		    		    		//"        \"ID\": -98,\r\n" + 
+		    		    		"        \"codigo\": \""+itemxubio.getCodeProducto()+"\",\r\n" + 
+		    		    		"        \"nombre\": \""+itemxubio.getProducto()+"\"\r\n" + 
+		    		    		"      },\r\n" + 
+		    		    		//"      \"centroDeCosto\": {\r\n" + 
+		    		    		//"        \"nombre\": \"string\",\r\n" + 
+		    		    		//"        \"codigo\": \"string\",\r\n" + 
+		    		    		//"        \"id\": 0\r\n" + 
+		    		    		//"      },\r\n" + 
+		    		    		"      \"deposito\": {\r\n" + 
+		    		    		"        \"ID\": -2,\r\n" + 
+		    		    		"        \"codigo\": \"DEPOSITO_UNIVERSAL\",\r\n" + 
+		    		    		"        \"nombre\": \"Depósito Universal\"\r\n" + 
+		    		    		"      },\r\n" + 
+		    		    		"      \"descripcion\": \"\",\r\n" + 
+		    		    		"      \"cantidad\": 1,\r\n" + 
+		    		    		"      \"precio\": "+itemxubio.getPrecio()+",\r\n" + 
+		    		    		//"      \"iva\": 0.4617,\r\n" + 
+		    		    		//"      \"importe\": 2.1983,\r\n" + 
+		    		    		"      \"total\": "+itemxubio.getTotal()+",\r\n" + 
+		    		    		"      \"procentajeDescuento\": 0,\r\n" + 
+		    		    		"      \"montoExtento\": 0\r\n" + 
+	    		    		"    }\r\n";
+	    			if(i != items.size()){
+	    		        json+=",";
+	    		    }
+				}
+	    		json+="  ],\r\n" + 
 	    		"  \"transaccionPercepcionItems\": [],\r\n" + 
 	    		"  \"transaccionCobranzaItems\": []\r\n" + 
 	    		"}";
 	    
 		// crear el request 
+	    Date time = new Date();
     	DateFormat hourdateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		String date=hourdateFormat.format(time);
 		Yng_XubioRequest requestTemp = new Yng_XubioRequest(); 
@@ -512,10 +477,6 @@ public class XubioFunds {
     	if(responseTemp.getStatus().equals("HTTP/1.1 200 OK")) {
     		JSONObject  jObject = new JSONObject(responseTemp.getBody());
     		if(jObject.has("transaccionid")) {
-    			productoItems.setTransaccionId(jObject.optJSONArray("transaccionProductoItems").optJSONObject(0).optLong("transaccionId"));
-    			productoItems.setIva((double)Math.round((jObject.optJSONArray("transaccionProductoItems").optJSONObject(0).optDouble("iva")) * 100d) / 100d);
-    			productoItems.setImporte((double)Math.round((jObject.optJSONArray("transaccionProductoItems").optJSONObject(0).optDouble("importe")) * 100d) / 100d);
-    			productoItems = xubioTransaccionProductoItemsDao.save(productoItems);
     			invoice.setTransaccionid(jObject.optLong("transaccionid"));
     			invoice.setNumeroDocumento(jObject.optString("numeroDocumento"));
     			invoice.setImporteImpuestos((double)Math.round((jObject.optDouble("importeImpuestos")) * 100d) / 100d);
@@ -524,9 +485,7 @@ public class XubioFunds {
     			invoice.setType(jObject.optString("type"));
     			invoice.setCAE(jObject.optString("CAE"));
     			invoice.setCAEFechaVto(jObject.optString("CAEFechaVto"));
-    			invoice.setXubioTransaccionProductoItems(productoItems);
-    			invoice.setTransaction(transaction);
-    			invoice = xubioProofOfPurchaseDao.save(invoice);
+    			invoice = xubioSalesInvoiceDao.save(invoice);
     			return "save";
     		}
 	    }
@@ -537,14 +496,11 @@ public class XubioFunds {
 
 	}
 
-	public String sendInvoiceByEmail(Yng_Transaction transaction) throws Exception{
+	public String sendSalesInvoiceByEmail(Yng_XubioSalesInvoice invoice) throws Exception{
 		Yng_XubioSendTransactionByMail transactionByMail = new Yng_XubioSendTransactionByMail();
 		
-		Yng_XubioProofOfPurchase invoice = new Yng_XubioProofOfPurchase();	
-		invoice = xubioProofOfPurchaseDao.findByTransaction(transaction);
-		
 		transactionByMail.setTransaccionId(invoice.getTransaccionid());
-		transactionByMail.setDestinatarios(transaction.getAccount().getUser().getEmail());
+		transactionByMail.setDestinatarios(invoice.getXubioClient().getEmail());
 		transactionByMail.setCopiaCon("noreply@internetvale.com");
 		transactionByMail.setCopiaConOtro("quenallataeddy@gmail.com");//solo para las pruebas 
 		transactionByMail.setAsunto("Factura correspondiente a los servicios de Yingul Company SRL");
@@ -602,6 +558,217 @@ public class XubioFunds {
     	
     	return "failXubio";
 
+	}
+
+	public String createSalesInvoice(Yng_Confirm confirm) throws Exception{
+		Yng_XubioSalesInvoice invoiceSeller = new Yng_XubioSalesInvoice();
+		/********CrearCleinte de xubio**********/
+		Yng_XubioClient xubioClient = new Yng_XubioClient();
+		try {
+			xubioClient = xubioClientDao.findByUser(confirm.getSeller());	
+		} catch (Exception e) {
+		
+		}
+		if(xubioClient==null || xubioClient.equals(null)) {
+			xubioClient = postCreateClient(confirm.getSeller());
+		}
+		if(xubioClient==null || xubioClient.equals(null)) {
+			return "failClient";
+		}
+		/*******Fin*************************/
+		/***********crear principales datos de la factura al vendedor************/
+		invoiceSeller.setXubioClient(xubioClient);
+		invoiceSeller.setExternalId(String.valueOf(confirm.getConfirmId()));
+		invoiceSeller.setCodeCircuitoContable("DEFAULT");
+		invoiceSeller.setCircuitoContable("default");
+		invoiceSeller.setTipo(1);
+		Date time = new Date();
+		DateFormat hourdateFormat1 = new SimpleDateFormat("yyyy-MM-dd");
+		invoiceSeller.setFecha(hourdateFormat1.format(time));
+		invoiceSeller.setFechaVto(hourdateFormat1.format(time));
+		invoiceSeller.setCondicionDePago(1);
+		invoiceSeller.setDeposito("Depósito Universal");
+		invoiceSeller.setCodeDeposito("DEPOSITO_UNIVERSAL");
+		invoiceSeller.setMoneda("Pesos Argentinos");
+		invoiceSeller.setCodeMoneda("PESOS_ARGENTINOS");
+		invoiceSeller.setPuntoVenta("0002");
+		invoiceSeller.setCotizacion(1);
+		invoiceSeller.setCotizacionListaDePrecio(1);
+		invoiceSeller.setPorcentajeComision(0);
+		invoiceSeller.setCBUInformada(false);
+		invoiceSeller.setFacturaNoExportacion(true);
+		invoiceSeller.setYngDescription("Factura de venta emitida al vendedor");
+		invoiceSeller.setYngStatus("pending");
+		invoiceSeller.setConfirm(confirm);
+		invoiceSeller = xubioSalesInvoiceDao.save(invoiceSeller);
+		/********************fin********************************/
+		/*******crear los item de la factura de acuerdo a la venta**********/
+		/********obtenemos el tipo de persona para definir el porcentaje de comision*******/
+		List<Yng_Person> personList= personDao.findAll();
+		Yng_Person person = new Yng_Person();
+		for (Yng_Person yng_Person : personList) {
+			if(yng_Person.getYng_User().getUsername().equals(confirm.getBuy().getYng_item().getUser().getUsername())) {
+				person = yng_Person;
+				System.out.println(person.getName()+" todo bien");
+			}
+		}
+		/***********creamos las dos comisiones ****************/
+		Yng_Commission commission= new Yng_Commission();
+		Yng_Commission commissionPAYU= new Yng_Commission();
+		commissionPAYU = commissionDao.findByConditionAndWhy("ARS", "PAYU");
+		switch(confirm.getBuy().getYng_item().getType()) {
+		case "Product":
+			if(person.isBusiness()) {
+				commission =commissionDao.findByToWhoAndWhy("Business", "Product");
+			}else {
+				commission =commissionDao.findByToWhoAndWhy("Person", "Product");
+			}
+			break;
+		case "Property":
+			if(confirm.getBuy().getYng_item().getCondition().equals("Rental")) {
+				commission =commissionDao.findByConditionAndWhy("Rental", "Property");
+			}else {
+				commission =commissionDao.findByToWhoAndWhy("All", "Property");
+			}
+			break;
+		case "Motorized":
+			if(confirm.getBuy().getYng_item().getCondition().equals("New")) {
+				commission =commissionDao.findByConditionAndWhy("New", "Motorized");
+			}else {
+				commission =commissionDao.findByConditionAndWhy("All", "All");
+			}
+			break;
+		default:
+			commission =commissionDao.findByConditionAndWhy("All", "All");
+			break;
+		}
+		/************fin*******************/
+		/****************costo de payu con el 21%*********************/
+		double costPayu = ((confirm.getBuy().getCost()*commissionPAYU.getPercentage())/100)+commissionPAYU.getFixedPrice();
+		double costPayuIva = (double)Math.round((costPayu+(costPayu*21/100)) * 100d) / 100d;
+		/*****************************fin************************/
+		/***************costo de la comision yingul***********************/
+		double costComission=0;
+		if(confirm.getBuy().getShippingCost()==0) {
+			costComission=(double)Math.round(((((confirm.getBuy().getCost()-costPayuIva-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d;
+		}else {
+			if(confirm.getBuy().getCost()==confirm.getBuy().getItemCost()) {
+				costComission=(double)Math.round(((((confirm.getBuy().getCost()-confirm.getBuy().getShippingCost()-costPayuIva-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d;
+				
+				Yng_XubioTransaccionProductoItems sendYingul = new Yng_XubioTransaccionProductoItems();
+				sendYingul.setPrecioconivaincluido(confirm.getBuy().getShippingCost());
+				sendYingul.setProducto("Yingul Envios");
+				sendYingul.setCodeProducto("YINGUL_ENVIOS");
+				sendYingul.setDeposito("Depósito Universal");
+				sendYingul.setCodeDeposito("DEPOSITO_UNIVERSAL");
+				sendYingul.setCantidad(1);
+				sendYingul.setPrecio(confirm.getBuy().getShippingCost());
+				sendYingul.setTotal(confirm.getBuy().getShippingCost());
+				sendYingul.setProcentajeDescuento(0);
+				sendYingul.setMontoExtento(0);
+				sendYingul.setXubioSalesInvoice(invoiceSeller);
+				sendYingul = xubioTransaccionProductoItemsDao.save(sendYingul);
+			}else {
+				costComission=(double)Math.round(((((confirm.getBuy().getItemCost()-costPayuIva-2)*commission.getPercentage())/100)+commission.getFixedPrice()) * 100d) / 100d;
+				
+				Yng_XubioSalesInvoice invoiceBuyer = new Yng_XubioSalesInvoice();
+				/********CrearCleinte de xubio**********/
+				Yng_XubioClient buyer = new Yng_XubioClient();
+				try {
+					buyer = xubioClientDao.findByUser(confirm.getBuyer());	
+				} catch (Exception e) {
+				
+				}
+				if(buyer==null || buyer.equals(null)) {
+					buyer = postCreateClient(confirm.getBuyer());
+				}
+				if(buyer==null || buyer.equals(null)) {
+					return "failClient";
+				}
+				/*******Fin*************************/
+				/***********crear principales datos de la factura al vendedor************/
+				invoiceBuyer.setXubioClient(buyer);
+				invoiceBuyer.setExternalId(String.valueOf(confirm.getConfirmId())+"-1");
+				invoiceBuyer.setCodeCircuitoContable("DEFAULT");
+				invoiceBuyer.setCircuitoContable("default");
+				invoiceBuyer.setTipo(1);
+				invoiceBuyer.setFecha(hourdateFormat1.format(time));
+				invoiceBuyer.setFechaVto(hourdateFormat1.format(time));
+				invoiceBuyer.setCondicionDePago(1);
+				invoiceBuyer.setDeposito("Depósito Universal");
+				invoiceBuyer.setCodeDeposito("DEPOSITO_UNIVERSAL");
+				invoiceBuyer.setMoneda("Pesos Argentinos");
+				invoiceBuyer.setCodeMoneda("PESOS_ARGENTINOS");
+				invoiceBuyer.setPuntoVenta("0002");
+				invoiceBuyer.setCotizacion(1);
+				invoiceBuyer.setCotizacionListaDePrecio(1);
+				invoiceBuyer.setPorcentajeComision(0);
+				invoiceBuyer.setCBUInformada(false);
+				invoiceBuyer.setFacturaNoExportacion(true);
+				invoiceBuyer.setYngDescription("Factura de envio emitida al comprador");
+				invoiceBuyer.setYngStatus("pending");
+				invoiceBuyer.setConfirm(confirm);
+				invoiceBuyer = xubioSalesInvoiceDao.save(invoiceBuyer);
+				
+				Yng_XubioTransaccionProductoItems sendYingul = new Yng_XubioTransaccionProductoItems();
+				sendYingul.setPrecioconivaincluido(confirm.getBuy().getShippingCost());
+				sendYingul.setProducto("Yingul Envios");
+				sendYingul.setCodeProducto("YINGUL_ENVIOS");
+				sendYingul.setDeposito("Depósito Universal");
+				sendYingul.setCodeDeposito("DEPOSITO_UNIVERSAL");
+				sendYingul.setCantidad(1);
+				sendYingul.setPrecio(confirm.getBuy().getShippingCost());
+				sendYingul.setTotal(confirm.getBuy().getShippingCost());
+				sendYingul.setProcentajeDescuento(0);
+				sendYingul.setMontoExtento(0);
+				sendYingul.setXubioSalesInvoice(invoiceBuyer);
+				sendYingul = xubioTransaccionProductoItemsDao.save(sendYingul);
+			}
+		}
+
+		Yng_XubioTransaccionProductoItems comissionYingul = new Yng_XubioTransaccionProductoItems();
+		comissionYingul.setPrecioconivaincluido(costComission);
+		comissionYingul.setProducto("Comision Yingul");
+		comissionYingul.setCodeProducto("COMISION_YINGUL");
+		comissionYingul.setDeposito("Depósito Universal");
+		comissionYingul.setCodeDeposito("DEPOSITO_UNIVERSAL");
+		comissionYingul.setCantidad(1);
+		comissionYingul.setPrecio(costComission);
+		comissionYingul.setTotal(costComission);
+		comissionYingul.setProcentajeDescuento(0);
+		comissionYingul.setMontoExtento(0);
+		comissionYingul.setXubioSalesInvoice(invoiceSeller);
+		comissionYingul = xubioTransaccionProductoItemsDao.save(comissionYingul);
+		
+		Yng_XubioTransaccionProductoItems yingulPay = new Yng_XubioTransaccionProductoItems();
+		yingulPay.setPrecioconivaincluido(costPayuIva);
+		yingulPay.setProducto("Yingul Pay");
+		yingulPay.setCodeProducto("YINGUL_PAY");
+		yingulPay.setDeposito("Depósito Universal");
+		yingulPay.setCodeDeposito("DEPOSITO_UNIVERSAL");
+		yingulPay.setCantidad(1);
+		yingulPay.setPrecio(costPayuIva);
+		yingulPay.setTotal(costPayuIva);
+		yingulPay.setProcentajeDescuento(0);
+		yingulPay.setMontoExtento(0);
+		yingulPay.setXubioSalesInvoice(invoiceSeller);
+		yingulPay = xubioTransaccionProductoItemsDao.save(yingulPay);
+		
+		Yng_XubioTransaccionProductoItems administrativeExpenses = new Yng_XubioTransaccionProductoItems();
+		administrativeExpenses.setPrecioconivaincluido(2);
+		administrativeExpenses.setProducto("Gastos Administrativos");
+		administrativeExpenses.setCodeProducto("GASTOS_ADMINISTRATIVOS");
+		administrativeExpenses.setDeposito("Depósito Universal");
+		administrativeExpenses.setCodeDeposito("DEPOSITO_UNIVERSAL");
+		administrativeExpenses.setCantidad(1);
+		administrativeExpenses.setPrecio(2);
+		administrativeExpenses.setTotal(2);
+		administrativeExpenses.setProcentajeDescuento(0);
+		administrativeExpenses.setMontoExtento(0);
+		administrativeExpenses.setXubioSalesInvoice(invoiceSeller);
+		administrativeExpenses = xubioTransaccionProductoItemsDao.save(administrativeExpenses);
+
+		return "save";
 	}
 
 }
