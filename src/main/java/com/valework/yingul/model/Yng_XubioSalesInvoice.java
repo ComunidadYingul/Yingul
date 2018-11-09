@@ -51,7 +51,7 @@ public class Yng_XubioSalesInvoice {
 	@JoinColumn(name = "xubio_client_id")
 	private Yng_XubioClient xubioClient;
 	
-	@OneToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "yng_confirm_id")
 	private Yng_Confirm confirm;
 	

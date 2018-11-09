@@ -40,14 +40,11 @@ import com.valework.yingul.dao.XubioResponseDao;
 import com.valework.yingul.dao.XubioSalesInvoiceDao;
 import com.valework.yingul.dao.XubioSendTransactionByMailDao;
 import com.valework.yingul.dao.XubioTransaccionProductoItemsDao;
-import com.valework.yingul.model.Yng_Account;
 import com.valework.yingul.model.Yng_Business;
 import com.valework.yingul.model.Yng_Commission;
 import com.valework.yingul.model.Yng_Confirm;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Standard;
-import com.valework.yingul.model.Yng_Transaction;
-import com.valework.yingul.model.Yng_TransactionDetail;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.model.Yng_XubioClient;
 import com.valework.yingul.model.Yng_XubioSalesInvoice;
@@ -200,7 +197,7 @@ public class XubioFunds {
 					xubioClient.setCodeCategoriaFiscal("EX");
 		        	break;
 				case "Exterior":  
-					//xubioClient.setCodeCategoriaFiscal("E");
+					xubioClient.setCodeCategoriaFiscal("CE");
 		        	break;
 				case "IVA No Alcanzado":  
 					xubioClient.setCodeCategoriaFiscal("NA");
@@ -501,7 +498,7 @@ public class XubioFunds {
 		
 		transactionByMail.setTransaccionId(invoice.getTransaccionid());
 		transactionByMail.setDestinatarios(invoice.getXubioClient().getEmail());
-		transactionByMail.setCopiaCon("noreply@internetvale.com");
+		transactionByMail.setCopiaCon("invoices@yingul.com");
 		transactionByMail.setCopiaConOtro("quenallataeddy@gmail.com");//solo para las pruebas 
 		transactionByMail.setAsunto("Factura correspondiente a los servicios de Yingul Company SRL");
 		transactionByMail.setCuerpo("Estimado cliente, La factura adjunta es de Carácter informativo, los valores ya fueron debitados de su cuenta virtual en Yingul Pay Importante: No debe realizar ningun pago a Yingul Pay por esta factura. Cordial Saludo.");

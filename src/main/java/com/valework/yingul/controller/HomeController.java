@@ -84,7 +84,8 @@ public class HomeController {
 		user.setYng_Ubication(null);
 		user.setPassword(user.getPassword().trim());
 		String password= user.getPassword().trim();
-		user.setUsername((cleanString(person.getName())+cleanString(person.getLastname())).replace(" ",""));
+		String usernameTemp=person.getName()+person.getLastname().replace(" ", "");
+		user.setUsername(cleanString(usernameTemp).replace("%20",""));
 		LOG.info(user.getUsername());
 		if(userService.checkUsernameExists(user.getUsername())) {
 			LOG.info("existe"+user.getUsername());
@@ -117,8 +118,13 @@ public class HomeController {
             account.setUser(temp);
             accountDao.save(account);
             //
-            smtpMailSender.send(user.getEmail(), "Autenticado exitosamente", "Ya esta autenticado su password es:"+password);
-            System.out.println("llego :save");
+            smtpMailSender.send(user.getEmail(), "Autenticado exitosamente", "<p><strong>Hola "+person.getName()+",</strong></p>\r\n" + 
+            		"<p>Yingul Company te da la bienvenida a la plataforma más segura y confiable para comprar y vender por internet.</p>\r\n" + 
+            		"<p>Hoy, aceptaste los&nbsp;<strong>Términos y Condiciones Generales (TCG)&nbsp;</strong>para usuarios Yingul, Para ver su contenido, haz click <a href=\"https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/politicas/terminos-y-condiciones-de-uso.pdf\" target=\"_blank\" rel=\"noopener\">aquí</a>.</p>\r\n" + 
+            		"<p>Puede iniciar sesión en nuestro sistema en&nbsp;<a href=\"https://www.yingul.com/login\" target=\"_blank\" rel=\"noopener noreferrer\">aquí</a>, usando la siguiente información:<br />&nbsp; &nbsp; Correo: "+temp.getEmail()+"<br />&nbsp;&nbsp;&nbsp;&nbsp;Contraseña: "+password+"<br />&nbsp; &nbsp; Nombre de usuario:&nbsp;"+temp.getUsername()+"</p>\r\n" + 
+            		"<p>Cordialemente:</p>\r\n" + 
+            		"<p><img src=\"https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/logos/logonaranja.jpg\" alt=\"\" width=\"182\" height=\"182\" /></p>\r\n" + 
+            		"<p>Su equípo de autenticación de Yingul&nbsp;<a href=\"https://www.yingul.com\" target=\"_blank\" rel=\"noopener\">www.yingul.com</a></p>");
             return "save";
         }
     }
@@ -145,7 +151,8 @@ public class HomeController {
 		user.setYng_Ubication(null);
 		user.setPassword(user.getPassword().trim());
 		String password= user.getPassword().trim();
-		user.setUsername((cleanString(person.getName())+cleanString(person.getLastname())).replace(" ",""));
+		String usernameTemp=person.getName()+person.getLastname().replace(" ", "");
+		user.setUsername(cleanString(usernameTemp).replace("%20",""));
 		LOG.info(user.getUsername());
 		if(userService.checkUsernameExists(user.getUsername())) {
 			LOG.info("existe"+user.getUsername());
@@ -181,12 +188,16 @@ public class HomeController {
             business.setBusinessName(business.getBusinessName().toUpperCase());
             business.setUser(user);
             businessDao.save(business);
-            smtpMailSender.send(user.getEmail(), "Autenticado exitosamente", "Ya esta autenticado su password es:"+password);
-            System.out.println("llego :save");
+            smtpMailSender.send(user.getEmail(), "Autenticado exitosamente", "<p><strong>Hola "+business.getBusinessName()+",</strong></p>\r\n" + 
+            		"<p>Yingul Company te da la bienvenida a la plataforma más segura y confiable para comprar y vender por internet.</p>\r\n" + 
+            		"<p>Hoy, aceptaste los&nbsp;<strong>Términos y Condiciones Generales (TCG)&nbsp;</strong>para empresas Yingul, Para ver su contenido, haz click <a href=\"https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/politicas/terminos-y-condiciones-de-uso.pdf\" target=\"_blank\" rel=\"noopener\">aquí</a>.</p>\r\n" + 
+            		"<p>Puede iniciar sesión en nuestro sistema en&nbsp;<a href=\"https://www.yingul.com/login\" target=\"_blank\" rel=\"noopener noreferrer\">aquí</a>, usando la siguiente información:<br />&nbsp; &nbsp; Correo: "+temp.getEmail()+"<br />&nbsp;&nbsp;&nbsp;&nbsp;Contraseña: "+password+"<br />&nbsp; &nbsp; Nombre de usuario:&nbsp;"+temp.getUsername()+"</p>\r\n" + 
+            		"<p>Cordialemente:</p>\r\n" + 
+            		"<p><img src=\"https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/logos/logonaranja.jpg\" alt=\"\" width=\"182\" height=\"182\" /></p>\r\n" + 
+            		"<p>Su equípo de autenticación de Yingul&nbsp;<a href=\"https://www.yingul.com\" target=\"_blank\" rel=\"noopener\">www.yingul.com</a></p>");
             return "save";
         }
     }
-	
 	
 	@RequestMapping("/userFront")
 	@ResponseBody

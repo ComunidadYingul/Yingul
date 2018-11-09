@@ -129,6 +129,8 @@ public class UserController {
 	@RequestMapping(value = "/updateUsername", method = RequestMethod.POST)
 	@ResponseBody
     public String updateUsernamePost(@Valid @RequestBody Yng_User user,@RequestHeader("Authorization") String authorization) throws MessagingException {
+		user.setUsername(user.getUsername().replace(":", ""));
+		user.setUsername(user.getUsername().replace(" ", ""));
 		String token =new String(org.apache.commons.codec.binary.Base64.decodeBase64(authorization));
 		String[] parts = token.split(":");
 		Yng_User yng_User= userDao.findByUsername(parts[0]);

@@ -5,16 +5,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
@@ -22,7 +18,6 @@ import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
-
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,20 +30,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.valework.yingul.SmtpMailSender;
 import com.valework.yingul.dao.AmbientDao;
 import com.valework.yingul.dao.AmenitiesDao;
 import com.valework.yingul.dao.BranchAndreaniDao;
+import com.valework.yingul.dao.BuyDao;
 import com.valework.yingul.dao.CategoryDao;
 import com.valework.yingul.dao.CityDao;
+import com.valework.yingul.dao.ClaimDao;
+import com.valework.yingul.dao.ConfirmDao;
 import com.valework.yingul.dao.ConfortDao;
 import com.valework.yingul.dao.DepartmentDao;
 import com.valework.yingul.dao.EquipmentDao;
 import com.valework.yingul.dao.ExteriorDao;
+import com.valework.yingul.dao.FavoriteDao;
 import com.valework.yingul.dao.FindMotorizedDao;
+import com.valework.yingul.dao.ItemCategoryDao;
 import com.valework.yingul.dao.ItemDao;
 import com.valework.yingul.dao.ItemImageDao;
 import com.valework.yingul.dao.MotorizedConfortDao;
@@ -57,6 +54,7 @@ import com.valework.yingul.dao.MotorizedEquipmentDao;
 import com.valework.yingul.dao.MotorizedExteriorDao;
 import com.valework.yingul.dao.MotorizedSecurityDao;
 import com.valework.yingul.dao.MotorizedSoundDao;
+import com.valework.yingul.dao.NotificationDao;
 import com.valework.yingul.dao.OmittedWordDao;
 import com.valework.yingul.dao.ProductDao;
 import com.valework.yingul.dao.PropertyAmbientDao;
@@ -64,17 +62,23 @@ import com.valework.yingul.dao.PropertyAmenitiesDao;
 import com.valework.yingul.dao.PropertyDao;
 import com.valework.yingul.dao.ProvinceDao;
 import com.valework.yingul.dao.QueryDao;
+import com.valework.yingul.dao.QuoteDao;
 import com.valework.yingul.dao.SecurityDao;
 import com.valework.yingul.dao.ServiceDao;
 import com.valework.yingul.dao.ServiceProvinceDao;
+import com.valework.yingul.dao.ShipmentDao;
+import com.valework.yingul.dao.ShippingDao;
 import com.valework.yingul.dao.SoundDao;
 import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.UbicationDao;
 import com.valework.yingul.dao.UserDao;
-import com.valework.yingul.model.Yng_Ambient;
+import com.valework.yingul.dao.XubioSalesInvoiceDao;
+import com.valework.yingul.dao.XubioTransaccionProductoItemsDao;
 import com.valework.yingul.model.Yng_BranchAndreani;
+import com.valework.yingul.model.Yng_Buy;
 import com.valework.yingul.model.Yng_Category;
-import com.valework.yingul.model.Yng_Country;
+import com.valework.yingul.model.Yng_Claim;
+import com.valework.yingul.model.Yng_Confirm;
 import com.valework.yingul.model.Yng_Favorite;
 import com.valework.yingul.model.Yng_FindMotorized;
 import com.valework.yingul.model.Yng_Item;
@@ -86,6 +90,7 @@ import com.valework.yingul.model.Yng_MotorizedEquipment;
 import com.valework.yingul.model.Yng_MotorizedExterior;
 import com.valework.yingul.model.Yng_MotorizedSecurity;
 import com.valework.yingul.model.Yng_MotorizedSound;
+import com.valework.yingul.model.Yng_Notification;
 import com.valework.yingul.model.Yng_OmittedWord;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Product;
@@ -93,12 +98,16 @@ import com.valework.yingul.model.Yng_Property;
 import com.valework.yingul.model.Yng_PropertyAmbient;
 import com.valework.yingul.model.Yng_PropertyAmenities;
 import com.valework.yingul.model.Yng_Query;
+import com.valework.yingul.model.Yng_Quote;
 import com.valework.yingul.model.Yng_Service;
 import com.valework.yingul.model.Yng_ServiceProvince;
+import com.valework.yingul.model.Yng_Shipment;
+import com.valework.yingul.model.Yng_Shipping;
 import com.valework.yingul.model.Yng_Standard;
 import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
-import com.valework.yingul.model.Yng_YingulRequest;
+import com.valework.yingul.model.Yng_XubioSalesInvoice;
+import com.valework.yingul.model.Yng_XubioTransaccionProductoItems;
 import com.valework.yingul.service.ItemCategoryService;
 import com.valework.yingul.service.ItemImageService;
 import com.valework.yingul.service.ItemService;
@@ -108,9 +117,8 @@ import com.valework.yingul.service.ProductService;
 import com.valework.yingul.service.PropertyService;
 import com.valework.yingul.service.QueryService;
 import com.valework.yingul.service.S3Services;
-import com.valework.yingul.service.ServiceProvinceService;
 import com.valework.yingul.service.ServiceService;
-import com.valework.yingul.service.UserServiceImpl.ServiceProvinceServiceImp;
+import com.valework.yingul.service.UserService;
 
 @RestController
 @RequestMapping("/item")
@@ -157,13 +165,10 @@ public class ItemController {
 	private StandardDao standardDao;
     @Autowired 
     CityDao cityDao;
-    
     @Autowired 
     ProvinceDao provinceDao;
-    
     @Autowired
     DepartmentDao departmentDao;
-    
     @Autowired
     UbicationDao ubicationDao;
     @Autowired
@@ -180,29 +185,22 @@ public class ItemController {
 	PropertyAmenitiesDao propertyAmenitiesDao;
 	@Autowired
 	SecurityDao securityDao;
-	
 	@Autowired
 	ConfortDao confortDao;
-	
 	@Autowired
 	EquipmentDao equipmentDao;
-	
 	@Autowired
 	ExteriorDao exteriorDao;
-	
 	@Autowired
 	SoundDao soundDao;
 	@Autowired
 	MotorizedSecurityDao motorizedSecurityDao;
-	
 	@Autowired
 	MotorizedConfortDao motorizedConfortDao;
-	
 	@Autowired
 	MotorizedEquipmentDao motorizedEquipmentDao;
 	@Autowired
 	MotorizedExteriorDao motorizedExteriorDao;
-	
 	@Autowired
 	MotorizedSoundDao motorizedSoundDao;
 	@Autowired
@@ -215,9 +213,39 @@ public class ItemController {
 	ItemImageDao itemImageDao;
 	@Autowired
 	OmittedWordDao omittedWordDao;
+	@Autowired 
+	UserService userService;
+	@Autowired 
+	ShipmentDao shipmentDao;
+	@Autowired
+	ShippingDao shippingDao;
+	@Autowired
+	BuyDao buyDao;
+	@Autowired
+	ConfirmDao confirmDao;
+	@Autowired 
+	ClaimDao claimDao;
+	@Autowired 
+	XubioSalesInvoiceDao xubioSalesInvoiceDao;
+	@Autowired 
+	XubioTransaccionProductoItemsDao xubioTransaccionProductoItemsDao;
+	@Autowired
+	FavoriteDao favoriteDao;
+	@Autowired
+	ItemCategoryDao itemCategoryDao;
+	@Autowired
+	NotificationDao notificationDao;
+	@Autowired 
+	QuoteDao quoteDao;
 	
 	@Value("${jsa.s3.bucket}")
 	private String bucketName;
+	
+	@RequestMapping("/getQuantityAllItems")
+    public String getQuantityAllItems() {
+		List<Yng_Item> itemList = itemDao.findAll();
+		return String.valueOf(itemList.size());
+    }
 	
 	@RequestMapping("/itemType/{itemId}")
     public String getItemTypeById(@PathVariable("itemId") Long itemId) {
@@ -1267,6 +1295,263 @@ public class ItemController {
     		return null;
     	}
         
+    }
+    
+    @RequestMapping("/deleteItemById/{itemId}")
+    public String deleteItemById(@PathVariable("itemId") Long itemId, @RequestHeader("Authorization") String authorization) {
+    	String token =new String(org.apache.commons.codec.binary.Base64.decodeBase64(authorization));
+		String[] parts = token.split(":");
+		Yng_User admin= userDao.findByUsername(parts[0]);
+    	if(userService.isAdmin(admin)) {
+    		Yng_Item item = new Yng_Item();
+    		item= itemDao.findByItemId(itemId);
+    		if(item!=null) {
+	    		deleteBuyByItem(item);
+	    		deleteFavoriteByItem(item);
+	    		deleteItemCategoryByItem(item);
+	    		deleteItemImageByItem(item);
+	    		deleteMotorizedByItem(item);
+	    		deleteNotificationByItem(item);
+	    		deleteProductByItem(item);
+	    		deletePropertyByItem(item);
+	    		deleteQueryByItem(item);
+	    		deleteQuoteByItem(item);
+	    		deleteServiceByItem(item);
+	    		deleteShipmentByItem(item);
+	    		itemDao.delete(item);
+	    		return "save";
+	    	}else {
+	    		return "doesNoExist";
+	    	}
+    	}else {
+        	return "prohibited";
+    	}
+    }
+    
+    public void deleteServiceByItem(Yng_Item item) {
+    	List<Yng_Service> serviceList = serviceDao.findAll();
+    	for (Yng_Service service : serviceList) {
+			if(service.getYng_Item()!=null && service.getYng_Item().getItemId()==item.getItemId()) {
+				deleteServiceProvinceByService(service);
+				serviceDao.delete(service);
+			}
+		}
+    }
+    
+    public void deleteServiceProvinceByService(Yng_Service service) {
+    	List<Yng_ServiceProvince> provinceList = serviceProvinceDao.findByService(service);
+    	for (Yng_ServiceProvince province : provinceList) {
+    		serviceProvinceDao.delete(province);
+		}
+    }
+    
+    public void deleteQuoteByItem(Yng_Item item) {
+    	List<Yng_Quote> quoteList = quoteDao.findAll();
+    	for (Yng_Quote quote : quoteList) {
+			if(quote.getYng_Item()!=null && quote.getYng_Item().getItemId()==item.getItemId()) {
+				deleteShippingByQuote(quote);
+				quoteDao.delete(quote);
+			}
+		}
+    }
+    
+    public void deleteShippingByQuote(Yng_Quote quote) {
+    	List<Yng_Shipping> shippingList = shippingDao.findAll();
+    	for (Yng_Shipping shipping : shippingList) {
+			if(shipping.getYng_Quote()!=null && shipping.getYng_Quote().getQuoteId()==quote.getQuoteId()) {
+				deleteBuyByShipping(shipping);
+				shippingDao.delete(shipping);
+			}
+		}
+    }
+    
+    public void deleteQueryByItem(Yng_Item item) {
+    	List<Yng_Query> queryList = queryDao.findAll();
+    	for (Yng_Query query : queryList) {
+			if(query.getYng_Item()!=null && query.getYng_Item().getItemId()==item.getItemId()) {
+				queryDao.delete(query);
+			}
+		}
+    }
+    
+    public void deletePropertyByItem(Yng_Item item) {
+    	List<Yng_Property> propertyList = propertyDao.findAll();
+    	for (Yng_Property property : propertyList) {
+			if(property.getYng_Item()!=null && property.getYng_Item().getItemId()==item.getItemId()) {
+				deletePropertyAmbientByProperty(property);
+				deletePropertyAmenitiesByProperty(property);
+				propertyDao.delete(property);
+			}
+		}
+    }
+    
+    public void deletePropertyAmbientByProperty(Yng_Property property) {
+    	List<Yng_PropertyAmbient> ambientList = propertyAmbietDao.findByProperty(property);
+    	for (Yng_PropertyAmbient ambient : ambientList) {
+    		propertyAmbietDao.delete(ambient);
+		}
+    }
+    
+    public void deletePropertyAmenitiesByProperty(Yng_Property property) {
+    	List<Yng_PropertyAmenities> amenitieList = propertyAmenitiesDao.findByProperty(property);
+    	for (Yng_PropertyAmenities amenitie : amenitieList) {
+    		propertyAmenitiesDao.delete(amenitie);
+		}
+    }
+    
+    public void deleteProductByItem(Yng_Item item) {
+    	List<Yng_Product> productList = productDao.findAll();
+    	for (Yng_Product product : productList) {
+			if(product.getYng_Item()!=null && product.getYng_Item().getItemId()==item.getItemId()) {
+				productDao.delete(product);
+			}
+		}
+    }
+    
+    public void deleteNotificationByItem(Yng_Item item) {
+    	List<Yng_Notification> notificationList = notificationDao.findByItem(item);
+    	for (Yng_Notification notification : notificationList) {
+			notificationDao.delete(notification);
+		}
+    }
+    
+    public void deleteMotorizedByItem(Yng_Item item) {
+    	List<Yng_Motorized> motorizedList = motorizedDao.findAll();
+    	for (Yng_Motorized motorized : motorizedList) {
+			if(motorized.getYng_Item()!=null && motorized.getYng_Item().getItemId()==item.getItemId()) {
+				deleteMotorizedConfortByMotorized(motorized);
+				deleteMotorizedEquipmentByMotorized(motorized);
+				deleteMotorizedExteriorByMotorized(motorized);
+				deleteMotorizedSecurityByMotorized(motorized);
+				deleteMotorizedSoundByMotorized(motorized);
+				motorizedDao.delete(motorized);
+			}
+		}
+    }
+    
+    public void deleteMotorizedSoundByMotorized(Yng_Motorized motorized) {
+    	List<Yng_MotorizedSound> soundList = motorizedSoundDao.findByMotorized(motorized);
+    	for (Yng_MotorizedSound sound : soundList) {
+    		motorizedSoundDao.delete(sound);
+		}
+    }
+    
+    public void deleteMotorizedSecurityByMotorized(Yng_Motorized motorized) {
+    	List<Yng_MotorizedSecurity> securityList = motorizedSecurityDao.findByMotorized(motorized);
+    	for (Yng_MotorizedSecurity security : securityList) {
+    		motorizedSecurityDao.delete(security);
+		}
+    }
+    
+    public void deleteMotorizedConfortByMotorized(Yng_Motorized motorized) {
+    	List<Yng_MotorizedConfort> confortList = motorizedConfortDao.findByMotorized(motorized);
+    	for (Yng_MotorizedConfort confort : confortList) {
+			motorizedConfortDao.delete(confort);
+		}
+    }
+    
+    public void deleteMotorizedEquipmentByMotorized(Yng_Motorized motorized) {
+    	List<Yng_MotorizedEquipment> equipmentList = motorizedEquipmentDao.findByMotorized(motorized);
+    	for (Yng_MotorizedEquipment equipment : equipmentList) {
+			motorizedEquipmentDao.delete(equipment);
+		}
+    }
+    
+    public void deleteMotorizedExteriorByMotorized(Yng_Motorized motorized) {
+    	List<Yng_MotorizedExterior> exteriorList = motorizedExteriorDao.findByMotorized(motorized);
+    	for (Yng_MotorizedExterior exterior : exteriorList) {
+			motorizedExteriorDao.delete(exterior);
+		}
+    }
+    
+    public void deleteItemImageByItem(Yng_Item item) {
+    	List<Yng_ItemImage> itemImageList = itemImageDao.findByItem(item);
+    	for (Yng_ItemImage itemImage : itemImageList) {	
+    		deleteImage(itemImage.getImage());
+    		itemImageDao.delete(itemImage);
+		}
+    }
+    
+    public void deleteItemCategoryByItem(Yng_Item item) {
+    	List<Yng_ItemCategory> itemCategoryList = itemCategoryDao.findByItem(item);
+    	for (Yng_ItemCategory itemCategory : itemCategoryList) {	
+    		itemCategoryDao.delete(itemCategory);
+		}
+    }
+    
+    public void deleteFavoriteByItem(Yng_Item item) {
+    	List<Yng_Favorite> favoriteList = favoriteDao.findByItem(item);
+    	for (Yng_Favorite favorite : favoriteList) {
+    		favoriteDao.delete(favorite);
+		}
+    }
+    
+    public void deleteBuyByItem(Yng_Item item) {
+    	List<Yng_Buy> buyList = buyDao.findAll();
+    	for (Yng_Buy buy : buyList) {
+    		if(buy.getYng_item()!=null && buy.getYng_item().getItemId()==item.getItemId()) {
+    			deleteConfirmByBuy(buy);
+        		buyDao.delete(buy);	
+    		}
+		}
+    }
+    
+    public void deleteShipmentByItem(Yng_Item item) {
+    	List<Yng_Shipment> shipmentList = shipmentDao.findAll();
+		for (Yng_Shipment shipment : shipmentList) {
+			if(shipment.getYng_Item()!=null && shipment.getYng_Item().getItemId()==item.getItemId()) {
+				deleteShippingByShipment(shipment);
+				shipmentDao.delete(shipment);
+			}
+		}
+    }
+    
+    public void deleteShippingByShipment(Yng_Shipment shipment) {
+    	List<Yng_Shipping> shippingList = shippingDao.findAll();
+		for (Yng_Shipping shipping : shippingList) {
+			if(shipping.getYng_Shipment()!=null && shipping.getYng_Shipment().getShipmentId()==shipment.getShipmentId()) {
+				deleteBuyByShipping(shipping);
+				shippingDao.delete(shipping);
+			}
+		}
+    }
+    
+    public void deleteBuyByShipping(Yng_Shipping shipping){
+    	List<Yng_Buy> buyList = buyDao.findByShipping(shipping);
+    	for (Yng_Buy buy : buyList) {
+    		deleteConfirmByBuy(buy);
+			buyDao.delete(buy);
+		}
+    }
+    
+    public void deleteConfirmByBuy(Yng_Buy buy) {
+    	Yng_Confirm confirm = confirmDao.findByBuy(buy);
+    	if(confirm!=null) {
+    		deleteClaimByConfirm(confirm);
+        	deleteXubioSalesInvoiceByConfirm(confirm);
+        	confirmDao.delete(confirm);	
+    	}
+    }
+    
+    public void deleteClaimByConfirm(Yng_Confirm confirm) {
+    	Yng_Claim claim = claimDao.findByConfirm(confirm);
+    	if(claim!=null)
+    	claimDao.delete(claim);
+    }
+    
+    public void deleteXubioSalesInvoiceByConfirm(Yng_Confirm confirm) {
+    	List<Yng_XubioSalesInvoice> invoiceList = xubioSalesInvoiceDao.findByConfirm(confirm);
+    	for (Yng_XubioSalesInvoice invoice : invoiceList) {
+    		delteXubioTransaccionProductoItemsByXubioSalesInvoice(invoice);
+        	xubioSalesInvoiceDao.delete(invoice);	
+		}
+    } 
+    
+    public void delteXubioTransaccionProductoItemsByXubioSalesInvoice(Yng_XubioSalesInvoice xubiSalesInvoice) {
+    	List<Yng_XubioTransaccionProductoItems> itemsList = xubioTransaccionProductoItemsDao.findByXubioSalesInvoice(xubiSalesInvoice);
+    	for (Yng_XubioTransaccionProductoItems item : itemsList) {
+    		xubioTransaccionProductoItemsDao.delete(item);
+		}
     }
     
 }

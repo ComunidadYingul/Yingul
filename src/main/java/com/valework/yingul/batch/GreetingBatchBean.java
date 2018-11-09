@@ -652,9 +652,4 @@ public class GreetingBatchBean {
 		}
 	}
 	
-	@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
-	public void labelQuery() throws MessagingException{
-		System.out.println("enviar mail");
-		smtpMailSender.send("quenallataeddy@gmail.com", "CRONS INVO", "CRONS");
-	}
 }
