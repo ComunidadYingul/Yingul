@@ -122,8 +122,12 @@ public class StoreController {
 		storeDao.save(storeTemp);
 		try {
 			smtpMailSender.send(storeTemp.getUser().getEmail(), "Tienda registrada exitosamente",
-					"Su tienda ya esta registrada compartela y encuentrala en: https://www.yingul.com/tiendaOficial/"+ storeTemp.getName()+
-					"</br> Importante todos los productos que publicaste y publicaras desde ahora se encontraran en tu tienda.");
+					"Su tienda ya esta registrada compartela y encuentrala <a href=\"https://www.yingul.com/tiendaOficial/"+ storeTemp.getName()+"\" target=\"_blank\">aquí</a>"+
+					"</br> Importante todos los productos que publicaste y publicaras desde ahora se encontraran en tu tienda."+
+					"<p>Cordialemente:</p>"+ 
+		        	"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
+		        	"<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
+        			"Copyright 2018 Yigul S.R.L.. All rights reserved.");
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -145,11 +145,11 @@ public class UserController {
 	        			"<br>" + 
 	        			"Su USERNAME de Yingul ha cambiado recientemente.<br>" + 
 	        			"Si usted no solicitó el cambio de USERNAME, póngase en contacto con el equipo de asistencia al cliente.<br>" + 
-	        			"https://www.yingul.com/about/contactUs<br>" + 
-	        			"<br>" + 
-	        			"El equipo de Yingul<br>" + 
-	        			"<br>" + 
-	        			"Copyright 2018 Yingul S.R.L. All rights reserved.");
+	        			"<a href=\"https://www.yingul.com/about/contactUs\" target=\"_blank\">aquí</a>" + 
+	        			"<p>Cordialemente:</p>"+ 
+		        		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
+		        		"<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
+        				"Copyright 2018 Yigul S.R.L.. All rights reserved.");
 	        	return "save";
 			}
 		}else {
@@ -172,22 +172,22 @@ public class UserController {
 	        			"<br>" + 
 	        			"Su Email de Yingul ha cambiado recientemente.<br>" + 
 	        			"Si usted no solicitó el cambio de Email, póngase en contacto con el equipo de asistencia al cliente.<br>" + 
-	        			"https://www.yingul.com/about/contactUs<br>" + 
-	        			"<br>" + 
-	        			"El equipo de Yingul<br>" + 
-	        			"<br>" + 
-	        			"Copyright 2018 Yingul S.R.L. All rights reserved.");
+	        			"<a href=\"https://www.yingul.com/about/contactUs\" target=\"_blank\">aquí</a>" + 
+	        			"<p>Cordialemente:</p>"+ 
+		        		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
+		        		"<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
+        				"Copyright 2018 Yigul S.R.L.. All rights reserved.");
 				yng_User.setEmail(user.getEmail().toLowerCase());
 				yng_User=userDao.save(yng_User);
 				smtpMailSender.send(yng_User.getEmail(), "El Email del Usuario de Yingul ha cambiado", "Estimado "+yng_User.getUsername()+":<br>" + 
 	        			"<br>" + 
 	        			"Su Email de Yingul ha cambiado recientemente.<br>" + 
 	        			"Si usted no solicitó el cambio de Email, póngase en contacto con el equipo de asistencia al cliente.<br>" + 
-	        			"https://www.yingul.com/about/contactUs<br>" + 
-	        			"<br>" + 
-	        			"El equipo de Yingul<br>" + 
-	        			"<br>" + 
-	        			"Copyright 2018 Yingul S.R.L. All rights reserved.");
+	        			"<a href=\"https://www.yingul.com/about/contactUs\" target=\"_blank\">aquí</a>" + 
+	        			"<p>Cordialemente:</p>"+ 
+		        		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
+		        		"<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
+        				"Copyright 2018 Yigul S.R.L.. All rights reserved.");
 				return "save";
 			}
 		}else {
@@ -211,11 +211,11 @@ public class UserController {
         			"<br>" + 
         			"Su Clave de Yingul ha cambiado recientemente.<br>" + 
         			"Si usted no solicitó el cambio de Clave, póngase en contacto con el equipo de asistencia al cliente.<br>" + 
-        			"https://www.yingul.com/about/contactUs<br>" + 
-        			"<br>" + 
-        			"El equipo de Yingul<br>" + 
-        			"<br>" + 
-        			"Copyright 2018 Yingul S.R.L. All rights reserved.");
+        			"<a href=\"https://www.yingul.com/about/contactUs\" target=\"_blank\">aquí</a>" + 
+	        		"<p>Cordialemente:</p>"+ 
+		        	"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
+		        	"<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
+        			"Copyright 2018 Yigul S.R.L.. All rights reserved.");
 			return "save";
 		}else {
 			return "prohibited";

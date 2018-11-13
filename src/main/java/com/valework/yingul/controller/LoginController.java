@@ -55,12 +55,14 @@ public class LoginController {
         	}
         	smtpMailSender.send(userTemp.getEmail(), "Restaure la contraseña del usuario de Yingul", "Estimado "+userTemp.getUsername()+":<br>" + 
         			"Para restaurar la contraseña, haga clic en este vínculo.<br>" + 
-        			"https://www.yingul.com/resetPassword/"+resetPassword.getResetpasswordId()+"<br>" +
+        			"<a href=\"https://www.yingul.com/resetPassword/"+resetPassword.getResetpasswordId()+"\" target=\"_blank\">aquí</a><br>" +
         			"Ingres este código "+resetPassword.getCodeResetPassword()+"<br>" +
         			"Tenga en cuenta lo siguiente: <br>" + 
         			"Por motivos de seguridad, el vínculo caducará 72 horas después de su envío.<br>" + 
         			"Si no puede acceder al vínculo, copie y pegue toda la URL en el navegador.<br>" + 
-        			"El equipo de Yingul<br>" + 
+        			"<p>Cordialemente:</p>"+ 
+		        	"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
+		        	"<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
         			"Copyright 2018 Yigul S.R.L.. All rights reserved.");
         	return "save";
         }else {
@@ -81,11 +83,10 @@ public class LoginController {
         			"<br>" + 
         			"Su contraseña de Yingul ha cambiado recientemente.<br>" + 
         			"Si usted no solicitó el cambio de contraseña, póngase en contacto con el equipo de asistencia al cliente.<br>" + 
-        			"bout/contactUs<br>" + 
-        			"<br>" + 
-        			"El equipo de Yingul<br>" + 
-        			"<br>" + 
-        			"Copyright 2018 Yingul S.R.L. All rights reserved.");
+        			"<p>Cordialemente:</p>"+ 
+		        	"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
+		        	"<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
+        			"Copyright 2018 Yigul S.R.L.. All rights reserved.");
         	return "save";
         }else {
         	return "prohibited";
