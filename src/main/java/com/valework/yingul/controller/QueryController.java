@@ -81,7 +81,10 @@ public class QueryController {
 	    	sellerNotification.setUser(query.getYng_Item().getUser());
 	    	notificationDao.save(sellerNotification);
 		    try {
-				smtpMailSender.send(query.getYng_Item().getUser().getEmail(), "Consulta urgente sobre su Item", query.getUser().getUsername()+" pregunto "+query.getQuery()+" sobre el Item "+query.getYng_Item().getName()+". Puedes responder las consultas en: https://www.yingul.com/userFront/sales/query");
+				smtpMailSender.send(query.getYng_Item().getUser().getEmail(), "Consulta urgente sobre su Item", query.getUser().getUsername()+" pregunto "+query.getQuery()+" sobre el Item "+query.getYng_Item().getName()+". Puedes responder las consultas en: https://www.yingul.com/userFront/sales/query")
+				+ "<p>Cordialemente:</p>\r\n"  
+				+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
+				+ "<p>Su equípo de consultas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
 			} catch (MessagingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -159,7 +162,10 @@ public class QueryController {
     	queryTemp.setDate(hourdateFormat.format(date));
     	queryTemp.setStatus("responded");
     	try {
-			smtpMailSender.send(queryTemp.getUser().getEmail(), "Respuesta sobre "+queryTemp.getYng_Item().getName(), queryTemp.getYng_Item().getUser().getUsername()+" respondio!!! sobre" +queryTemp.getYng_Item().getName()+". Puedes ver la repuesta en: https://www.yingul.com/itemDetail/"+queryTemp.getYng_Item().getItemId()+" o ver todas las respuestas en https://www.yingul.com/userFront/purchases/query");
+			smtpMailSender.send(queryTemp.getUser().getEmail(), "Respuesta sobre "+queryTemp.getYng_Item().getName(), queryTemp.getYng_Item().getUser().getUsername()+" respondio!!! sobre" +queryTemp.getYng_Item().getName()+". Puedes ver la repuesta en: https://www.yingul.com/itemDetail/"+queryTemp.getYng_Item().getItemId()+" o ver todas las respuestas en https://www.yingul.com/userFront/purchases/query")
+			+ "<p>Cordialemente:</p>\r\n"  
+			+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
+			+ "<p>Su equípo de consultas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
