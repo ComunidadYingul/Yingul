@@ -28,7 +28,6 @@ import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.TransactionDao;
 import com.valework.yingul.dao.TransactionDetailDao;
 import com.valework.yingul.dao.XubioSalesInvoiceDao;
-import com.valework.yingul.logistic.GetStateSend;
 import com.valework.yingul.logistic.GetTraceability;
 import com.valework.yingul.logistic.Yng_AndreaniTrazabilidad;
 import com.valework.yingul.model.Yng_Account;
@@ -39,7 +38,6 @@ import com.valework.yingul.model.Yng_Item;
 import com.valework.yingul.model.Yng_Payment;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Standard;
-import com.valework.yingul.model.Yng_StateShipping;
 import com.valework.yingul.model.Yng_Transaction;
 import com.valework.yingul.model.Yng_TransactionDetail;
 import com.valework.yingul.model.Yng_XubioSalesInvoice;
@@ -86,7 +84,7 @@ public class GreetingBatchBean {
 	
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 6 * * *")//cada dia a las 6 de la mañana
-	//@Scheduled(cron = "0 25 0-23 * * ?")//para todas las horas y 20
+	@Scheduled(cron = "0 25 0-23 * * ?")//para todas las horas y 20
 	public void cronJob() throws ClientProtocolException, IOException, Exception {
 		System.out.println("primer cron");
 		Date date = new Date();
@@ -452,7 +450,7 @@ public class GreetingBatchBean {
     	}
 	}
 	
-	//@Scheduled(cron = "0 20 0-23 * * ?")//para todas las horas y 20
+	@Scheduled(cron = "0 20 0-23 * * ?")//para todas las horas y 20
 	public void cronJob1() throws ClientProtocolException, IOException, Exception {
 		System.out.println("segundo cron");
 		List<Yng_Payment> confirmCashPayment= paymentDao.findByTypeAndStatusAndBuyStatus("CASH","PENDING","PENDING");
@@ -492,7 +490,7 @@ public class GreetingBatchBean {
 		}
 	}
 	
-	//@Scheduled(cron = "0 15 0-23 * * ?")//para todas las horas y 15
+	@Scheduled(cron = "0 15 0-23 * * ?")//para todas las horas y 15
 	public void deliveryConfirmation() throws MessagingException{
 		System.out.println("tercer cron");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("pending");
@@ -541,18 +539,26 @@ public class GreetingBatchBean {
 		            	confirmTemp.setYearSellerConfirm(Integer.parseInt(hourdateFormat2.format(date)));
 		            	confirmTemp.setStatus("delivered");
 		            	confirmDao.save(confirmTemp);
-		            	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(), "CONFIRMACIÓN DE ENTREGA EXITOSA","Se realizo la confirmacion de la entrega del producto en una sucursal andreani:  "+confirmTemp.getBuy().getYng_item().getName() +"  Descripción : "+confirmTemp.getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +confirmTemp.getBuy().getYng_item().getPrice()
-		            			+ "<br/>--Despues de que tu comprador recoja el producto tendra 10 dias vigentes para realizar reclamos acerca del producto.");
+		            	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(),"CONFIRMACIÓN DE ENTREGA EXITOSA","<h2>CONFIRMACIÓN DE ENTREGA EXITOSA!</h2>" + 
+		            			"<p>Se realizo la confirmación de la entrega del producto en una sucursal andreani: "+confirmTemp.getBuy().getYng_item().getName() +" en la suscursal Andreani.</p>" + 
+		            			"<p>Despues de que tu comprador recoja el producto tendra 10 dias vigentes para realizar reclamos acerca del producto.</p>" + 
+		            			"<p>Cordialemente:</p>" + 
+		            			"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" + 
+		            			"<p>Su equípo de confirmación Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
 		            	DateTime endClaim = now.plusDays(4);
-		            	smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "CONFIRMACIÓN DE ENTREGA EXITOSA", "Tu vendedor realizo la entrega del producto : "+confirmTemp.getBuy().getQuantity()+" "+confirmTemp.getBuy().getYng_item().getName()+" a:"+confirmTemp.getBuy().getCost()+" en la sucursal andreani"
-		    					+ "<br/>--Puedes recoger el producto de la sucursal Andreani desde "+Integer.parseInt(hourdateFormat.format(endClaim.toDate()))+"/"+Integer.parseInt(hourdateFormat1.format(endClaim.toDate()))+"/"+Integer.parseInt(hourdateFormat2.format(endClaim.toDate())));
+		            	smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(),"CONFIRMACIÓN DE ENTREGA EXITOSA","<h2>CONFIRMACIÓN DE ENTREGA EXITOSA!</h2>\r\n" + 
+		            			"<p>Tu vendedor realizo la entrega del producto: "+confirmTemp.getBuy().getYng_item().getName() +" en la suscursal Andreani.</p>\r\n" + 
+		            			"<p>Puedes recoger el producto de la sucursal Andreani desde "+Integer.parseInt(hourdateFormat.format(endClaim.toDate()))+"/"+Integer.parseInt(hourdateFormat1.format(endClaim.toDate()))+"/"+Integer.parseInt(hourdateFormat2.format(endClaim.toDate()))+".</p>\r\n" + 
+		            			"<p>Cordialemente:</p>\r\n" + 
+		            			"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" + 
+		            			"<p>Su equípo de confirmación Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
 		    		}		
 		    	}
 			}
 		}
 	}
 	
-	//@Scheduled(cron = "0 10 0-23 * * ?")//para todas las horas y 10
+	@Scheduled(cron = "0 10 0-23 * * ?")//para todas las horas y 10
 	public void whithdrawalConfirmation() throws MessagingException{
 		System.out.println("cuarto cron");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("delivered");
@@ -603,15 +609,23 @@ public class GreetingBatchBean {
 	            	confirmTemp.setYearEndClaim(Integer.parseInt(hourdateFormat2.format(endClaim.toDate())));
 	            	confirmTemp.setStatus("confirm");
 	            	confirmDao.save(confirmTemp);
-	            	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(), "CONFIRMACIÓN DE RECEPCIÓN EXITOSA","Tu comprador realizo la confirmacion de la recepción del producto :  "+confirmTemp.getBuy().getYng_item().getName() +"  Descripción : "+confirmTemp.getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +confirmTemp.getBuy().getYng_item().getPrice()+" de la suscursal Andreani"
-	            			+ "<br/>--Si tu comprador no tiene ninguna observacion del producto en "+daysForClaims.getValue()+" días podras recoger tu dinero ingresando a : https://www.yingul.com/frontYingulPay");
-	    			smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "CONFIRMACIÓN DE RECEPCIÓN EXITOSA", "Se realizo la confirmacion de la recepción del producto : "+confirmTemp.getBuy().getQuantity()+" "+confirmTemp.getBuy().getYng_item().getName()+" a:"+confirmTemp.getBuy().getCost()+" de la sucursal Andreani"
-	    					+ "<br/> --Tiene "+daysForClaims.getValue()+" días de garantia con Yingul para realizar alguna observación ingrese a: https://www.yingul.com/userFront/claims despues de ese lapso no se aceptaran reclamos.");
+	            	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(),"CONFIRMACIÓN DE RECEPCIÓN EXITOSA","<h2>CONFIRMACIÓN DE RECEPCIÓN EXITOSA!</h2>\r\n" + 
+	            			"<p>Tu comprador realizo la confirmación de la recepción del producto: "+confirmTemp.getBuy().getYng_item().getName() +" de la suscursal Andreani.</p>\r\n" + 
+	            			"<p>Si tu comprador no tiene ninguna observación del producto en "+daysForClaims.getValue()+" días podras recoger tu dinero ingresando <a href=\"https://www.yingul.com/frontYingulPay\">aquí</a>.</p>\r\n" + 
+	            			"<p>Cordialemente:</p>\r\n" + 
+	            			"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" + 
+	            			"<p>Su equípo de confirmación Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+	            	smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(),"CONFIRMACIÓN DE RECEPCIÓN EXITOSA","<h2>CONFIRMACIÓN DE RECEPCIÓN EXITOSA!</h2>\r\n" + 
+	            			"<p>Se realizo la confirmación de la recepción del producto: "+confirmTemp.getBuy().getYng_item().getName() +" de la suscursal Andreani.</p>\r\n" + 
+	            			"<p>Tiene "+daysForClaims.getValue()+" días de garantia con Yingul, para realizar alguna observación ingrese <a href=\"https://www.yingul.com/userFront/claims\">aquí</a> después de ese lapso no se aceptaran reclamos.</p>\r\n" + 
+	            			"<p>Cordialemente:</p>\r\n" + 
+	            			"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" + 
+	            			"<p>Su equípo de confirmación Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
 	    	}
 		}
 	}
 	
-	//@Scheduled(cron = "0 0 0-23 * * ?")//para todas la hora empunto
+	@Scheduled(cron = "0 0 0-23 * * ?")//para todas la hora empunto
 	public void	createSalesInvoice() throws Exception{
 		smtpMailSender.send("quenallataeddy@gmail.com", "CRONS INVO", "CRONS");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("closed");
@@ -625,7 +639,7 @@ public class GreetingBatchBean {
 		}
 	}
 	
-	//@Scheduled(cron = "0 5 0-23 * * ?")//para todas las hora y 5
+	@Scheduled(cron = "0 5 0-23 * * ?")//para todas las hora y 5
 	public void	invoiceOrSendSalesInvoice() throws Exception{
 		List<Yng_XubioSalesInvoice> listSalesInvoice = xubioSalesInvoiceDao.findAll();
 		String responseXubio;

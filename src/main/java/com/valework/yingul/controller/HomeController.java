@@ -5,10 +5,8 @@ import java.security.Principal;
 import java.text.Normalizer;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.mail.MessagingException;
 import javax.validation.Valid;
-
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,12 +32,10 @@ import com.valework.yingul.dao.ProvinceDao;
 import com.valework.yingul.dao.RoleDao;
 import com.valework.yingul.dao.StandardDao;
 import com.valework.yingul.dao.UbicationDao;
-import com.valework.yingul.dao.UserDao;
 import com.valework.yingul.model.Yng_Account;
 import com.valework.yingul.model.Yng_Business;
 import com.valework.yingul.model.Yng_Person;
 import com.valework.yingul.model.Yng_Standard;
-import com.valework.yingul.model.Yng_Ubication;
 import com.valework.yingul.model.Yng_User;
 import com.valework.yingul.model.security.Yng_UserRole;
 import com.valework.yingul.service.BusinessService;
@@ -54,8 +49,6 @@ public class HomeController {
 	private UserService userService;
 	@Autowired 
 	private PersonService personService;
-	@Autowired
-	private BusinessService businessService;
 	@Autowired
     private RoleDao roleDao;
 	@Autowired
@@ -118,12 +111,12 @@ public class HomeController {
             account.setUser(temp);
             accountDao.save(account);
             //
-            smtpMailSender.send(user.getEmail(), "Autenticado exitosamente", "<p><strong>Hola "+person.getName()+",</strong></p>\r\n" + 
+            smtpMailSender.send(user.getEmail(), "Autenticado exitosamente", "<h2>Hola "+person.getName()+",</h2>\r\n" + 
             		"<p>Yingul Company te da la bienvenida a la plataforma más segura y confiable para comprar y vender por internet.</p>\r\n" + 
-            		"<p>Hoy, aceptaste los&nbsp;<strong>Términos y Condiciones Generales (TCG)&nbsp;</strong>para usuarios Yingul, Para ver su contenido, haz click <a href=\"https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/politicas/terminos-y-condiciones-de-uso.pdf\" target=\"_blank\" rel=\"noopener\">aquí</a>.</p>\r\n" + 
+            		"<p>Hoy, aceptaste los&nbsp;<strong>Términos y Condiciones Generales (TCG)&nbsp;</strong>para usuarios Yingul, Para ver su contenido, haz click <a href=\"https://www.yingul.com/assets/images/terminos-y-condiciones-de-uso.pdf\" target=\"_blank\">aquí</a>.</p>\r\n" + 
             		"<p>Puede iniciar sesión en nuestro sistema en&nbsp;<a href=\"https://www.yingul.com/login\" target=\"_blank\" rel=\"noopener noreferrer\">aquí</a>, usando la siguiente información:<br />&nbsp; &nbsp; Correo: "+temp.getEmail()+"<br />&nbsp;&nbsp;&nbsp;&nbsp;Contraseña: "+password+"<br />&nbsp; &nbsp; Nombre de usuario:&nbsp;"+temp.getUsername()+"</p>\r\n" + 
             		"<p>Cordialemente:</p>\r\n" + 
-            		"<p><img src=\"https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/logos/logonaranja.jpg\" alt=\"\" width=\"182\" height=\"182\" /></p>\r\n" + 
+            		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" alt=\"\" width=\"182\" height=\"182\" /></p>\r\n" + 
             		"<p>Su equípo de autenticación de Yingul&nbsp;<a href=\"https://www.yingul.com\" target=\"_blank\" rel=\"noopener\">www.yingul.com</a></p>");
             return "save";
         }
@@ -190,10 +183,10 @@ public class HomeController {
             businessDao.save(business);
             smtpMailSender.send(user.getEmail(), "Autenticado exitosamente", "<p><strong>Hola "+business.getBusinessName()+",</strong></p>\r\n" + 
             		"<p>Yingul Company te da la bienvenida a la plataforma más segura y confiable para comprar y vender por internet.</p>\r\n" + 
-            		"<p>Hoy, aceptaste los&nbsp;<strong>Términos y Condiciones Generales (TCG)&nbsp;</strong>para empresas Yingul, Para ver su contenido, haz click <a href=\"https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/politicas/terminos-y-condiciones-de-uso.pdf\" target=\"_blank\" rel=\"noopener\">aquí</a>.</p>\r\n" + 
+            		"<p>Hoy, aceptaste los&nbsp;<strong>Términos y Condiciones Generales (TCG)&nbsp;</strong>para empresas Yingul, Para ver su contenido, haz click <a href=\"https://www.yingul.com/assets/images/terminos-y-condiciones-de-uso.pdf\" target=\"_blank\" rel=\"noopener\">aquí</a>.</p>\r\n" + 
             		"<p>Puede iniciar sesión en nuestro sistema en&nbsp;<a href=\"https://www.yingul.com/login\" target=\"_blank\" rel=\"noopener noreferrer\">aquí</a>, usando la siguiente información:<br />&nbsp; &nbsp; Correo: "+temp.getEmail()+"<br />&nbsp;&nbsp;&nbsp;&nbsp;Contraseña: "+password+"<br />&nbsp; &nbsp; Nombre de usuario:&nbsp;"+temp.getUsername()+"</p>\r\n" + 
             		"<p>Cordialemente:</p>\r\n" + 
-            		"<p><img src=\"https://s3-us-west-2.amazonaws.com/jsa-s3-bucketimage/logos/logonaranja.jpg\" alt=\"\" width=\"182\" height=\"182\" /></p>\r\n" + 
+            		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" alt=\"\" width=\"182\" height=\"182\" /></p>\r\n" + 
             		"<p>Su equípo de autenticación de Yingul&nbsp;<a href=\"https://www.yingul.com\" target=\"_blank\" rel=\"noopener\">www.yingul.com</a></p>");
             return "save";
         }
