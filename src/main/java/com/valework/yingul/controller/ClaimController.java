@@ -51,15 +51,27 @@ public class ClaimController {
     	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(), "RECLAMO URGENTE","Tu comprador hizo un reclamo respecto a :  "+confirmTemp.getBuy().getYng_item().getName()
     			+ "<br/> La acreditacion de Yingul a tu cuenta se encuentra temporalmente congelada "
     			+ "<br/> Tu comprador argumento: "+ claim.getClaimText()
-    			+ "<br/> Nos pondremos en contacto contigo lo mas pronto posible o puedes escribirnos a info@yingul.com codigo de seguimiento:"+confirmTemp.getConfirmId());
+    			+ "<br/> Nos pondremos en contacto contigo lo mas pronto posible o puedes escribirnos a info@yingul.com codigo de seguimiento:"+confirmTemp.getConfirmId())
+				+ "<p>Cordialemente:</p>"  
+				+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" 
+				+ "<p>Su equípo de reclamos Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+
 		smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "RECLAMO REALIZADO EXITOSAMENTE", "Se hizo el reclamo respecto a :  "+confirmTemp.getBuy().getYng_item().getName() 
     			+ "<br/> Tu argumento es : "+ claim.getClaimText()
-    			+ "<br/> Nos pondremos en contacto contigo lo mas pronto posible o puedes escribirnos a info@yingul.com codigo de seguimiento:"+confirmTemp.getConfirmId());
+    			+ "<br/> Nos pondremos en contacto contigo lo mas pronto posible o puedes escribirnos a info@yingul.com codigo de seguimiento:"+confirmTemp.getConfirmId())
+				+ "<p>Cordialemente:</p>"  
+				+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" 
+				+ "<p>Su equípo de reclamos Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+
     			/*+ "<br/> Encuentrate con tu vendedor e ingresa a: https://www.yingul.com/agreement/"+claim.getClaimId()+" donde ambos podran firmar un acuerdo que los beneficie."
     			+ "<br/> No devuelvas el poducto al vendedor hasta que ambos hasta que te llegue un email indicando que lo puedes hacer si no no podremos devolverte tu dinero");*/
 		smtpMailSender.send("no-reply@yingul.com", "RECLAMO EN www.yingul.com", "Se hizo el reclamo respecto a :  "+confirmTemp.getBuy().getYng_item().getName() 
     			+ "<br/> El argumento del comprador es : "+ claim.getClaimText()
-    			+ "<br/> Código de seguimiento:"+confirmTemp.getConfirmId());
+    			+ "<br/> Código de seguimiento:"+confirmTemp.getConfirmId())
+				+ "<p>Cordialemente:</p>"  
+				+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" 
+				+ "<p>Su equípo de reclamos Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+
     	return "save";
     }
 	
@@ -127,7 +139,10 @@ public class ClaimController {
 			claimTemp=claimDao.save(claimTemp);
 			smtpMailSender.send(claimTemp.getConfirm().getBuy().getUser().getEmail(), "CÓDIGO DE ACUERDO", "Tú y tu vendedor llegaron al cuerdo de "+agreement+"  respecto a :  "+claimTemp.getConfirm().getBuy().getYng_item().getName() +"  Descripción : "+claimTemp.getConfirm().getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +claimTemp.getConfirm().getBuy().getYng_item().getPrice() 
 					+ "<br/> Tu reclamo fue : "+ claim.getClaimText()
-					+ "<br/> Dale este código ("+codeConfirm+")a tu vendedor si estas de acuerdo y espera mas instrucciones antes de devolver el producto a tu vendedor o no podremos devolverte tu dinero");
+					+ "<br/> Dale este código ("+codeConfirm+")a tu vendedor si estas de acuerdo y espera mas instrucciones antes de devolver el producto a tu vendedor o no podremos devolverte tu dinero")
+					+ "<p>Cordialemente:</p>"  
+					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" 
+					+ "<p>Su equípo de reclamos Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
 			return "save";
 		}else {
 			return "prohibited";

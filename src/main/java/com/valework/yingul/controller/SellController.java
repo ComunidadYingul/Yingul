@@ -362,7 +362,10 @@ public class SellController {
 		}
         try {
 			smtpMailSender.send(userTemp.getEmail(), "Servicio registrado exitosamente", "Su servicio ya esta registrado en las categorias de: "+ruta+
-					"<br> puede encontrarlo y compartirlo en: www.yingul.com/itemDetail/"+serz.getYng_Item().getItemId());
+					"<br> puede encontrarlo y compartirlo en: www.yingul.com/itemDetail/"+serz.getYng_Item().getItemId())
+					+ "<p>Cordialemente:</p>\r\n"  
+					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
+					+ "<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -535,7 +538,10 @@ public class SellController {
 		}*/
         try {
 			smtpMailSender.send(userTemp.getEmail(), "Producto registrado exitosamente", "Su producto ya esta registrado en las categorias de: "+ruta+
-					"<br> puede encontrarlo y compartirlo en: www.yingul.com/itemDetail/"+productTemp.getYng_Item().getItemId());
+					"<br> puede encontrarlo y compartirlo en: www.yingul.com/itemDetail/"+productTemp.getYng_Item().getItemId())
+					+ "<p>Cordialemente:</p>\r\n"  
+					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
+					+ "<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -720,7 +726,10 @@ public class SellController {
         
         try {
 			smtpMailSender.send(userTemp.getEmail(), "INMUEBLE registrado exitosamente", "Su inmueble ya esta registrado en las categorias de: "+ruta+
-					"<br> puede encontrarlo y compartirlo en: www.yingul.com/itemDetail/"+prop.getYng_Item().getItemId());
+					"<br> puede encontrarlo y compartirlo en: www.yingul.com/itemDetail/"+prop.getYng_Item().getItemId())
+					+ "<p>Cordialemente:</p>\r\n"  
+					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
+					+ "<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -919,7 +928,10 @@ public class SellController {
         
         try {
 			smtpMailSender.send(userTemp.getEmail(), "Vehículo registrado exitosamente", "Su vehículo ya esta registrado en las categorias de: "+ruta+
-					"<br> puede encontrarlo y compartirlo en: www.yingul.com/itemDetail/"+mots.getYng_Item().getItemId());
+					"<br> puede encontrarlo y compartirlo en: www.yingul.com/itemDetail/"+mots.getYng_Item().getItemId())
+					+ "<p>Cordialemente:</p>\r\n"  
+					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
+					+ "<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -611,13 +611,13 @@ public class GreetingBatchBean {
 	            	confirmDao.save(confirmTemp);
 	            	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(),"CONFIRMACIÓN DE RECEPCIÓN EXITOSA","<h2>CONFIRMACIÓN DE RECEPCIÓN EXITOSA!</h2>\r\n" + 
 	            			"<p>Tu comprador realizo la confirmación de la recepción del producto: "+confirmTemp.getBuy().getYng_item().getName() +" de la suscursal Andreani.</p>\r\n" + 
-	            			"<p>Si tu comprador no tiene ninguna observación del producto en "+daysForClaims.getValue()+" días podras recoger tu dinero ingresando <a href=\"https://www.yingul.com/frontYingulPay\">aquí</a>.</p>\r\n" + 
+	            			"<p>Si tu comprador no tiene ninguna observación del producto en "+daysForClaims.getValue()+" días podras recoger tu dinero ingresando <a  href=\"https://www.yingul.com/frontYingulPay\" target=\"_blank\">aquí</a>.</p>\r\n" + 
 	            			"<p>Cordialemente:</p>\r\n" + 
 	            			"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" + 
 	            			"<p>Su equípo de confirmación Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
 	            	smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(),"CONFIRMACIÓN DE RECEPCIÓN EXITOSA","<h2>CONFIRMACIÓN DE RECEPCIÓN EXITOSA!</h2>\r\n" + 
 	            			"<p>Se realizo la confirmación de la recepción del producto: "+confirmTemp.getBuy().getYng_item().getName() +" de la suscursal Andreani.</p>\r\n" + 
-	            			"<p>Tiene "+daysForClaims.getValue()+" días de garantia con Yingul, para realizar alguna observación ingrese <a href=\"https://www.yingul.com/userFront/claims\">aquí</a> después de ese lapso no se aceptaran reclamos.</p>\r\n" + 
+	            			"<p>Tiene "+daysForClaims.getValue()+" días de garantia con Yingul, para realizar alguna observación ingrese <a href=\"https://www.yingul.com/userFront/claims\" target=\"_blank\">aquí</a> después de ese lapso no se aceptaran reclamos.</p>\r\n" + 
 	            			"<p>Cordialemente:</p>\r\n" + 
 	            			"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" + 
 	            			"<p>Su equípo de confirmación Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
