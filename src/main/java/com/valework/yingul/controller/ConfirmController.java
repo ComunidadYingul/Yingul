@@ -138,13 +138,13 @@ public class ConfirmController {
             	confirmDao.save(confirmTemp);
             	System.out.println("Eddy:"+confirmTemp.getBuy().getYng_item().getUser().getEmail());
             	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(), "CONFIRMACIÓN DE ENTREGA EXITOSA","Se realizo la confirmacion de la entrega del producto :  "+confirmTemp.getBuy().getYng_item().getName() +"  Descripción : "+confirmTemp.getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +confirmTemp.getBuy().getYng_item().getPrice()
-            			+ "<br/> --Si tu comprador no tiene ninguna observacion del producto en "+daysForClaims.getValue()+" días podras recoger tu dinero ingresando a : https://www.yingul.com/frontYingulPay"
+            			+ "<br/> --Si tu comprador no tiene ninguna observacion del producto en "+daysForClaims.getValue()+" días podras recoger tu dinero ingresando <a href=\"https://www.yingul.com/frontYingulPay\" target=\"_blank\">aquí</a>"
 						+ "<p>Cordialemente:</p>\r\n"  
 						+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
 						+ "<p>Su equípo de confirmación Yingul Company SRL</p>" +
 							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
     			smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "CONFIRMACIÓN DE RECEPCIÓN EXITOSA", "Se realizo la confirmacion de la entrega del producto : "+confirmTemp.getBuy().getQuantity()+" "+confirmTemp.getBuy().getYng_item().getName()+" a:"+confirmTemp.getBuy().getCost()
-    					+ "<br/> --Tiene "+daysForClaims.getValue()+" días de garantia con Yingul para realizar alguna observación ingrese a: https://www.yingul.com/userFront/claims despues de ese lapso no se aceptaran reclamos"
+    					+ "<br/> --Tiene "+daysForClaims.getValue()+" días de garantia con Yingul para realizar alguna observación ingrese <a href=\"https://www.yingul.com/userFront/claims\" target=\"_blank\">aquí</a> despues de ese lapso no se aceptaran reclamos"
 						+ "<p>Cordialemente:</p>\r\n"  
 						+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
 						+ "<p>Su equípo de confirmación Yingul Company SRL</p>" +
@@ -273,13 +273,13 @@ public class ConfirmController {
            	confirmDao.save(confirmTemp);
            	System.out.println("Eddy:"+confirmTemp.getBuy().getYng_item().getUser().getEmail());
            	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(), "CONFIRMACIÓN DE ENTREGA EXITOSA","Se realizo la confirmacion de la entrega del producto :  "+confirmTemp.getBuy().getYng_item().getName() +"  Descripción : "+confirmTemp.getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +confirmTemp.getBuy().getYng_item().getPrice()
-           			+ "<br/> --Si tu comprador no tiene ninguna observacion del producto en 7 días podras recoger tu dinero ingresando a : https://www.yingul.com/frontYingulPay"
+           			+ "<br/> --Si tu comprador no tiene ninguna observacion del producto en 7 días podras recoger tu dinero ingresando <a href=\"https://www.yingul.com/frontYingulPay\" target=\"_blank\">aquí</a>"
 					+ "<p>Cordialemente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
 					+ "<p>Su equípo de confirmación Yingul Company SRL</p>" +
 							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
    			smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "CONFIRMACIÓN DE RECEPCIÓN EXITOSA", "Se realizo la confirmacion de la entrega del producto : "+confirmTemp.getBuy().getQuantity()+" "+confirmTemp.getBuy().getYng_item().getName()+" a:"+confirmTemp.getBuy().getCost()
-   					+ "<br/> --Tiene 7 días de garantia con Yingul para realizar alguna observación ingrese a: https://www.yingul.com/userFront/purchases despues de ese lapso no se aceptaran reclamos"
+   					+ "<br/> --Tiene 10 días de garantia con Yingul para realizar alguna observación ingrese <a href=\"https://www.yingul.com/userFront/purchases\" target=\"_blank\">aquí</a> después de ese lapso no se aceptaran reclamos"
 					+ "<p>Cordialemente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
 					+ "<p>Su equípo de confirmación Yingul Company SRL</p>" +
