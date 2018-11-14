@@ -966,11 +966,11 @@ public class ItemController {
 	    	smtpMailSender.send(yng_User.getEmail(), "El Título de un Artículo de Yingul ha cambiado", "Estimado "+yng_User.getUsername()+":<br>" + 
         			"<br>" + 
         			"Su Título de un Artículo de Yingul ha cambiado recientemente.<br>" + 
-        			"Puede ver sus modificaciones en: https://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
+        			"Puede ver sus modificaciones <a href=\"https://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"\" target=\"_blank\">aquí</a> <br>"+
         			"<br>"
         			+ "<p>Cordialemente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
-					+ "<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>")+
+					+ "<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
         			"<br>" + 
         			"Copyright 2018 Yingul S.R.L. All rights reserved.");
 	    	return "save";				
@@ -992,11 +992,11 @@ public class ItemController {
 	    	smtpMailSender.send(yng_User.getEmail(), "La Descripción de un Artículo de Yingul ha cambiado", "Estimado "+yng_User.getUsername()+":<br>" + 
         			"<br>" + 
         			"Su Descripción de un Artículo de Yingul ha cambiado recientemente.<br>" + 
-        			"Puede ver sus modificaciones en: https://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
+        			"Puede ver sus modificaciones <a href=\"https://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"\" target=\"_blank\">aquí</a><br>"+
         			"<br>" 
         			+ "<p>Cordialemente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
-					+ "<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>")+
+					+ "<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
         			"<br>" + 
         			"Copyright 2018 Yingul S.R.L. All rights reserved.");
 	    	return "save";				
@@ -1024,11 +1024,11 @@ public class ItemController {
 	    	smtpMailSender.send(yng_User.getEmail(), "La Cantidad en Stock de un Artículo de Yingul ha cambiado", "Estimado "+yng_User.getUsername()+":<br>" + 
         			"<br>" + 
         			"Su Cantidad en Stock de un Artículo de Yingul ha cambiado recientemente.<br>" + 
-        			"Puede ver sus modificaciones en: https://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
+        			"Puede ver sus modificaciones <a href=\"https://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"\" target=\"_blank\">aquí</a> <br>"+
         			"<br>" 
         			+ "<p>Cordialemente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
-					+ "<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>")+
+					+ "<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
         			"<br>" + 
         			"Copyright 2018 Yingul S.R.L. All rights reserved.");
 	    	return "save";				
@@ -1053,11 +1053,11 @@ public class ItemController {
 	    	smtpMailSender.send(yng_User.getEmail(), "El Precio de un Artículo de Yingul ha cambiado", "Estimado "+yng_User.getUsername()+":<br>" + 
         			"<br>" + 
         			"Su Precio de un Artículo de Yingul ha cambiado recientemente.<br>" + 
-        			"Puede ver sus modificaciones en: https://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
+        			"Puede ver sus modificaciones  <a href=\"https://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"\" target=\"_blank\">aquí</a><br>"+
         			"<br>"  
         			+ "<p>Cordialemente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
-					+ "<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>") + 
+					+ "<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>" + 
         			"<br>" + 
         			"Copyright 2018 Yingul S.R.L. All rights reserved.");
 	    	return "save";				
@@ -1127,11 +1127,11 @@ public class ItemController {
 	    	smtpMailSender.send(yng_User.getEmail(), "La(s) imagen(es) de un Artículo de Yingul ha cambiado", "Estimado "+yng_User.getUsername()+":<br>" + 
         			"<br>" + 
         			"Su(s) imagen(es) de un Artículo de Yingul ha cambiado recientemente.<br>" + 
-        			"Puede ver sus modificaciones en: https://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"<br>"+
+        			"Puede ver sus modificaciones <a href=\"https://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"\" target=\"_blank\">aquí</a> <br>"+
         			"<br>" 
         			+ "<p>Cordialemente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
-					+ "<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>")+
+					+ "<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
         			"<br>" + 
         			"Copyright 2018 Yingul S.R.L. All rights reserved.");
 	    	return "save";				
