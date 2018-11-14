@@ -148,7 +148,8 @@ public class UserController {
 	        			"<a href=\"https://www.yingul.com/about/contactUs\" target=\"_blank\">aquí</a>" + 
 	        			"<p>Cordialemente:</p>"+ 
 		        		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
-		        		"<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
+		        		"<p>Su equípo de registro Yingul Company SRL</p>" +
+						"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +
         				"Copyright 2018 Yigul S.R.L.. All rights reserved.");
 	        	return "save";
 			}
@@ -175,7 +176,8 @@ public class UserController {
 	        			"<a href=\"https://www.yingul.com/about/contactUs\" target=\"_blank\">aquí</a>" + 
 	        			"<p>Cordialemente:</p>"+ 
 		        		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
-		        		"<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
+		        		"<p>Su equípo de registro Yingul Company SRL</p>" +
+						"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +
         				"Copyright 2018 Yigul S.R.L.. All rights reserved.");
 				yng_User.setEmail(user.getEmail().toLowerCase());
 				yng_User=userDao.save(yng_User);
@@ -186,7 +188,8 @@ public class UserController {
 	        			"<a href=\"https://www.yingul.com/about/contactUs\" target=\"_blank\">aquí</a>" + 
 	        			"<p>Cordialemente:</p>"+ 
 		        		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
-		        		"<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
+		        		"<p>Su equípo de registro Yingul Company SRL</p>" +
+						"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +
         				"Copyright 2018 Yigul S.R.L.. All rights reserved.");
 				return "save";
 			}
@@ -214,7 +217,8 @@ public class UserController {
         			"<a href=\"https://www.yingul.com/about/contactUs\" target=\"_blank\">aquí</a>" + 
 	        		"<p>Cordialemente:</p>"+ 
 		        	"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
-		        	"<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
+		        	"<p>Su equípo de registro Yingul Company SRL</p>" +
+					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +
         			"Copyright 2018 Yigul S.R.L.. All rights reserved.");
 			return "save";
 		}else {

@@ -115,9 +115,10 @@ public class HomeController {
             		"<p>Yingul Company te da la bienvenida a la plataforma más segura y confiable para comprar y vender por internet.</p>\r\n" + 
             		"<p>Hoy, aceptaste los&nbsp;<strong>Términos y Condiciones Generales (TCG)&nbsp;</strong>para usuarios Yingul, Para ver su contenido, haz click <a href=\"https://www.yingul.com/assets/images/terminos-y-condiciones-de-uso.pdf\" target=\"_blank\">aquí</a>.</p>\r\n" + 
             		"<p>Puede iniciar sesión en nuestro sistema en&nbsp;<a href=\"https://www.yingul.com/login\" target=\"_blank\" rel=\"noopener noreferrer\">aquí</a>, usando la siguiente información:<br />&nbsp; &nbsp; Correo: "+temp.getEmail()+"<br />&nbsp;&nbsp;&nbsp;&nbsp;Contraseña: "+password+"<br />&nbsp; &nbsp; Nombre de usuario:&nbsp;"+temp.getUsername()+"</p>\r\n" + 
-            		"<p>Cordialemente:</p>\r\n" + 
+            		"<p>Atentamente:</p>\r\n" + 
             		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" alt=\"\" width=\"182\" height=\"182\" /></p>\r\n" + 
-            		"<p>Su equípo de autenticación de Yingul&nbsp;<a href=\"https://www.yingul.com\" target=\"_blank\" rel=\"noopener\">www.yingul.com</a></p>");
+            		"<p>Su equípo de autenticación Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
             return "save";
         }
     }
@@ -185,9 +186,10 @@ public class HomeController {
             		"<p>Yingul Company te da la bienvenida a la plataforma más segura y confiable para comprar y vender por internet.</p>\r\n" + 
             		"<p>Hoy, aceptaste los&nbsp;<strong>Términos y Condiciones Generales (TCG)&nbsp;</strong>para empresas Yingul, Para ver su contenido, haz click <a href=\"https://www.yingul.com/assets/images/terminos-y-condiciones-de-uso.pdf\" target=\"_blank\" rel=\"noopener\">aquí</a>.</p>\r\n" + 
             		"<p>Puede iniciar sesión en nuestro sistema en&nbsp;<a href=\"https://www.yingul.com/login\" target=\"_blank\" rel=\"noopener noreferrer\">aquí</a>, usando la siguiente información:<br />&nbsp; &nbsp; Correo: "+temp.getEmail()+"<br />&nbsp;&nbsp;&nbsp;&nbsp;Contraseña: "+password+"<br />&nbsp; &nbsp; Nombre de usuario:&nbsp;"+temp.getUsername()+"</p>\r\n" + 
-            		"<p>Cordialemente:</p>\r\n" + 
+            		"<p>Atentamente:</p>\r\n" + 
             		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" alt=\"\" width=\"182\" height=\"182\" /></p>\r\n" + 
-            		"<p>Su equípo de autenticación de Yingul&nbsp;<a href=\"https://www.yingul.com\" target=\"_blank\" rel=\"noopener\">www.yingul.com</a></p>");
+            		"<p>Su equípo de autenticación Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
             return "save";
         }
     }

@@ -970,7 +970,8 @@ public class ItemController {
         			"<br>"
         			+ "<p>Cordialemente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
-					+ "<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
+					+ "<p>Su equípo de registro Yingul Company SRL</p>" +
+					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +
         			"<br>" + 
         			"Copyright 2018 Yingul S.R.L. All rights reserved.");
 	    	return "save";				
@@ -996,7 +997,8 @@ public class ItemController {
         			"<br>" 
         			+ "<p>Cordialemente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
-					+ "<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
+					+ "<p>Su equípo de registro Yingul Company SRL</p>" +
+					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +
         			"<br>" + 
         			"Copyright 2018 Yingul S.R.L. All rights reserved.");
 	    	return "save";				
@@ -1028,7 +1030,8 @@ public class ItemController {
         			"<br>" 
         			+ "<p>Cordialemente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
-					+ "<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
+					+ "<p>Su equípo de registro Yingul Company SRL</p>" +
+					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +
         			"<br>" + 
         			"Copyright 2018 Yingul S.R.L. All rights reserved.");
 	    	return "save";				
@@ -1057,7 +1060,8 @@ public class ItemController {
         			"<br>"  
         			+ "<p>Cordialemente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
-					+ "<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>" + 
+					+ "<p>Su equípo de registro Yingul Company SRL</p>" +
+					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +
         			"<br>" + 
         			"Copyright 2018 Yingul S.R.L. All rights reserved.");
 	    	return "save";				
@@ -1131,7 +1135,8 @@ public class ItemController {
         			"<br>" 
         			+ "<p>Cordialemente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
-					+ "<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
+					+ "<p>Su equípo de registro Yingul Company SRL</p>" +
+					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +
         			"<br>" + 
         			"Copyright 2018 Yingul S.R.L. All rights reserved.");
 	    	return "save";				

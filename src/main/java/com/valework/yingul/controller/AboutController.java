@@ -29,7 +29,8 @@ public class AboutController {
     			"Gracias por contactarte con Yingul, la solicitud ha sido recibida por nuestros agentes quienes están trabajando para brindar una respuesta oportuna."+
 				"<p>Cordialemente:</p>" + 
 		        "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" + 
-		        "<p>Su equípo de reclamos Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        "<p>Su equípo de reclamos Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
     	return "save";
     }
 

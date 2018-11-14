@@ -565,7 +565,8 @@ public class BuyController {
 						+ "<br/> - Despues de entregar el producto tu comprador tiene 10 dias para observar sus condiciones posterior a eso te daremos mas instrucciones para recoger tu dinero"+
 						"<p>Cordialemente:</p>" + 
 		        		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" + 
-		        		"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        		"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 				if(buy.getYng_Payment().getType().equals("CASH")) {
 					smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
 							+ "<table border=\"1\">\r\n"  
@@ -595,7 +596,8 @@ public class BuyController {
 							+ "<br/> - Despues de recibir el producto tienes 10 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero."+
 							"<p>Cordialemente:</p>"+
 		        			"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
-		        			"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        			"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 				}
 				if(buy.getYng_Payment().getType().equals("CARD")) {
 					smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
@@ -626,7 +628,8 @@ public class BuyController {
 							+ "<br/> - Despues de recibir el producto tienes 10 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero"+
 							"<p>Cordialemente:</p>" + 
 		        			"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" + 
-		        			"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        			"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 				}	
 			}
 			else {
@@ -658,7 +661,8 @@ public class BuyController {
 							+ "<br/>Nos pondremos en contacto con usted cuando tu comprador recoja el producto de Andreani."+
 							"<p>Cordialemente:</p>" + 
 		        			"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" + 
-		        			"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        			"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 					if(buy.getYng_Payment().getType().equals("CASH")) {
 						smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
 							+ "<table border=\"1\">\r\n"  
@@ -690,7 +694,8 @@ public class BuyController {
 							+ "<br/>Sucursal: "+branchAndreaniC.getLocation()+" "+branchAndreaniC.getSchedules()+" Fono: "+branchAndreaniC.getPhones()+
 							"<p>Cordialemente:</p>" + 
 		        			"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" + 
-		        			"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        			"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 					}
 					if(buy.getYng_Payment().getType().equals("CARD")) {
 						smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
@@ -723,7 +728,8 @@ public class BuyController {
 							+ "<br/> Sucursal: "+branchAndreaniC.getLocation()+" "+branchAndreaniC.getSchedules()+" Fono: "+branchAndreaniC.getPhones()+
 							"<p>Cordialemente:</p>" + 
 		        			"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" + 
-		        			"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        			"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 					}
 				}else {
 					smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","<b>DETALLE DE LA VENTA:</b>"
@@ -752,7 +758,8 @@ public class BuyController {
 							+ "<br/>Nos pondremos en contacto con usted cuando tu comprador recoja el producto de Andreani."+
 							"<p>Cordialemente:</p>" + 
 		        			"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" + 
-		        			"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        			"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 					if(buy.getYng_Payment().getType().equals("CASH")) {
 						smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
 							+ "<table border=\"1\">\r\n"  
@@ -784,7 +791,8 @@ public class BuyController {
 							+ "<br/> Sucursal: "+branchAndreaniC.getLocation()+" "+branchAndreaniC.getSchedules()+" Fono: "+branchAndreaniC.getPhones()+
 							"<p>Cordialemente:</p>" + 
 		        			"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" + 
-		        			"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        			"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 					}
 					if(buy.getYng_Payment().getType().equals("CARD")) {
 						smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
@@ -817,7 +825,8 @@ public class BuyController {
 							+ "<br/> Sucursal: "+branchAndreaniC.getLocation()+" "+branchAndreaniC.getSchedules()+" Fono: "+branchAndreaniC.getPhones()+
 							"<p>Cordialemente:</p>" + 
 		        			"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" + 
-		        			"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        			"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 					}
 				}
 			}
@@ -1174,7 +1183,8 @@ public class BuyController {
 					+ "<br/> - Despues de entregar el producto tu comprador tiene 10 dias para observar sus condiciones posterior a eso te daremos mas instrucciones para recoger tu dinero"+
 					"<p>Cordialemente:</p>" + 
 		        	"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" + 
-		        	"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        	"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 			if(buy.getYng_Payment().getType().equals("CASH")) {
 				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
 						+ "<table border=\"1\">\r\n"  
@@ -1204,7 +1214,8 @@ public class BuyController {
 						+ "<br/> - Despues de recibir el producto tienes 10 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero."+
 						"<p>Cordialemente:</p>" + 
 		        		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" + 
-		        		"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        		"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 			}
 			if(buy.getYng_Payment().getType().equals("CARD")) {
 				smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
@@ -1235,7 +1246,8 @@ public class BuyController {
 						+ "<br/> - Despues de recibir el producto tienes 10 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero"+
 						"<p>Cordialemente:</p>" + 
 		        		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" + 
-		        		"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        		"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 			}	
 		}
 		else {
@@ -1267,7 +1279,8 @@ public class BuyController {
 						+ "<br/>Nos pondremos en contacto con usted cuando tu comprador recoja el producto de Andreani."+
 						"<p>Cordialemente:</p>" + 
 		        		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" + 
-		        		"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        		"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 				if(buy.getYng_Payment().getType().equals("CASH")) {
 					smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
 						+ "<table border=\"1\">\r\n"  
@@ -1299,7 +1312,8 @@ public class BuyController {
 						+ "<br/>Sucursal: "+branchAndreaniC.getLocation()+" "+branchAndreaniC.getSchedules()+" Fono: "+branchAndreaniC.getPhones()+
 						"<p>Cordialemente:</p>" + 
 		        		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" + 
-		        		"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        		"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 				}
 				if(buy.getYng_Payment().getType().equals("CARD")) {
 					smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
@@ -1332,7 +1346,8 @@ public class BuyController {
 						+ "<br/> Sucursal: "+branchAndreaniC.getLocation()+" "+branchAndreaniC.getSchedules()+" Fono: "+branchAndreaniC.getPhones()+
 						"<p>Cordialemente:</p>"+ 
 		        		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
-		        		"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        		"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 				}
 			}else {
 				smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","<b>DETALLE DE LA VENTA:</b>"
@@ -1361,7 +1376,8 @@ public class BuyController {
 						+ "<br/>Nos pondremos en contacto con usted cuando tu comprador recoja el producto de Andreani."+
 						"<p>Cordialemente:</p>"+ 
 		        		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
-		        		"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        		"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 				if(buy.getYng_Payment().getType().equals("CASH")) {
 					smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
 						+ "<table border=\"1\">\r\n"  
@@ -1393,7 +1409,8 @@ public class BuyController {
 						+ "<br/> Sucursal: "+branchAndreaniC.getLocation()+" "+branchAndreaniC.getSchedules()+" Fono: "+branchAndreaniC.getPhones()+
 						"<p>Cordialemente:</p>"+ 
 		        		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
-		        		"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        		"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 				}
 				if(buy.getYng_Payment().getType().equals("CARD")) {
 					smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "<b>DETALLE DE LA COMPRA:</b>"
@@ -1426,7 +1443,8 @@ public class BuyController {
 						+ "<br/> Sucursal: "+branchAndreaniC.getLocation()+" "+branchAndreaniC.getSchedules()+" Fono: "+branchAndreaniC.getPhones()+
 						"<p>Cordialemente:</p>"+ 
 		        		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
-		        		"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        		"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 				}
 			}
 		}
@@ -1907,7 +1925,8 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 					+ "<br/> - Despues de entregar el producto tu comprador tiene 7 dias para observar sus condiciones posterior a eso te daremos mas instrucciones para recoger tu dinero"+
 					"<p>Cordialemente:</p>"+ 
 		        	"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
-		        	"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        	"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" Cumpla las siguientes instrucciones:."
 					+ "<br/> - Al Momento de recibir el producto dile este codigo a tu vendedor: "+confirm.getCodeConfirm()+" si el producto esta en buenas condiciones "
 					+ "<br/> - Espera el mensaje de confirmacion exitosa de nuestra pagina "
@@ -1916,7 +1935,8 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 					+ "<br/> - Despues de recibir el producto tienes 7 dias para observar sus condiciones posterior a ese lapzo no se aceptan reclamos ni devolucion de tu dinero"+
 					"<p>Cordialemente:</p>"+ 
 		        	"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
-		        	"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        	"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 		}
 		else {
 			smtpMailSender.send(buy.getYng_item().getUser().getEmail(), "VENTA EXITOSA","Se realizo la venta del producto :  "+buy.getYng_item().getName() +"  Descripción : "+buy.getYng_item().getDescription()+ "  " +"  Precio: " +buy.getYng_item().getPrice()+"   Costo del envio : " +buy.getShipping().getYng_Quote().getRate()+  
@@ -1930,11 +1950,13 @@ buy.setShipping(shippingDao.save(buy.getShipping()));
 					+ "Y tu comprador tiene 10 dias para observar sus condiciones, posterior a eso te daremos mas instrucciones para recoger tu dinero"+
 					"<p>Cordialemente:</p>"+ 
 		        	"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
-		        	"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        	"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 			smtpMailSender.send(userTemp.getEmail(), "COMPRA EXITOSA", "Adquirio: "+buy.getQuantity()+" "+buy.getYng_item().getName()+" a:"+buy.getCost()+" pago realizado con: "+buy.getYng_Payment().getType()+" "+buy.getYng_Payment().getYng_Card().getProvider()+" terminada en: "+buy.getYng_Payment().getYng_Card().getNumber()%10000+" nos pondremos en contacto con usted lo mas pronto posible."+
 					"<p>Cordialemente:</p>"+ 
 		        	"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
-		        	"<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+		        	"<p>Su equípo de ventas Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 		}
     	return "save";
     }

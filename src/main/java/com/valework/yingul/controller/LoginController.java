@@ -62,7 +62,8 @@ public class LoginController {
         			"Si no puede acceder al vínculo, copie y pegue toda la URL en el navegador.<br>" + 
         			"<p>Cordialemente:</p>"+ 
 		        	"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
-		        	"<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
+		        	"<p>Su equípo de registro Yingul Company SRL</p>" +
+					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +
         			"Copyright 2018 Yigul S.R.L.. All rights reserved.");
         	return "save";
         }else {
@@ -85,7 +86,8 @@ public class LoginController {
         			"Si usted no solicitó el cambio de contraseña, póngase en contacto con el equipo de asistencia al cliente.<br>" + 
         			"<p>Cordialemente:</p>"+ 
 		        	"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
-		        	"<p>Su equípo de registro Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>"+
+		        	"<p>Su equípo de registro Yingul Company SRL</p>" +
+					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +
         			"Copyright 2018 Yigul S.R.L.. All rights reserved.");
         	return "save";
         }else {

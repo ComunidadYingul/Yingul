@@ -365,7 +365,8 @@ public class SellController {
 					"<br> puede encontrarlo y compartirlo <a href=\"https://www.yingul.com/itemDetail/"+serz.getYng_Item().getItemId()+"\" target=\"_blank\">aquí</a>"
 					+ "<p>Cordialemente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
-					+ "<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+					+ "<p>Su equípo de ventas Yingul Company SRL</p>" +
+					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -541,7 +542,8 @@ public class SellController {
 					"<br>puede encontrarlo y compartirlo <a href=\"https://www.yingul.com/itemDetail/"+productTemp.getYng_Item().getItemId()+"\" target=\"_blank\">aquí</a>"
 					+ "<p>Cordialemente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
-					+ "<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+					+ "<p>Su equípo de ventas Yingul Company SRL</p>" +
+					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -729,7 +731,8 @@ public class SellController {
 					"<br> puede encontrarlo y compartirlo <a href=\"https://www.yingul.com/itemDetail/"+prop.getYng_Item().getItemId()+"\" target=\"_blank\">aquí</a>"
 					+ "<p>Cordialemente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
-					+ "<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+					+ "<p>Su equípo de ventas Yingul Company SRL</p>" +
+					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -931,7 +934,8 @@ public class SellController {
 					"<br> puede encontrarlo y compartirlo <a href=\"https://www.yingul.com/itemDetail/"+mots.getYng_Item().getItemId()+"\" target=\"_blank\">aquí</a>"
 					+ "<p>Cordialemente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
-					+ "<p>Su equípo de ventas Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+					+ "<p>Su equípo de ventas Yingul Company SRL</p>" +
+					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

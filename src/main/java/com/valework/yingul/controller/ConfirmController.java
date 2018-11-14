@@ -141,12 +141,14 @@ public class ConfirmController {
             			+ "<br/> --Si tu comprador no tiene ninguna observacion del producto en "+daysForClaims.getValue()+" días podras recoger tu dinero ingresando a : https://www.yingul.com/frontYingulPay"
 						+ "<p>Cordialemente:</p>\r\n"  
 						+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
-						+ "<p>Su equípo de confirmación Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+						+ "<p>Su equípo de confirmación Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
     			smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "CONFIRMACIÓN DE RECEPCIÓN EXITOSA", "Se realizo la confirmacion de la entrega del producto : "+confirmTemp.getBuy().getQuantity()+" "+confirmTemp.getBuy().getYng_item().getName()+" a:"+confirmTemp.getBuy().getCost()
     					+ "<br/> --Tiene "+daysForClaims.getValue()+" días de garantia con Yingul para realizar alguna observación ingrese a: https://www.yingul.com/userFront/claims despues de ese lapso no se aceptaran reclamos"
 						+ "<p>Cordialemente:</p>\r\n"  
 						+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
-						+ "<p>Su equípo de confirmación Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+						+ "<p>Su equípo de confirmación Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
         		return "save";
         	}else {
         		return "el codigo es incorrecto!!!";
@@ -274,12 +276,14 @@ public class ConfirmController {
            			+ "<br/> --Si tu comprador no tiene ninguna observacion del producto en 7 días podras recoger tu dinero ingresando a : https://www.yingul.com/frontYingulPay"
 					+ "<p>Cordialemente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
-					+ "<p>Su equípo de confirmación Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+					+ "<p>Su equípo de confirmación Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
    			smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "CONFIRMACIÓN DE RECEPCIÓN EXITOSA", "Se realizo la confirmacion de la entrega del producto : "+confirmTemp.getBuy().getQuantity()+" "+confirmTemp.getBuy().getYng_item().getName()+" a:"+confirmTemp.getBuy().getCost()
    					+ "<br/> --Tiene 7 días de garantia con Yingul para realizar alguna observación ingrese a: https://www.yingul.com/userFront/purchases despues de ese lapso no se aceptaran reclamos"
 					+ "<p>Cordialemente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
-					+ "<p>Su equípo de confirmación Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+					+ "<p>Su equípo de confirmación Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
        		return "save";
        	}else {
        		return "el codigo es incorrecto!!!";

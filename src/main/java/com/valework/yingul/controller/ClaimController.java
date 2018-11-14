@@ -54,14 +54,16 @@ public class ClaimController {
     			+ "<br/> Nos pondremos en contacto contigo lo mas pronto posible o puedes escribirnos a info@yingul.com codigo de seguimiento:"+confirmTemp.getConfirmId()
 				+ "<p>Cordialemente:</p>"  
 				+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" 
-				+ "<p>Su equípo de reclamos Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+				+ "<p>Su equípo de reclamos Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 
 		smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "RECLAMO REALIZADO EXITOSAMENTE", "Se hizo el reclamo respecto a :  "+confirmTemp.getBuy().getYng_item().getName() 
     			+ "<br/> Tu argumento es : "+ claim.getClaimText()
     			+ "<br/> Nos pondremos en contacto contigo lo mas pronto posible o puedes escribirnos a info@yingul.com codigo de seguimiento:"+confirmTemp.getConfirmId()
 				+ "<p>Cordialemente:</p>"  
 				+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" 
-				+ "<p>Su equípo de reclamos Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+				+ "<p>Su equípo de reclamos Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 
     			/*+ "<br/> Encuentrate con tu vendedor e ingresa a: https://www.yingul.com/agreement/"+claim.getClaimId()+" donde ambos podran firmar un acuerdo que los beneficie."
     			+ "<br/> No devuelvas el poducto al vendedor hasta que ambos hasta que te llegue un email indicando que lo puedes hacer si no no podremos devolverte tu dinero");*/
@@ -70,7 +72,8 @@ public class ClaimController {
     			+ "<br/> Código de seguimiento:"+confirmTemp.getConfirmId()
 				+ "<p>Cordialemente:</p>"  
 				+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" 
-				+ "<p>Su equípo de reclamos Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+				+ "<p>Su equípo de reclamos Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 
     	return "save";
     }
@@ -142,7 +145,8 @@ public class ClaimController {
 					+ "<br/> Dale este código ("+codeConfirm+")a tu vendedor si estas de acuerdo y espera mas instrucciones antes de devolver el producto a tu vendedor o no podremos devolverte tu dinero"
 					+ "<p>Cordialemente:</p>"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" 
-					+ "<p>Su equípo de reclamos Yingul <a href=\"https://www.yingul.com\" target=\"_blank\">www.yingul.com</a></p>");
+					+ "<p>Su equípo de reclamos Yingul Company SRL</p>" +
+							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 			return "save";
 		}else {
 			return "prohibited";
