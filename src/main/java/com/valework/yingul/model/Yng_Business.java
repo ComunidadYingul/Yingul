@@ -17,6 +17,7 @@ public class Yng_Business {
     private Long businessId;
 	private String businessName;
 	private String documentType;
+	@Column(unique=true)
 	private String documentNumber;
 	private String contributorType;
 	

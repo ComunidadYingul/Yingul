@@ -27,7 +27,7 @@ public class AboutController {
     	smtpMailSender.send(email.getSentFrom(), "Solicitud Creada","Hola\r\n" + 
     			"<br>" + 
     			"Gracias por contactarte con Yingul, la solicitud ha sido recibida por nuestros agentes quienes están trabajando para brindar una respuesta oportuna."+
-				"<p>Cordialemente:</p>" + 
+				"<p>Atentamente:</p>" + 
 		        "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" + 
 		        "<p>Su equípo de reclamos Yingul Company SRL</p>" +
 							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");

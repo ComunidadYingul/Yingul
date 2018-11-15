@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.text.Normalizer;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
@@ -134,12 +135,16 @@ public class HomeController {
         
 		try {
 			business = mapper.readValue(String.valueOf(businessObj), Yng_Business.class);
+			Yng_Business yng_Business = businessDao.findByDocumentNumber(business.getDocumentNumber());
+			if(yng_Business!=null) {
+				return "documentNumberExists";
+			}
 			person = mapper.readValue(String.valueOf(personObj), Yng_Person.class);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			return "problem";
 		}
-        
+		
 		Yng_User user=person.getYng_User();
 		user.setYng_Ubication(null);
 		user.setPassword(user.getPassword().trim());

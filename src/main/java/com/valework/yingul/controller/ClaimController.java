@@ -52,7 +52,7 @@ public class ClaimController {
     			+ "<br/> La acreditacion de Yingul a tu cuenta se encuentra temporalmente congelada "
     			+ "<br/> Tu comprador argumento: "+ claim.getClaimText() 
     			+ "<br/> Nos pondremos en contacto contigo lo mas pronto posible o puedes escribirnos a info@yingul.com codigo de seguimiento:"+confirmTemp.getConfirmId()
-				+ "<p>Cordialemente:</p>"  
+				+ "<p>Atentamente:</p>"  
 				+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" 
 				+ "<p>Su equípo de reclamos Yingul Company SRL</p>" +
 							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
@@ -60,7 +60,7 @@ public class ClaimController {
 		smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(), "RECLAMO REALIZADO EXITOSAMENTE", "Se hizo el reclamo respecto a :  "+confirmTemp.getBuy().getYng_item().getName() 
     			+ "<br/> Tu argumento es : "+ claim.getClaimText()
     			+ "<br/> Nos pondremos en contacto contigo lo mas pronto posible o puedes escribirnos a info@yingul.com codigo de seguimiento:"+confirmTemp.getConfirmId()
-				+ "<p>Cordialemente:</p>"  
+				+ "<p>Atentamente:</p>"  
 				+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" 
 				+ "<p>Su equípo de reclamos Yingul Company SRL</p>" +
 							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
@@ -70,7 +70,7 @@ public class ClaimController {
 		smtpMailSender.send("no-reply@yingul.com", "RECLAMO EN www.yingul.com", "Se hizo el reclamo respecto a :  "+confirmTemp.getBuy().getYng_item().getName() 
     			+ "<br/> El argumento del comprador es : "+ claim.getClaimText()
     			+ "<br/> Código de seguimiento:"+confirmTemp.getConfirmId()
-				+ "<p>Cordialemente:</p>"  
+				+ "<p>Atentamente:</p>"  
 				+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" 
 				+ "<p>Su equípo de reclamos Yingul Company SRL</p>" +
 							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
@@ -143,7 +143,7 @@ public class ClaimController {
 			smtpMailSender.send(claimTemp.getConfirm().getBuy().getUser().getEmail(), "CÓDIGO DE ACUERDO", "Tú y tu vendedor llegaron al cuerdo de "+agreement+"  respecto a :  "+claimTemp.getConfirm().getBuy().getYng_item().getName() +"  Descripción : "+claimTemp.getConfirm().getBuy().getYng_item().getDescription()+ "  " +"  Precio: " +claimTemp.getConfirm().getBuy().getYng_item().getPrice() 
 					+ "<br/> Tu reclamo fue : "+ claim.getClaimText()
 					+ "<br/> Dale este código ("+codeConfirm+")a tu vendedor si estas de acuerdo y espera mas instrucciones antes de devolver el producto a tu vendedor o no podremos devolverte tu dinero"
-					+ "<p>Cordialemente:</p>"  
+					+ "<p>Atentamente:</p>"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" 
 					+ "<p>Su equípo de reclamos Yingul Company SRL</p>" +
 							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");

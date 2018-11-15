@@ -159,7 +159,7 @@ public class UserController {
 	        			"Su USERNAME de Yingul ha cambiado recientemente.<br>" + 
 	        			"Si usted no solicitó el cambio de USERNAME, póngase en contacto con el equipo de asistencia al cliente.<br>" + 
 	        			"<a href=\"https://www.yingul.com/about/contactUs\" target=\"_blank\">aquí</a>" + 
-	        			"<p>Cordialemente:</p>"+ 
+	        			"<p>Atentamente:</p>"+ 
 		        		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
 		        		"<p>Su equípo de registro Yingul Company SRL</p>" +
 						"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +
@@ -187,7 +187,7 @@ public class UserController {
 	        			"Su Email de Yingul ha cambiado recientemente.<br>" + 
 	        			"Si usted no solicitó el cambio de Email, póngase en contacto con el equipo de asistencia al cliente.<br>" + 
 	        			"<a href=\"https://www.yingul.com/about/contactUs\" target=\"_blank\">aquí</a>" + 
-	        			"<p>Cordialemente:</p>"+ 
+	        			"<p>Atentamente:</p>"+ 
 		        		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
 		        		"<p>Su equípo de registro Yingul Company SRL</p>" +
 						"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +
@@ -199,7 +199,7 @@ public class UserController {
 	        			"Su Email de Yingul ha cambiado recientemente.<br>" + 
 	        			"Si usted no solicitó el cambio de Email, póngase en contacto con el equipo de asistencia al cliente.<br>" + 
 	        			"<a href=\"https://www.yingul.com/about/contactUs\" target=\"_blank\">aquí</a>" + 
-	        			"<p>Cordialemente:</p>"+ 
+	        			"<p>Atentamente:</p>"+ 
 		        		"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
 		        		"<p>Su equípo de registro Yingul Company SRL</p>" +
 						"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +
@@ -228,7 +228,7 @@ public class UserController {
         			"Su Clave de Yingul ha cambiado recientemente.<br>" + 
         			"Si usted no solicitó el cambio de Clave, póngase en contacto con el equipo de asistencia al cliente.<br>" + 
         			"<a href=\"https://www.yingul.com/about/contactUs\" target=\"_blank\">aquí</a>" + 
-	        		"<p>Cordialemente:</p>"+ 
+	        		"<p>Atentamente:</p>"+ 
 		        	"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
 		        	"<p>Su equípo de registro Yingul Company SRL</p>" +
 					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +

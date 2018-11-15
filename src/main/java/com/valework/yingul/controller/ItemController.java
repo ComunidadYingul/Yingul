@@ -968,7 +968,7 @@ public class ItemController {
         			"Su Título de un Artículo de Yingul ha cambiado recientemente.<br>" + 
         			"Puede ver sus modificaciones <a href=\"https://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"\" target=\"_blank\">aquí</a> <br>"+
         			"<br>"
-        			+ "<p>Cordialemente:</p>\r\n"  
+        			+ "<p>Atentamente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
 					+ "<p>Su equípo de registro Yingul Company SRL</p>" +
 					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +
@@ -995,7 +995,7 @@ public class ItemController {
         			"Su Descripción de un Artículo de Yingul ha cambiado recientemente.<br>" + 
         			"Puede ver sus modificaciones <a href=\"https://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"\" target=\"_blank\">aquí</a><br>"+
         			"<br>" 
-        			+ "<p>Cordialemente:</p>\r\n"  
+        			+ "<p>Atentamente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
 					+ "<p>Su equípo de registro Yingul Company SRL</p>" +
 					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +
@@ -1028,7 +1028,7 @@ public class ItemController {
         			"Su Cantidad en Stock de un Artículo de Yingul ha cambiado recientemente.<br>" + 
         			"Puede ver sus modificaciones <a href=\"https://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"\" target=\"_blank\">aquí</a> <br>"+
         			"<br>" 
-        			+ "<p>Cordialemente:</p>\r\n"  
+        			+ "<p>Atentamente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
 					+ "<p>Su equípo de registro Yingul Company SRL</p>" +
 					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +
@@ -1058,7 +1058,7 @@ public class ItemController {
         			"Su Precio de un Artículo de Yingul ha cambiado recientemente.<br>" + 
         			"Puede ver sus modificaciones  <a href=\"https://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"\" target=\"_blank\">aquí</a><br>"+
         			"<br>"  
-        			+ "<p>Cordialemente:</p>\r\n"  
+        			+ "<p>Atentamente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
 					+ "<p>Su equípo de registro Yingul Company SRL</p>" +
 					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +
@@ -1133,7 +1133,7 @@ public class ItemController {
         			"Su(s) imagen(es) de un Artículo de Yingul ha cambiado recientemente.<br>" + 
         			"Puede ver sus modificaciones <a href=\"https://www.yingul.com/itemDetail/"+itemTemp.getItemId()+"\" target=\"_blank\">aquí</a> <br>"+
         			"<br>" 
-        			+ "<p>Cordialemente:</p>\r\n"  
+        			+ "<p>Atentamente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
 					+ "<p>Su equípo de registro Yingul Company SRL</p>" +
 					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +

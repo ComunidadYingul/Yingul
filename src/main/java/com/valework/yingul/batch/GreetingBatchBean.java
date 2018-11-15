@@ -542,7 +542,7 @@ public class GreetingBatchBean {
 		            	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(),"CONFIRMACIÓN DE ENTREGA EXITOSA","<h2>CONFIRMACIÓN DE ENTREGA EXITOSA!</h2>" + 
 		            			"<p>Se realizo la confirmación de la entrega del producto en una sucursal andreani: "+confirmTemp.getBuy().getYng_item().getName() +" en la suscursal Andreani.</p>" + 
 		            			"<p>Despues de que tu comprador recoja el producto tendra 10 dias vigentes para realizar reclamos acerca del producto.</p>" + 
-		            			"<p>Cordialemente:</p>" + 
+		            			"<p>Atentamente:</p>" + 
 		            			"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>" + 
 		            			"<p>Su equípo de confirmación Yingul Company SRL</p>" +
 								"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
@@ -550,7 +550,7 @@ public class GreetingBatchBean {
 		            	smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(),"CONFIRMACIÓN DE ENTREGA EXITOSA","<h2>CONFIRMACIÓN DE ENTREGA EXITOSA!</h2>\r\n" + 
 		            			"<p>Tu vendedor realizo la entrega del producto: "+confirmTemp.getBuy().getYng_item().getName() +" en la suscursal Andreani.</p>\r\n" + 
 		            			"<p>Puedes recoger el producto de la sucursal Andreani desde "+Integer.parseInt(hourdateFormat.format(endClaim.toDate()))+"/"+Integer.parseInt(hourdateFormat1.format(endClaim.toDate()))+"/"+Integer.parseInt(hourdateFormat2.format(endClaim.toDate()))+".</p>\r\n" + 
-		            			"<p>Cordialemente:</p>\r\n" + 
+		            			"<p>Atentamente:</p>\r\n" + 
 		            			"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" + 
 		            			"<p>Su equípo de confirmación Yingul Company SRL</p>" +
 								"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
@@ -614,14 +614,14 @@ public class GreetingBatchBean {
 	            	smtpMailSender.send(confirmTemp.getBuy().getYng_item().getUser().getEmail(),"CONFIRMACIÓN DE RECEPCIÓN EXITOSA","<h2>CONFIRMACIÓN DE RECEPCIÓN EXITOSA!</h2>\r\n" + 
 	            			"<p>Tu comprador realizo la confirmación de la recepción del producto: "+confirmTemp.getBuy().getYng_item().getName() +" de la suscursal Andreani.</p>\r\n" + 
 	            			"<p>Si tu comprador no tiene ninguna observación del producto en "+daysForClaims.getValue()+" días podras recoger tu dinero ingresando <a href=\"https://www.yingul.com/frontYingulPay\" target=\"_blank\">aquí</a>.</p>\r\n" + 
-	            			"<p>Cordialemente:</p>\r\n" + 
+	            			"<p>Atentamente:</p>\r\n" + 
 	            			"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" + 
 	            			"<p>Su equípo de confirmación Yingul Company SRL</p>" +
 							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
 	            	smtpMailSender.send(confirmTemp.getBuy().getUser().getEmail(),"CONFIRMACIÓN DE RECEPCIÓN EXITOSA","<h2>CONFIRMACIÓN DE RECEPCIÓN EXITOSA!</h2>\r\n" + 
 	            			"<p>Se realizo la confirmación de la recepción del producto: "+confirmTemp.getBuy().getYng_item().getName() +" de la suscursal Andreani.</p>\r\n" + 
 	            			"<p>Tiene "+daysForClaims.getValue()+" días de garantia con Yingul, para realizar alguna observación ingrese <a href=\"https://www.yingul.com/userFront/claims\" target=\"_blank\">aquí</a> después de ese lapso no se aceptaran reclamos.</p>\r\n" + 
-	            			"<p>Cordialemente:</p>\r\n" + 
+	            			"<p>Atentamente:</p>\r\n" + 
 	            			"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" + 
 	            			"<p>Su equípo de confirmación Yingul Company SRL</p>" +
 							"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");

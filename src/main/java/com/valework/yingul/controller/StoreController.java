@@ -124,7 +124,7 @@ public class StoreController {
 			smtpMailSender.send(storeTemp.getUser().getEmail(), "Tienda registrada exitosamente",
 					"Su tienda ya esta registrada compartela y encuentrala <a href=\"https://www.yingul.com/tiendaOficial/"+ storeTemp.getName()+"\" target=\"_blank\">aquí</a>"+
 					"</br> Importante todos los productos que publicaste y publicaras desde ahora se encontraran en tu tienda."+
-					"<p>Cordialemente:</p>"+ 
+					"<p>Atentamente:</p>"+ 
 		        	"<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>"+ 
 		        	"<p>Su equípo de registro Yingul Company SRL</p>" +
 					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>" +

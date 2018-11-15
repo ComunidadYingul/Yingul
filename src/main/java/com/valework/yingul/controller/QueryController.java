@@ -82,7 +82,7 @@ public class QueryController {
 	    	notificationDao.save(sellerNotification);
 		    try {
 				smtpMailSender.send(query.getYng_Item().getUser().getEmail(), "Consulta urgente sobre su Item", query.getUser().getUsername()+" pregunto "+query.getQuery()+" sobre el Item "+query.getYng_Item().getName()+". Puedes responder las consultas <a href=\"https://www.yingul.com/userFront/sales/query\" target=\"_blank\">aquí</a>"
-				+ "<p>Cordialemente:</p>\r\n"  
+				+ "<p>Atentamente:</p>\r\n"  
 				+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
 				+ "<p>Su equípo de consultas Yingul Company SRL</p>" +
 				"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
@@ -164,7 +164,7 @@ public class QueryController {
     	queryTemp.setStatus("responded");
     	try {
 			smtpMailSender.send(queryTemp.getUser().getEmail(), "Respuesta sobre "+queryTemp.getYng_Item().getName(), queryTemp.getYng_Item().getUser().getUsername()+" respondio!!! sobre" +queryTemp.getYng_Item().getName()+". Puedes ver la repuesta <a href=\"https://www.yingul.com/itemDetail/"+queryTemp.getYng_Item().getItemId()+"\" target=\"_blank\">aquí</a> o ver todas las respuestas <a href=\"https://www.yingul.com/userFront/purchases/query\" target=\"_blank\">aquí</a>"
-			+ "<p>Cordialemente:</p>\r\n"  
+			+ "<p>Atentamente:</p>\r\n"  
 			+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
 			+ "<p>Su equípo de consultas Yingul Company SRL</p>" +
 			"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");

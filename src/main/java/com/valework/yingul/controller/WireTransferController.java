@@ -123,7 +123,7 @@ public class WireTransferController {
 				}
 				try {
 					smtpMailSender.send(yng_User.getEmail(), "Débito, de su cuenta en YingulPay", "El débito de "+transactionTemp.getAmount()+" $ a través de Tranferencia Bancaria a la cuenta "+wireTransfer.getCbu()+" de la persona "+wireTransfer.getTitularName()+" fue realizado exitosamente su saldo Disponible en Yingul Pay es de: "+account.getAvailableMoney()+" para ver el detalle de sus transacciones ingrese <a href=\"https://www.yingul.com/frontYingulPay\" target=\"_blank\">aquí</a>"
-					+ "<p>Cordialemente:</p>\r\n"  
+					+ "<p>Atentamente:</p>\r\n"  
 					+ "<p><img src=\"https://www.yingul.com/assets/images/logonaranja.jpg\" width=\"182\" height=\"182\" /></p>\r\n" 
 					+ "<p>Su equípo de transferencias Yingul Company SRL</p>" +
 					"<p>Consultas o dudas a: <i>info@yingul.com</i></p>");
