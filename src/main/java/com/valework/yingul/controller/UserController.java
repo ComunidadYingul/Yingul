@@ -264,6 +264,10 @@ public class UserController {
 		Yng_User yng_User= userDao.findByUsername(parts[0]);
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
 		if(yng_User.getUsername().equals(parts[0]) && encoder.matches(parts[1], yng_User.getPassword())){
+			Yng_Business yng_Business = businessDao.findByDocumentNumber(business.getDocumentNumber());
+			if(yng_Business!=null) {
+				return "documentNumberExists";
+			}	
 			Yng_Business businessTemp = businessDao.findByUser(yng_User);
 			businessTemp.setDocumentNumber(business.getDocumentNumber());
 			businessTemp.setDocumentType(business.getDocumentType());

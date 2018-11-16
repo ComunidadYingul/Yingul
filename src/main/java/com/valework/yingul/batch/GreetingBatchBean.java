@@ -84,7 +84,7 @@ public class GreetingBatchBean {
 	
 	//@Scheduled(cron = "0,30 * * * * *")//para cada 30 segundos
 	//@Scheduled(cron = "0 0 6 * * *")//cada dia a las 6 de la mañana
-	@Scheduled(cron = "0 25 0-23 * * ?")//para todas las horas y 20
+	//@Scheduled(cron = "0 25 0-23 * * ?")//para todas las horas y 20
 	public void cronJob() throws ClientProtocolException, IOException, Exception {
 		System.out.println("primer cron");
 		Date date = new Date();
@@ -450,7 +450,7 @@ public class GreetingBatchBean {
     	}
 	}
 	
-	@Scheduled(cron = "0 20 0-23 * * ?")//para todas las horas y 20
+	//@Scheduled(cron = "0 20 0-23 * * ?")//para todas las horas y 20
 	public void cronJob1() throws ClientProtocolException, IOException, Exception {
 		System.out.println("segundo cron");
 		List<Yng_Payment> confirmCashPayment= paymentDao.findByTypeAndStatusAndBuyStatus("CASH","PENDING","PENDING");
@@ -490,7 +490,7 @@ public class GreetingBatchBean {
 		}
 	}
 	
-	@Scheduled(cron = "0 15 0-23 * * ?")//para todas las horas y 15
+	//@Scheduled(cron = "0 15 0-23 * * ?")//para todas las horas y 15
 	public void deliveryConfirmation() throws MessagingException{
 		System.out.println("tercer cron");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("pending");
@@ -560,7 +560,7 @@ public class GreetingBatchBean {
 		}
 	}
 	
-	@Scheduled(cron = "0 10 0-23 * * ?")//para todas las horas y 10
+	//@Scheduled(cron = "0 10 0-23 * * ?")//para todas las horas y 10
 	public void whithdrawalConfirmation() throws MessagingException{
 		System.out.println("cuarto cron");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("delivered");
@@ -629,7 +629,7 @@ public class GreetingBatchBean {
 		}
 	}
 	
-	@Scheduled(cron = "0 0 0-23 * * ?")//para todas la hora empunto
+	//@Scheduled(cron = "0 0 0-23 * * ?")//para todas la hora empunto
 	public void	createSalesInvoice() throws Exception{
 		smtpMailSender.send("quenallataeddy@gmail.com", "CRONS INVO", "CRONS");
 		List<Yng_Confirm> listConfirm = confirmDao.findByStatus("closed");
@@ -643,7 +643,7 @@ public class GreetingBatchBean {
 		}
 	}
 	
-	@Scheduled(cron = "0 5 0-23 * * ?")//para todas las hora y 5
+	//@Scheduled(cron = "0 5 0-23 * * ?")//para todas las hora y 5
 	public void	invoiceOrSendSalesInvoice() throws Exception{
 		List<Yng_XubioSalesInvoice> listSalesInvoice = xubioSalesInvoiceDao.findAll();
 		String responseXubio;
